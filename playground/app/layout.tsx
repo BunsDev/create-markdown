@@ -2,9 +2,52 @@ import type { Metadata } from 'next';
 import { ThemeProvider } from './theme-context';
 import './globals.css';
 
+const siteConfig = {
+  title: 'create-markdown',
+  description: 'WYSIWYG block-based markdown editor with zero dependencies',
+  url: 'https://create-markdown.vercel.app',
+  ogImage: '/og-image.svg',
+};
+
 export const metadata: Metadata = {
-  title: 'create-markdown playground',
-  description: 'WYSIWYG block-based markdown editor',
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: `${siteConfig.title} playground`,
+    template: `%s | ${siteConfig.title}`,
+  },
+  description: siteConfig.description,
+  keywords: ['markdown', 'editor', 'wysiwyg', 'block-based', 'react', 'typescript', 'zero-dependencies'],
+  authors: [{ name: 'BunsDev', url: 'https://bunsdev.com' }],
+  creator: 'BunsDev',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: siteConfig.url,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    siteName: siteConfig.title,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: 'create-markdown - WYSIWYG block-based markdown editor',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+    creator: '@BunsDev',
+  },
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/logo.svg',
+  },
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
@@ -21,6 +64,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
           rel="stylesheet"
         />
+        <meta name="theme-color" content="#6366f1" />
         {/* Prevent flash of wrong theme */}
         <script
           dangerouslySetInnerHTML={{

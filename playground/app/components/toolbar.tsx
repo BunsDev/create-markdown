@@ -3,6 +3,7 @@
 import { useCallback } from 'react';
 import { useTheme } from '../theme-context';
 import { VERSION } from '../../../dist/index.js';
+import { LogoMark } from './logo';
 
 export type BlockTypeOption = 'paragraph' | 'h1' | 'h2' | 'h3' | 'bullet' | 'numbered' | 'quote' | 'code';
 
@@ -26,7 +27,16 @@ export function Toolbar({
   return (
     <header className="toolbar">
       <div className="toolbar-left">
-        <span className="toolbar-logo">create-markdown</span>
+        <a 
+          href="https://github.com/BunsDev/create-markdown" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="toolbar-logo-link"
+          title="View on GitHub"
+        >
+          <LogoMark size={24} />
+          <span className="toolbar-logo">create-markdown</span>
+        </a>
         <span className="toolbar-version">v{VERSION}</span>
         <span className="toolbar-version">{blockCount} blocks</span>
       </div>

@@ -1,0 +1,38 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#a5b4fc"/>
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#c7d2fe"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Document shape with rounded corners -->
+  <rect x="4" y="2" width="32" height="36" rx="4" fill="url(#logoGradient)"/>
+  
+  <!-- Folded corner effect -->
+  <path d="M28 2L36 10L28 10L28 2Z" fill="#4f46e5" opacity="0.6"/>
+  
+  <!-- Markdown "M" stylized -->
+  <path d="M10 28V16L14 22L18 16V28" 
+        stroke="white" 
+        stroke-width="2.5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        fill="none"/>
+  
+  <!-- Down arrow (markdown indicator) -->
+  <path d="M24 16V26M24 26L21 23M24 26L27 23" 
+        stroke="url(#accentGradient)" 
+        stroke-width="2.5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        fill="none"/>
+  
+  <!-- Hash symbol hint (subtle) -->
+  <rect x="8" y="10" width="6" height="1.5" rx="0.75" fill="white" opacity="0.5"/>
+  <rect x="8" y="13" width="10" height="1.5" rx="0.75" fill="white" opacity="0.3"/>
+</svg>
