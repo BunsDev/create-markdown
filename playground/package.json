@@ -1,0 +1,20 @@
+{
+  "name": "playground",
+  "private": true,
+  "scripts": {
+    "bdev": "next build && next dev --port 3333",
+    "dev": "next dev --port 3333",
+    "build": "next build"
+  },
+  "dependencies": {
+    "create-markdown": "workspace:*",
+    "next": "^16",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@types/node": "^25",
+    "@types/react": "^19",
+    "typescript": "^5"
+  }
+}

@@ -14,6 +14,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.1] - 2026-01-20
+
+### Added
+- Documentation for `VERSION` export
+- Documentation for default export usage
+
+### Fixed
+- Corrected Node.js version requirement to 20+ (was incorrectly stated as 18+)
+- Fixed repository URL inconsistencies across documentation
+
+### Changed
+- Updated README with improved API documentation
+
+---
+
 ## [0.1.0] - 2026-01-20
 
 ### Added
@@ -28,9 +43,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Technical
 - Built with Bun for fast builds
 - Zero runtime dependencies
-- Node.js 18+ support
+- Node.js 20+ support
 
 ---
 
-[Unreleased]: https://github.com/BunsDev/create-markdown/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/BunsDev/create-markdown/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/BunsDev/create-markdown/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/BunsDev/create-markdown/releases/tag/v0.1.0

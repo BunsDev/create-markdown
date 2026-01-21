@@ -34,6 +34,15 @@ const doc = createMarkdown('# Hello World');
 console.log(doc.content);
 ```
 
+### Default Export
+
+```typescript
+import createMarkdown from 'create-markdown';
+
+const doc = createMarkdown('# Hello World');
+console.log(doc.content);
+```
+
 ### CommonJS
 
 ```javascript
@@ -72,6 +81,16 @@ Creates a new markdown document.
 - `content` (string): Raw markdown content
 - `meta` (Record<string, unknown>): Document metadata
 
+### `VERSION`
+
+Package version string.
+
+```typescript
+import { VERSION } from 'create-markdown';
+
+console.log(VERSION); // '0.1.1'
+```
+
 ## Development
 
 ```bash
@@ -86,7 +105,15 @@ bun run dev
 
 # Clean build artifacts
 bun run clean
+
+# Run the playground
+bun run playground
 ```
+
+## Requirements
+
+- Node.js 20+
+- Bun 1.0+ (for development)
 
 ## Contributing
 
