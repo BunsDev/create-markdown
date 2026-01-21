@@ -5,14 +5,14 @@ import './globals.css';
 const siteConfig = {
   title: 'create-markdown',
   description: 'WYSIWYG block-based markdown editor with zero dependencies',
-  url: 'https://create-markdown.vercel.app',
+  url: 'https://create-markdown.com',
   ogImage: '/og-image.svg',
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.title} playground`,
+    default: `${siteConfig.title}`,
     template: `%s | ${siteConfig.title}`,
   },
   description: siteConfig.description,
