@@ -33,23 +33,23 @@ import type { Block, TextSpan } from '../../dist/index.js';
 // ============================================================================
 
 const INITIAL_BLOCKS: Block[] = [
-  h1('Welcome to create-markdown'),
+  h1('create-markdown 👋🏻'),
   paragraph(spans(
-    text('Click anywhere to start editing. This is a '),
+    text('Click anywhere to edit this '),
     bold('WYSIWYG'),
     text(' block-based editor built with '),
     italic('zero dependencies'),
     text('.')
   )),
-  h2('Features'),
+  h2('Notable Features ✨'),
   bulletList([
-    'Click any block to edit it directly',
+    'Block-based architecture',
     'Press Enter to create new paragraphs',
-    'Use Cmd+B for bold, Cmd+I for italic',
-    'Toggle between dark and light themes',
-    'Export your document as markdown',
+    'Keyboard shortcuts: cmd+b, cmd+i, and cmd+u',
+    'Toggle themes (light/dark)',
+    'Export as markdown',
   ]),
-  h2('Markdown Shortcuts'),
+  h2('Markdown Shortcuts ⚡'),
   paragraph(spans(
     text('Type markdown syntax and watch it render live:')
   )),
@@ -61,18 +61,18 @@ const INITIAL_BLOCKS: Block[] = [
     '**bold**, *italic*, `code`, ~~strikethrough~~, ==highlight==',
     '[link text](url) for links',
   ]),
-  h2('Try it out!'),
+  h2('Demo Instructions 👇🏻'),
   paragraph(spans(
     text('Edit this text, add new blocks, or try the formatting toolbar above.')
   )),
-  blockquote('This is a blockquote. Click to edit!'),
-  codeBlock('function hello() { console.log("Hello, create-markdown!"); }', 'javascript'),
+  blockquote('🗒️ Something to quote or something to note.'),
+  codeBlock('function hello() { console.log("TODO: add syntax highlighting"); }', 'typescript'),
   divider(),
   paragraph(spans(
     text('Enchanted by '),
-    { text: 'BunsDev', styles: { bold: true, link: { url: 'https://buns.dev', title: 'Buns' } } },
+    { text: 'Buns', styles: { bold: true, link: { url: 'https://bunsdev.com', title: 'BunsDev' } } },
     text(' with '),
-    bold('love'),
+    bold('love (+ Alani)'),
     text(' for the markdown community.')
   )),
 ];
@@ -298,12 +298,12 @@ export default function Editor() {
     // 1. Updated current item content
     // 2. New empty item inserted after
     const newChildren = [...block.children];
-    
+
     // Update current item content first
     if (newChildren[afterItemIndex]) {
       newChildren[afterItemIndex] = { ...newChildren[afterItemIndex], content: currentItemContent };
     }
-    
+
     // Insert new empty item
     const newItem = paragraph('');
     newChildren.splice(afterItemIndex + 1, 0, newItem);
@@ -348,9 +348,9 @@ export default function Editor() {
   const handleExitList = useCallback((blockId: string, itemIndex: number) => {
     const block = doc.blocks.find((b) => b.id === blockId);
     if (!block || !block.children) return;
-    
+
     const blockIndex = doc.getBlockIndex(blockId);
-    
+
     if (block.children.length === 1) {
       // Only one item (the empty one), convert whole list to paragraph
       const newBlock = paragraph('');
@@ -362,7 +362,7 @@ export default function Editor() {
       // Multiple items - remove the empty one and create paragraph after list
       const newChildren = block.children.filter((_, i) => i !== itemIndex);
       doc.updateBlock(blockId, { children: newChildren });
-      
+
       // Create a new paragraph after the list
       const newParagraph = paragraph('');
       doc.insertBlock(newParagraph, blockIndex + 1);
