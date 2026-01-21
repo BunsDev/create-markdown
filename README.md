@@ -3,9 +3,18 @@
 [![npm version](https://img.shields.io/npm/v/create-markdown.svg)](https://www.npmjs.com/package/create-markdown)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Markdown package to enable creating markdown interfaces seamlessly because it is complicated and annoying asf.
+A complete block-based markdown notes package with zero dependencies. Parse, create, and serialize markdown with full TypeScript support.
 
 📦 **[View on npm](https://www.npmjs.com/package/create-markdown)**
+
+## Features
+
+- 🧱 **Block-based architecture** - Work with structured blocks instead of raw strings
+- 🔄 **Bidirectional conversion** - Parse markdown to blocks, serialize blocks to markdown
+- 📝 **Rich inline styles** - Bold, italic, code, links, strikethrough, highlights
+- ⚛️ **React components** - Optional React bindings for rendering and editing
+- 🪶 **Zero dependencies** - Core package has no runtime dependencies
+- 🔒 **Full TypeScript** - Complete type definitions with generics
 
 ## Installation
 
@@ -23,73 +32,191 @@ yarn add create-markdown
 pnpm add create-markdown
 ```
 
-## Usage
+## Quick Start
 
-### ESM (recommended)
-
-```typescript
-import { createMarkdown } from 'create-markdown';
-
-const doc = createMarkdown('# Hello World');
-console.log(doc.content);
-```
-
-### Default Export
+### Parse Markdown to Blocks
 
 ```typescript
-import createMarkdown from 'create-markdown';
+import { parse } from 'create-markdown';
 
-const doc = createMarkdown('# Hello World');
-console.log(doc.content);
+const blocks = parse(`# Hello World
+
+This is **bold** and *italic* text.
+
+- Item one
+- Item two
+`);
+
+console.log(blocks);
+// [
+//   { type: 'heading', props: { level: 1 }, content: [...] },
+//   { type: 'paragraph', content: [...] },
+//   { type: 'bulletList', children: [...] }
+// ]
 ```
 
-### CommonJS
-
-```javascript
-const { createMarkdown } = require('create-markdown');
-
-const doc = createMarkdown('# Hello World');
-console.log(doc.content);
-```
-
-### With Options
+### Create Blocks Programmatically
 
 ```typescript
-import { createMarkdown, type MarkdownOptions } from 'create-markdown';
+import { h1, paragraph, bulletList, bold, italic, spans } from 'create-markdown';
 
-const options: MarkdownOptions = {
-  strict: true,
-  lineEnding: '\n',
-};
-
-const doc = createMarkdown('# My Document', options);
+const blocks = [
+  h1('My Document'),
+  paragraph(spans(
+    bold('Important: '),
+    { text: 'This is ', styles: {} },
+    italic('really'),
+    { text: ' cool!', styles: {} }
+  )),
+  bulletList(['First item', 'Second item', 'Third item']),
+];
 ```
 
-## API
-
-### `createMarkdown(content?, options?)`
-
-Creates a new markdown document.
-
-**Parameters:**
-- `content` (string, optional): Initial markdown content
-- `options` (MarkdownOptions, optional): Configuration options
-  - `strict` (boolean): Enable strict parsing mode
-  - `lineEnding` (string): Custom line ending (default: `'\n'`)
-
-**Returns:** `MarkdownDocument`
-- `content` (string): Raw markdown content
-- `meta` (Record<string, unknown>): Document metadata
-
-### `VERSION`
-
-Package version string.
+### Serialize Blocks to Markdown
 
 ```typescript
-import { VERSION } from 'create-markdown';
+import { stringify, h1, paragraph, codeBlock } from 'create-markdown';
 
-console.log(VERSION); // '0.1.1'
+const markdown = stringify([
+  h1('Hello'),
+  paragraph('World'),
+  codeBlock('console.log("Hi!");', 'javascript'),
+]);
+
+console.log(markdown);
+// # Hello
+//
+// World
+//
+// ```javascript
+// console.log("Hi!");
+// ```
 ```
+
+### Document Management
+
+```typescript
+import { 
+  createDocument, 
+  appendBlock, 
+  removeBlock, 
+  findBlock,
+  paragraph 
+} from 'create-markdown';
+
+// Create a document
+let doc = createDocument([paragraph('First paragraph')]);
+
+// Add a block
+doc = appendBlock(doc, paragraph('Second paragraph'));
+
+// Find a block
+const block = findBlock(doc, 'some-id');
+
+// Remove a block
+doc = removeBlock(doc, 'some-id');
+```
+
+## React Components
+
+Optional React bindings are available via a separate import:
+
+```tsx
+import { BlockRenderer, useDocument, useMarkdown } from 'create-markdown/react';
+import { paragraph, h1 } from 'create-markdown/react';
+
+function Editor() {
+  const { blocks, appendBlock, toMarkdown } = useDocument();
+  
+  return (
+    <div>
+      <BlockRenderer blocks={blocks} />
+      <button onClick={() => appendBlock(paragraph('New paragraph'))}>
+        Add Paragraph
+      </button>
+      <button onClick={() => console.log(toMarkdown())}>
+        Export Markdown
+      </button>
+    </div>
+  );
+}
+
+function MarkdownEditor() {
+  const { markdown, blocks, setMarkdown } = useMarkdown('# Hello');
+  
+  return (
+    <div>
+      <textarea 
+        value={markdown} 
+        onChange={(e) => setMarkdown(e.target.value)} 
+      />
+      <BlockRenderer blocks={blocks} />
+    </div>
+  );
+}
+```
+
+## Block Types
+
+| Type | Factory Function | Description |
+|------|-----------------|-------------|
+| `paragraph` | `paragraph(content)` | Text paragraph |
+| `heading` | `heading(level, content)` or `h1`-`h6` | Heading levels 1-6 |
+| `bulletList` | `bulletList(items)` | Unordered list |
+| `numberedList` | `numberedList(items)` | Ordered list |
+| `checkList` | `checkList(items)` | Task list with checkboxes |
+| `codeBlock` | `codeBlock(code, language?)` | Fenced code block |
+| `blockquote` | `blockquote(content)` | Block quote |
+| `image` | `image(url, alt?)` | Image |
+| `divider` | `divider()` | Horizontal rule |
+| `table` | `table(headers, rows)` | Table with headers |
+| `callout` | `callout(type, content)` | Callout/admonition |
+
+## Inline Styles
+
+```typescript
+import { bold, italic, code, link, strikethrough, highlight } from 'create-markdown';
+
+// Create styled text spans
+const content = [
+  bold('Bold text'),
+  italic('Italic text'),
+  code('inline code'),
+  link('Click here', 'https://example.com'),
+  strikethrough('deleted'),
+  highlight('highlighted'),
+];
+```
+
+## API Reference
+
+### Parsing
+
+- `parse(markdown)` - Parse markdown string to blocks
+- `markdownToBlocks(markdown, options?)` - Full parser with options
+- `markdownToDocument(markdown)` - Parse to a Document object
+
+### Serialization
+
+- `stringify(blocks)` - Serialize blocks to markdown
+- `blocksToMarkdown(blocks, options?)` - Full serializer with options
+- `documentToMarkdown(doc)` - Serialize a Document
+
+### Document Operations
+
+- `createDocument(blocks?, options?)` - Create a new document
+- `insertBlock(doc, block, index?)` - Insert block at position
+- `appendBlock(doc, block)` - Add block at end
+- `removeBlock(doc, blockId)` - Remove block by ID
+- `updateBlock(doc, blockId, updates)` - Update block properties
+- `moveBlock(doc, blockId, newIndex)` - Reorder blocks
+- `findBlock(doc, blockId)` - Find block by ID
+
+### React Hooks
+
+- `useDocument(initialBlocks?)` - Full document state management
+- `useMarkdown(initialMarkdown?)` - Bidirectional markdown/blocks
+- `useBlockEditor(doc)` - Selection and editing operations
 
 ## Development
 
@@ -100,11 +227,8 @@ bun install
 # Build the package
 bun run build
 
-# Watch mode during development
-bun run dev
-
-# Clean build artifacts
-bun run clean
+# Type check
+bun run typecheck
 
 # Run the playground
 bun run playground
@@ -114,6 +238,7 @@ bun run playground
 
 - Node.js 20+
 - Bun 1.0+ (for development)
+- React 18+ (optional, for React components)
 
 ## Contributing
 
