@@ -59,6 +59,7 @@ const INITIAL_BLOCKS: Block[] = [
     '> for blockquotes, ``` for code blocks',
     '--- for dividers',
     '**bold**, *italic*, `code`, ~~strikethrough~~, ==highlight==',
+    '[link text](url) for links',
   ]),
   h2('Try it out!'),
   paragraph(spans(

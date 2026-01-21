@@ -225,11 +225,11 @@ function getPlaceholder(block: Block): string {
 }
 
 // Patterns that trigger block conversions
-const BULLET_PATTERNS = /^[-*•+]\s$/;
-const NUMBERED_LIST_PATTERN = /^(\d+)\.\s$/;
-const HEADING_PATTERNS = /^(#{1,6})\s$/;
-const BLOCKQUOTE_PATTERN = /^>\s$/;
-const CODE_BLOCK_PATTERN = /^```$/;
+const BULLET_PATTERNS = /^[-*•+]\s(.*)$/;
+const NUMBERED_LIST_PATTERN = /^(\d+)\.\s(.*)$/;
+const HEADING_PATTERNS = /^(#{1,6})\s(.*)$/;
+const BLOCKQUOTE_PATTERN = /^>\s(.*)$/;
+const CODE_BLOCK_PATTERN = /^```(.*)$/;
 const DIVIDER_PATTERN = /^(-{3,}|_{3,}|\*{3,})$/;
 
 // Inline markdown patterns for live rendering
@@ -254,6 +254,12 @@ const INLINE_PATTERNS = [
  */
 function parseInlineMarkdown(text: string): string {
   let result = text;
+  
+  // Process links first: [text](url) or [text](url "title")
+  result = result.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]+)")?\)/g, (match, linkText, url, title) => {
+    const titleAttr = title ? ` title="${escapeHtml(title)}"` : '';
+    return `<a href="${escapeHtml(url)}"${titleAttr}>${escapeHtml(linkText)}</a>`;
+  });
   
   // Process bold first (** and __)
   result = result.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
@@ -312,6 +318,18 @@ function hasIncompletePattern(text: string): boolean {
   const italicUnderMatches = textWithoutBoldUnder.match(/_/g);
   if (italicUnderMatches && italicUnderMatches.length % 2 !== 0) return true;
   
+  // For links: check if there's an incomplete [text](url) pattern
+  // Incomplete: has [ without matching ] or ]( without matching )
+  const openBrackets = (text.match(/\[/g) || []).length;
+  const closeBrackets = (text.match(/\]/g) || []).length;
+  const linkStarts = (text.match(/\]\(/g) || []).length;
+  const linkEnds = (text.match(/\]\([^)]*\)/g) || []).length;
+  
+  // If we have more open brackets than close brackets, pattern is incomplete
+  if (openBrackets > closeBrackets) return true;
+  // If we have ]( but not a complete ](...)
+  if (linkStarts > linkEnds) return true;
+  
   return false;
 }
 
@@ -342,6 +360,7 @@ export function EditableBlock({
   const [focusedItemIndex, setFocusedItemIndex] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const initializedRef = useRef(false);
+  const skipBlurRef = useRef(false); // Flag to skip blur handler after list operations
   const isListBlock = block.type === 'bulletList' || block.type === 'numberedList';
   const isDivider = block.type === 'divider';
 
@@ -399,32 +418,40 @@ export function EditableBlock({
       const headingMatch = text.match(HEADING_PATTERNS);
       if (headingMatch && onConvertToHeading) {
         const level = headingMatch[1].length as 1 | 2 | 3 | 4 | 5 | 6;
-        onConvertToHeading(level, '');
+        const remainingText = (headingMatch[2] || '').trim();
+        onConvertToHeading(level, remainingText);
         return;
       }
       
       // Check for bullet list: - * + •
-      if (BULLET_PATTERNS.test(text) && onConvertToList) {
-        onConvertToList('');
+      const bulletMatch = text.match(BULLET_PATTERNS);
+      if (bulletMatch && onConvertToList) {
+        const remainingText = (bulletMatch[1] || '').trim();
+        onConvertToList(remainingText);
         return;
       }
       
       // Check for numbered list: 1. 2. etc.
       const numberedMatch = text.match(NUMBERED_LIST_PATTERN);
       if (numberedMatch && onConvertToNumberedList) {
-        onConvertToNumberedList('');
+        const remainingText = (numberedMatch[2] || '').trim();
+        onConvertToNumberedList(remainingText);
         return;
       }
       
       // Check for blockquote: >
-      if (BLOCKQUOTE_PATTERN.test(text) && onConvertToBlockquote) {
-        onConvertToBlockquote('');
+      const blockquoteMatch = text.match(BLOCKQUOTE_PATTERN);
+      if (blockquoteMatch && onConvertToBlockquote) {
+        const remainingText = (blockquoteMatch[1] || '').trim();
+        onConvertToBlockquote(remainingText);
         return;
       }
       
       // Check for code block: ```
-      if (CODE_BLOCK_PATTERN.test(text) && onConvertToCodeBlock) {
-        onConvertToCodeBlock('');
+      const codeBlockMatch = text.match(CODE_BLOCK_PATTERN);
+      if (codeBlockMatch && onConvertToCodeBlock) {
+        const remainingText = (codeBlockMatch[1] || '').trim();
+        onConvertToCodeBlock(remainingText);
         return;
       }
       
@@ -453,7 +480,8 @@ export function EditableBlock({
       /(?<!_)_[^_]+_(?!_)/.test(plainText) ||
       /`[^`]+`/.test(plainText) ||
       /~~[^~]+~~/.test(plainText) ||
-      /==[^=]+==/.test(plainText);
+      /==[^=]+==/.test(plainText) ||
+      /\[[^\]]+\]\([^)]+\)/.test(plainText);
     
     if (hasCompletePattern) {
       // Save cursor position
@@ -627,7 +655,11 @@ export function EditableBlock({
       
       // If current item is empty, exit the list
       if (content === '' && onExitList) {
+        // Skip blur handler to prevent overwriting other items
+        skipBlurRef.current = true;
         onExitList(itemIndex);
+        // Reset after a tick
+        requestAnimationFrame(() => { skipBlurRef.current = false; });
         return;
       }
       
@@ -637,8 +669,12 @@ export function EditableBlock({
       
       // Add new item (pass current content so it can be saved atomically)
       if (onAddListItem) {
+        // Skip blur handler since we're saving content atomically
+        skipBlurRef.current = true;
         setFocusedItemIndex(itemIndex + 1);
         onAddListItem(itemIndex, currentContent);
+        // Reset after a tick to allow future blurs
+        requestAnimationFrame(() => { skipBlurRef.current = false; });
       }
       return;
     }
@@ -646,6 +682,8 @@ export function EditableBlock({
     // Backspace on empty item: remove item or convert to paragraph
     if (e.key === 'Backspace' && content === '') {
       e.preventDefault();
+      // Skip blur handler to prevent overwriting other items
+      skipBlurRef.current = true;
       if (block.children.length === 1) {
         // Last item, convert to paragraph
         onBackspaceEmpty();
@@ -655,6 +693,8 @@ export function EditableBlock({
         setFocusedItemIndex(newFocusIndex);
         onRemoveListItem(itemIndex);
       }
+      // Reset after a tick
+      requestAnimationFrame(() => { skipBlurRef.current = false; });
       return;
     }
 
@@ -688,12 +728,19 @@ export function EditableBlock({
   // Handle list item blur - save content
   const handleListItemBlur = useCallback((itemIndex: number) => {
     setIsEditing(false);
+    // Skip if we just did an operation that already saved content
+    if (skipBlurRef.current) return;
+    
     const itemRef = listItemRefs.current[itemIndex];
     if (!itemRef || !onUpdateListItem) return;
+    
+    // Verify the item still exists in the children array
+    if (itemIndex >= block.children.length) return;
+    
     const html = itemRef.innerHTML;
     const newContent = htmlToSpans(html);
     onUpdateListItem(itemIndex, newContent);
-  }, [onUpdateListItem]);
+  }, [onUpdateListItem, block.children.length]);
 
   // Handle list item focus
   const handleListItemFocus = useCallback((itemIndex: number) => {
