@@ -64,7 +64,7 @@ const INITIAL_BLOCKS: Block[] = [
     'Block-based architecture',
     'DnD block reordering',
     'Press Enter to create new paragraphs',
-    'Keyboard shortcuts: cmd+b, cmd+i, and cmd+u',
+    'Shortcuts: cmd+b, cmd+i, and cmd+u',
     'Toggle themes (light/dark)',
     'Export as markdown',
   ]),
