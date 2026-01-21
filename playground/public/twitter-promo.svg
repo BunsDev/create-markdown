@@ -1,0 +1,163 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Deep black gradient -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000"/>
+      <stop offset="100%" style="stop-color:#0a0a0a"/>
+    </linearGradient>
+    
+    <!-- Neon purple gradient -->
+    <linearGradient id="neon" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="50%" style="stop-color:#a855f7"/>
+      <stop offset="100%" style="stop-color:#c084fc"/>
+    </linearGradient>
+    
+    <!-- Electric blue accent -->
+    <linearGradient id="electric" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+    
+    <!-- Glass card gradient -->
+    <linearGradient id="glass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.12)"/>
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0.04)"/>
+    </linearGradient>
+    
+    <!-- Intense glow -->
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="40" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Subtle blur for glass -->
+    <filter id="blur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+    
+    <!-- Text shadow -->
+    <filter id="textShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#a855f7" flood-opacity="0.5"/>
+    </filter>
+    
+    <!-- Noise texture -->
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" result="noise"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feBlend in="SourceGraphic" in2="noise" mode="overlay"/>
+    </filter>
+  </defs>
+  
+  <!-- Pure black background -->
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  
+  <!-- Gradient orbs - dramatic positioning -->
+  <ellipse cx="200" cy="0" rx="400" ry="300" fill="#7c3aed" opacity="0.25" filter="url(#glow)"/>
+  <ellipse cx="1100" cy="700" rx="500" ry="400" fill="#a855f7" opacity="0.2" filter="url(#glow)"/>
+  <ellipse cx="600" cy="350" rx="200" ry="200" fill="#c084fc" opacity="0.08" filter="url(#glow)"/>
+  
+  <!-- Accent line at top -->
+  <rect x="0" y="0" width="1200" height="3" fill="url(#neon)"/>
+  
+  <!-- Main title - massive and bold -->
+  <g transform="translate(600, 200)">
+    <text x="0" y="0" text-anchor="middle" font-family="SF Pro Display, -apple-system, system-ui, sans-serif" font-size="100" font-weight="800" fill="white" letter-spacing="-4" filter="url(#textShadow)">create-markdown</text>
+  </g>
+  
+  <!-- Tagline with gradient -->
+  <g transform="translate(600, 260)">
+    <text x="0" y="0" text-anchor="middle" font-family="SF Pro Display, Inter, -apple-system, system-ui, sans-serif" font-size="28" font-weight="500" fill="url(#neon)" letter-spacing="0.5">Zero dependencies. Infinite possibilities.</text>
+  </g>
+  
+  <!-- Floating glass terminal card -->
+  <g transform="translate(250, 320)">
+    <!-- Card shadow -->
+    <rect x="4" y="4" width="700" height="140" rx="20" fill="#000" opacity="0.5" filter="url(#blur)"/>
+    
+    <!-- Glass card -->
+    <rect x="0" y="0" width="700" height="140" rx="20" fill="url(#glass)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    
+    <!-- Inner glow line -->
+    <rect x="1" y="1" width="698" height="40" rx="20" fill="rgba(255,255,255,0.03)"/>
+    
+    <!-- Terminal dots -->
+    <circle cx="32" cy="24" r="7" fill="#ff5f57"/>
+    <circle cx="56" cy="24" r="7" fill="#febc2e"/>
+    <circle cx="80" cy="24" r="7" fill="#28c840"/>
+    
+    <!-- Command line -->
+    <g transform="translate(40, 85)">
+      <text font-family="JetBrains Mono, SF Mono, Fira Code, monospace" font-size="26" font-weight="500">
+        <tspan fill="#10b981">❯</tspan>
+        <tspan fill="#e4e4e7" dx="16">bun add </tspan>
+        <tspan fill="url(#neon)" font-weight="700">create-markdown</tspan>
+      </text>
+    </g>
+  </g>
+  
+  <!-- Feature badges - floating pills -->
+  <g transform="translate(600, 520)">
+    <!-- TypeScript -->
+    <g transform="translate(-320, 0)">
+      <rect x="0" y="0" width="130" height="44" rx="22" fill="rgba(59, 130, 246, 0.15)" stroke="rgba(59, 130, 246, 0.4)" stroke-width="1"/>
+      <text x="65" y="29" text-anchor="middle" font-family="SF Pro Display, Inter, sans-serif" font-size="16" font-weight="600" fill="#60a5fa">TypeScript</text>
+    </g>
+    
+    <!-- React -->
+    <g transform="translate(-170, 0)">
+      <rect x="0" y="0" width="100" height="44" rx="22" fill="rgba(6, 182, 212, 0.15)" stroke="rgba(6, 182, 212, 0.4)" stroke-width="1"/>
+      <text x="50" y="29" text-anchor="middle" font-family="SF Pro Display, Inter, sans-serif" font-size="16" font-weight="600" fill="#22d3ee">React</text>
+    </g>
+    
+    <!-- Blocks -->
+    <g transform="translate(-50, 0)">
+      <rect x="0" y="0" width="100" height="44" rx="22" fill="rgba(168, 85, 247, 0.15)" stroke="rgba(168, 85, 247, 0.4)" stroke-width="1"/>
+      <text x="50" y="29" text-anchor="middle" font-family="SF Pro Display, Inter, sans-serif" font-size="16" font-weight="600" fill="#c084fc">Blocks</text>
+    </g>
+    
+    <!-- WYSIWYG -->
+    <g transform="translate(70, 0)">
+      <rect x="0" y="0" width="120" height="44" rx="22" fill="rgba(236, 72, 153, 0.15)" stroke="rgba(236, 72, 153, 0.4)" stroke-width="1"/>
+      <text x="60" y="29" text-anchor="middle" font-family="SF Pro Display, Inter, sans-serif" font-size="16" font-weight="600" fill="#f472b6">WYSIWYG</text>
+    </g>
+    
+    <!-- MIT -->
+    <g transform="translate(210, 0)">
+      <rect x="0" y="0" width="110" height="44" rx="22" fill="rgba(16, 185, 129, 0.15)" stroke="rgba(16, 185, 129, 0.4)" stroke-width="1"/>
+      <text x="55" y="29" text-anchor="middle" font-family="SF Pro Display, Inter, sans-serif" font-size="16" font-weight="600" fill="#34d399">MIT</text>
+    </g>
+  </g>
+  
+  <!-- Bottom info -->
+  <g transform="translate(600, 600)">
+    <text x="0" y="0" text-anchor="middle" font-family="SF Pro Display, Inter, sans-serif" font-size="22" font-weight="500" fill="url(#neon)" letter-spacing="0.5">
+      create-markdown.com
+    </text>
+  </g>
+  
+  <!-- Floating markdown symbols -->
+  <g opacity="0.06" fill="white">
+    <text x="80" y="150" font-family="JetBrains Mono, monospace" font-size="80" font-weight="bold">#</text>
+    <text x="1020" y="200" font-family="JetBrains Mono, monospace" font-size="60" font-weight="bold">**</text>
+    <text x="100" y="550" font-family="JetBrains Mono, monospace" font-size="70">&gt;</text>
+    <text x="1050" y="500" font-family="JetBrains Mono, monospace" font-size="50">```</text>
+  </g>
+  
+  
+  <!-- Logo mark - top left -->
+  <g transform="translate(50, 45)">
+    <rect x="0" y="0" width="40" height="48" rx="6" fill="url(#neon)" opacity="0.9"/>
+    <path d="M30 0L40 10L30 10L30 0Z" fill="#7c3aed" opacity="0.7"/>
+    <path d="M8 34V16L14 26L20 16V34" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M28 18V32M28 32L24 28M28 32L32 28" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.7"/>
+  </g>
+  
+  <!-- Decorative corner accents -->
+  <path d="M0 675 L0 620 Q0 600 20 600 L80 600" stroke="url(#neon)" stroke-width="2" fill="none" opacity="0.3"/>
+  <path d="M1200 675 L1200 620 Q1200 600 1180 600 L1120 600" stroke="url(#neon)" stroke-width="2" fill="none" opacity="0.3"/>
+</svg>

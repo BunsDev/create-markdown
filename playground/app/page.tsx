@@ -1,6 +1,22 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  type DragStartEvent,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import {
   h1,
   h2,
@@ -27,6 +43,7 @@ import {
 import { SelectionToolbar } from './components/selection-toolbar';
 import { FloatingActions } from './components/floating-actions';
 import { EditableBlock } from './components/editable-block';
+import { SortableBlock, DragOverlayBlock } from './components/sortable-block';
 import type { Block, TextSpan } from '../../dist/index.js';
 
 // ============================================================================
@@ -45,6 +62,7 @@ const INITIAL_BLOCKS: Block[] = [
   h2('Notable Features ✨'),
   bulletList([
     'Block-based architecture',
+    'DnD block reordering',
     'Press Enter to create new paragraphs',
     'Keyboard shortcuts: cmd+b, cmd+i, and cmd+u',
     'Toggle themes (light/dark)',
@@ -86,6 +104,40 @@ export default function Editor() {
   const doc = useDocument(INITIAL_BLOCKS);
   const editor = useBlockEditor(doc);
   const editorRef = useRef<HTMLElement>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  // DnD sensors - pointer for mouse/touch, keyboard for accessibility
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement required before drag starts
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Handle drag start - track which block is being dragged
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+    editor.selectBlock(null); // Deselect blocks during drag
+  }, [editor]);
+
+  // Handle drag end - reorder blocks
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (over && active.id !== over.id) {
+      const oldIndex = doc.getBlockIndex(active.id as string);
+      const newIndex = doc.getBlockIndex(over.id as string);
+      doc.moveBlock(active.id as string, newIndex);
+    }
+  }, [doc]);
+
+  // Get the active block for drag overlay
+  const activeBlock = activeId ? doc.blocks.find(b => b.id === activeId) : null;
 
   // Handle inline formatting from selection toolbar
   const handleFormat = useCallback((format: 'bold' | 'italic' | 'underline' | 'strikethrough' | 'code' | 'link') => {
@@ -349,39 +401,73 @@ export default function Editor() {
         blockCount={doc.blocks.length}
       />
 
-      <div className="editor-wrapper">
-        <div className="doc-container">
-          <div className="doc-glow" />
-          <div className="doc-border" />
-          <main ref={editorRef} className="editor-canvas">
-            {doc.blocks.map((block) => (
-              <EditableBlock
-                key={block.id}
-                block={block}
-                isSelected={editor.selectedBlockId === block.id}
-                onSelect={() => editor.selectBlock(block.id)}
-                onUpdate={(content) => handleUpdateBlock(block.id, content)}
-                onEnter={() => handleEnter(block.id)}
-                onBackspaceEmpty={() => handleBackspaceEmpty(block.id)}
-                onArrowUp={() => handleArrowUp(block.id)}
-                onArrowDown={() => handleArrowDown(block.id)}
-                onConvertToList={(text) => handleConvertToList(block.id, text)}
-                onConvertToNumberedList={(text) => handleConvertToNumberedList(block.id, text)}
-                onConvertToHeading={(level, text) => handleConvertToHeading(block.id, level, text)}
-                onConvertToBlockquote={(text) => handleConvertToBlockquote(block.id, text)}
-                onConvertToCodeBlock={(text) => handleConvertToCodeBlock(block.id, text)}
-                onConvertToDivider={() => handleConvertToDivider(block.id)}
-                onAddListItem={(afterIndex, currentContent) => handleAddListItem(block.id, afterIndex, currentContent)}
-                onUpdateListItem={(itemIndex, content) => handleUpdateListItem(block.id, itemIndex, content)}
-                onRemoveListItem={(itemIndex) => handleRemoveListItem(block.id, itemIndex)}
-                onIndentListItem={(itemIndex) => handleIndentListItem(block.id, itemIndex)}
-                onOutdentListItem={(itemIndex) => handleOutdentListItem(block.id, itemIndex)}
-                onExitList={(itemIndex) => handleExitList(block.id, itemIndex)}
-              />
-            ))}
-          </main>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="editor-wrapper">
+          <div className="doc-container">
+            <div className="doc-glow" />
+            <div className="doc-border" />
+            <main ref={editorRef} className="editor-canvas" role="list" aria-label="Document blocks">
+              <SortableContext
+                items={doc.blocks.map(b => b.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {doc.blocks.map((block) => (
+                  <SortableBlock key={block.id} id={block.id}>
+                    <EditableBlock
+                      block={block}
+                      isSelected={editor.selectedBlockId === block.id}
+                      onSelect={() => editor.selectBlock(block.id)}
+                      onUpdate={(content) => handleUpdateBlock(block.id, content)}
+                      onEnter={() => handleEnter(block.id)}
+                      onBackspaceEmpty={() => handleBackspaceEmpty(block.id)}
+                      onArrowUp={() => handleArrowUp(block.id)}
+                      onArrowDown={() => handleArrowDown(block.id)}
+                      onConvertToList={(text) => handleConvertToList(block.id, text)}
+                      onConvertToNumberedList={(text) => handleConvertToNumberedList(block.id, text)}
+                      onConvertToHeading={(level, text) => handleConvertToHeading(block.id, level, text)}
+                      onConvertToBlockquote={(text) => handleConvertToBlockquote(block.id, text)}
+                      onConvertToCodeBlock={(text) => handleConvertToCodeBlock(block.id, text)}
+                      onConvertToDivider={() => handleConvertToDivider(block.id)}
+                      onAddListItem={(afterIndex, currentContent) => handleAddListItem(block.id, afterIndex, currentContent)}
+                      onUpdateListItem={(itemIndex, content) => handleUpdateListItem(block.id, itemIndex, content)}
+                      onRemoveListItem={(itemIndex) => handleRemoveListItem(block.id, itemIndex)}
+                      onIndentListItem={(itemIndex) => handleIndentListItem(block.id, itemIndex)}
+                      onOutdentListItem={(itemIndex) => handleOutdentListItem(block.id, itemIndex)}
+                      onExitList={(itemIndex) => handleExitList(block.id, itemIndex)}
+                    />
+                  </SortableBlock>
+                ))}
+              </SortableContext>
+            </main>
+          </div>
         </div>
-      </div>
+
+        {/* Drag Overlay - shows ghost preview while dragging */}
+        <DragOverlay dropAnimation={{
+          duration: 200,
+          easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+        }}>
+          {activeBlock ? (
+            <DragOverlayBlock>
+              <EditableBlock
+                block={activeBlock}
+                isSelected={false}
+                onSelect={() => {}}
+                onUpdate={() => {}}
+                onEnter={() => {}}
+                onBackspaceEmpty={() => {}}
+                onArrowUp={() => {}}
+                onArrowDown={() => {}}
+              />
+            </DragOverlayBlock>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
     </div>
   );
 }

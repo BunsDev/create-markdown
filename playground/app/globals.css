@@ -320,14 +320,16 @@ body {
 }
 
 .block-paragraph a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s;
+  color: var(--accent-light);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 2px;
+  transition: all 0.15s ease;
 }
 
 .block-paragraph a:hover {
-  border-bottom-color: var(--accent);
+  color: var(--accent);
+  text-decoration-color: var(--accent-light);
 }
 
 .block-paragraph del {
@@ -383,6 +385,21 @@ body {
   font-weight: 500;
 }
 
+.block-bullet-list a,
+.block-numbered-list a {
+  color: var(--accent-light);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 2px;
+  transition: all 0.15s ease;
+}
+
+.block-bullet-list a:hover,
+.block-numbered-list a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent-light);
+}
+
 /* ============================================================================
    Code Blocks
    ============================================================================ */
@@ -425,6 +442,19 @@ body {
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   color: var(--text-secondary);
   font-style: italic;
+}
+
+.block-blockquote a {
+  color: var(--accent-light);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 2px;
+  transition: all 0.15s ease;
+}
+
+.block-blockquote a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent-light);
 }
 
 /* ============================================================================
@@ -677,4 +707,206 @@ button:focus-visible {
 .editable-block *:focus-visible,
 [contenteditable]:focus-visible {
   outline: none;
+}
+
+/* ============================================================================
+   Drag & Drop - Sortable Blocks
+   ============================================================================ */
+
+.sortable-block {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin-left: -32px;
+  padding-left: 32px;
+  transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.sortable-block-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Drag Handle */
+.drag-handle {
+  position: absolute;
+  left: 0;
+  top: 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: grab;
+  opacity: 0;
+  transition: all 0.15s ease;
+  touch-action: none;
+}
+
+.drag-handle:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+  color: var(--accent);
+}
+
+.drag-handle:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--accent);
+  outline-offset: 0;
+}
+
+/* Show handle on block hover */
+.sortable-block:hover .drag-handle {
+  opacity: 1;
+}
+
+/* Adjust handle position for different block types */
+.sortable-block:has(.block-h1) .drag-handle {
+  top: 0.5rem;
+}
+
+.sortable-block:has(.block-h2) .drag-handle {
+  top: 2.25rem; /* Account for margin-top */
+}
+
+.sortable-block:has(.block-h3) .drag-handle {
+  top: 1.75rem;
+}
+
+.sortable-block:has(.block-code) .drag-handle {
+  top: 1.25rem;
+}
+
+.sortable-block:has(.block-blockquote) .drag-handle {
+  top: 1.25rem;
+}
+
+.sortable-block:has(.block-divider) .drag-handle {
+  top: 2.25rem;
+}
+
+/* Dragging State */
+.sortable-block.is-dragging {
+  z-index: 1;
+}
+
+.sortable-block.is-dragging .sortable-block-content {
+  opacity: 0.4;
+}
+
+.sortable-block.is-dragging .drag-handle {
+  opacity: 1;
+  color: var(--accent);
+}
+
+/* Drop Target Indicator */
+.sortable-block.is-over::before {
+  content: '';
+  position: absolute;
+  left: 32px;
+  right: 0;
+  top: -2px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--accent);
+  animation: drop-indicator-pulse 1s ease-in-out infinite;
+}
+
+@keyframes drop-indicator-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scaleX(0.98);
+  }
+}
+
+/* Drag Overlay - Ghost preview while dragging */
+.drag-overlay-block {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    0 8px 16px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(99, 102, 241, 0.2);
+  transform: rotate(1deg) scale(1.02);
+  opacity: 0.95;
+  max-width: 600px;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .drag-overlay-block {
+  background: rgba(24, 24, 27, 0.98);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(99, 102, 241, 0.3),
+    0 0 20px rgba(99, 102, 241, 0.1);
+}
+
+.drag-overlay-block .drag-handle {
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 1;
+  color: var(--accent);
+}
+
+.drag-overlay-block .sortable-block-content {
+  flex: 1;
+  min-width: 0;
+  pointer-events: none;
+}
+
+/* Prevent text selection while dragging */
+.drag-overlay-block * {
+  user-select: none;
+}
+
+/* Smooth reorder animation */
+.sortable-block {
+  transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  .sortable-block {
+    margin-left: -28px;
+    padding-left: 28px;
+  }
+  
+  .drag-handle {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .sortable-block.is-over::before {
+    left: 28px;
+  }
+  
+  .drag-overlay-block {
+    max-width: calc(100vw - 3rem);
+    transform: rotate(0.5deg) scale(1.01);
+  }
 }
