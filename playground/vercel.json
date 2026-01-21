@@ -1,0 +1,4 @@
+{
+  "buildCommand": "cd .. && bun install && bun run build && cd playground && bun run build",
+  "installCommand": "cd .. && bun install && cd playground && bun install"
+}
