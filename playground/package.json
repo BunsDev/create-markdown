@@ -7,7 +7,7 @@
     "build": "next build"
   },
   "dependencies": {
-    "create-markdown": "workspace:*",
+    "create-markdown": "link:..",
     "next": "^16",
     "react": "^19",
     "react-dom": "^19"

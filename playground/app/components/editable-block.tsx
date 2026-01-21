@@ -225,11 +225,12 @@ function getPlaceholder(block: Block): string {
 }
 
 // Patterns that trigger block conversions
-const BULLET_PATTERNS = /^[-*•+]\s(.*)$/;
-const NUMBERED_LIST_PATTERN = /^(\d+)\.\s(.*)$/;
-const HEADING_PATTERNS = /^(#{1,6})\s(.*)$/;
-const BLOCKQUOTE_PATTERN = /^>\s(.*)$/;
-const CODE_BLOCK_PATTERN = /^```(.*)$/;
+// Patterns that only match when the prefix is typed with just a trailing space (no content yet)
+const BULLET_PATTERNS = /^[-*•+]\s$/;
+const NUMBERED_LIST_PATTERN = /^(\d+)\.\s$/;
+const HEADING_PATTERNS = /^(#{1,6})\s$/;
+const BLOCKQUOTE_PATTERN = /^>\s$/;
+const CODE_BLOCK_PATTERN = /^```$/;
 const DIVIDER_PATTERN = /^(-{3,}|_{3,}|\*{3,})$/;
 
 // Inline markdown patterns for live rendering
@@ -413,45 +414,43 @@ export function EditableBlock({
     const text = ref.current.textContent || '';
     
     // Only check for block-level conversions on paragraph blocks
+    console.log('[DEBUG] handleInput - block.type:', block.type, 'text:', JSON.stringify(text));
     if (block.type === 'paragraph') {
-      // Check for heading patterns: # ## ### etc.
+      // Check for heading patterns: # ## ### etc. (only when just the prefix + space is typed)
       const headingMatch = text.match(HEADING_PATTERNS);
+      console.log('[DEBUG] headingMatch:', headingMatch, 'pattern test:', HEADING_PATTERNS.test(text));
       if (headingMatch && onConvertToHeading) {
         const level = headingMatch[1].length as 1 | 2 | 3 | 4 | 5 | 6;
-        const remainingText = (headingMatch[2] || '').trim();
-        onConvertToHeading(level, remainingText);
+        console.log('[DEBUG] Converting to heading level:', level);
+        // Clear the DOM content before converting
+        if (ref.current) {
+          ref.current.textContent = '';
+        }
+        onConvertToHeading(level, '');
         return;
       }
       
       // Check for bullet list: - * + •
-      const bulletMatch = text.match(BULLET_PATTERNS);
-      if (bulletMatch && onConvertToList) {
-        const remainingText = (bulletMatch[1] || '').trim();
-        onConvertToList(remainingText);
+      if (BULLET_PATTERNS.test(text) && onConvertToList) {
+        onConvertToList('');
         return;
       }
       
       // Check for numbered list: 1. 2. etc.
-      const numberedMatch = text.match(NUMBERED_LIST_PATTERN);
-      if (numberedMatch && onConvertToNumberedList) {
-        const remainingText = (numberedMatch[2] || '').trim();
-        onConvertToNumberedList(remainingText);
+      if (NUMBERED_LIST_PATTERN.test(text) && onConvertToNumberedList) {
+        onConvertToNumberedList('');
         return;
       }
       
       // Check for blockquote: >
-      const blockquoteMatch = text.match(BLOCKQUOTE_PATTERN);
-      if (blockquoteMatch && onConvertToBlockquote) {
-        const remainingText = (blockquoteMatch[1] || '').trim();
-        onConvertToBlockquote(remainingText);
+      if (BLOCKQUOTE_PATTERN.test(text) && onConvertToBlockquote) {
+        onConvertToBlockquote('');
         return;
       }
       
       // Check for code block: ```
-      const codeBlockMatch = text.match(CODE_BLOCK_PATTERN);
-      if (codeBlockMatch && onConvertToCodeBlock) {
-        const remainingText = (codeBlockMatch[1] || '').trim();
-        onConvertToCodeBlock(remainingText);
+      if (CODE_BLOCK_PATTERN.test(text) && onConvertToCodeBlock) {
+        onConvertToCodeBlock('');
         return;
       }
       
