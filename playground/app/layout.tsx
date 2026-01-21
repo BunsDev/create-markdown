@@ -6,7 +6,7 @@ const siteConfig = {
   title: 'create-markdown',
   description: 'WYSIWYG block-based markdown editor with zero dependencies',
   url: 'https://create-markdown.com',
-  ogImage: '/og-image.svg',
+  ogImage: 'https://create-markdown/og-image.svg',
 };
 
 export const metadata: Metadata = {
