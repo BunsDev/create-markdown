@@ -15,6 +15,7 @@ A complete block-based markdown notes package with zero dependencies. Parse, cre
 - ⚛️ **React components** - Optional React bindings for rendering and editing
 - 🪶 **Zero dependencies** - Core package has no runtime dependencies
 - 🔒 **Full TypeScript** - Complete type definitions with generics
+- 🚀 **Framework ready** - Works with Next.js, Vite, Remix, Astro, and more
 
 ## Installation
 
@@ -218,6 +219,18 @@ const content = [
 - `useMarkdown(initialMarkdown?)` - Bidirectional markdown/blocks
 - `useBlockEditor(doc)` - Selection and editing operations
 
+## Integration
+
+For detailed framework-specific setup guides, see the **[Integration Guide](./INTEGRATION.md)**.
+
+Quick links:
+- [Next.js (App Router)](./INTEGRATION.md#nextjs-app-router)
+- [Next.js (Pages Router)](./INTEGRATION.md#nextjs-pages-router)
+- [Vite + React](./INTEGRATION.md#vite--react)
+- [Remix](./INTEGRATION.md#remix)
+- [Astro](./INTEGRATION.md#astro)
+- [Node.js / Server-side](./INTEGRATION.md#nodejs--server-side)
+
 ## Development
 
 ```bash
@@ -239,6 +252,15 @@ bun run playground
 - Node.js 20+
 - Bun 1.0+ (for development)
 - React 18+ (optional, for React components)
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [README.md](./README.md) | Quick start and API overview |
+| [INTEGRATION.md](./INTEGRATION.md) | Framework-specific setup guides |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | Contribution guidelines |
+| [CHANGELOG.md](./CHANGELOG.md) | Version history |
 
 ## Contributing
 
