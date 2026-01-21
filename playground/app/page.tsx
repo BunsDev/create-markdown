@@ -288,12 +288,22 @@ export default function Editor() {
   }, [doc, editor]);
 
   // Handle adding a new list item after the specified index
-  const handleAddListItem = useCallback((blockId: string, afterItemIndex: number) => {
+  // Also saves the current item's content atomically to prevent data loss
+  const handleAddListItem = useCallback((blockId: string, afterItemIndex: number, currentItemContent: TextSpan[]) => {
     const block = doc.blocks.find((b) => b.id === blockId);
     if (!block || !block.children) return;
 
-    // Create new children array with empty paragraph item inserted
+    // Create new children array with:
+    // 1. Updated current item content
+    // 2. New empty item inserted after
     const newChildren = [...block.children];
+    
+    // Update current item content first
+    if (newChildren[afterItemIndex]) {
+      newChildren[afterItemIndex] = { ...newChildren[afterItemIndex], content: currentItemContent };
+    }
+    
+    // Insert new empty item
     const newItem = paragraph('');
     newChildren.splice(afterItemIndex + 1, 0, newItem);
 
@@ -333,6 +343,32 @@ export default function Editor() {
     console.log('Outdent list item:', blockId, itemIndex);
   }, []);
 
+  // Handle exiting a list when Enter is pressed on an empty item
+  const handleExitList = useCallback((blockId: string, itemIndex: number) => {
+    const block = doc.blocks.find((b) => b.id === blockId);
+    if (!block || !block.children) return;
+    
+    const blockIndex = doc.getBlockIndex(blockId);
+    
+    if (block.children.length === 1) {
+      // Only one item (the empty one), convert whole list to paragraph
+      const newBlock = paragraph('');
+      newBlock.id = blockId;
+      doc.removeBlock(blockId);
+      doc.insertBlock(newBlock, blockIndex);
+      editor.selectBlock(newBlock.id);
+    } else {
+      // Multiple items - remove the empty one and create paragraph after list
+      const newChildren = block.children.filter((_, i) => i !== itemIndex);
+      doc.updateBlock(blockId, { children: newChildren });
+      
+      // Create a new paragraph after the list
+      const newParagraph = paragraph('');
+      doc.insertBlock(newParagraph, blockIndex + 1);
+      editor.selectBlock(newParagraph.id);
+    }
+  }, [doc, editor]);
+
   return (
     <>
       <Toolbar
@@ -361,11 +397,12 @@ export default function Editor() {
             onConvertToBlockquote={(text) => handleConvertToBlockquote(block.id, text)}
             onConvertToCodeBlock={(text) => handleConvertToCodeBlock(block.id, text)}
             onConvertToDivider={() => handleConvertToDivider(block.id)}
-            onAddListItem={(afterIndex) => handleAddListItem(block.id, afterIndex)}
+            onAddListItem={(afterIndex, currentContent) => handleAddListItem(block.id, afterIndex, currentContent)}
             onUpdateListItem={(itemIndex, content) => handleUpdateListItem(block.id, itemIndex, content)}
             onRemoveListItem={(itemIndex) => handleRemoveListItem(block.id, itemIndex)}
             onIndentListItem={(itemIndex) => handleIndentListItem(block.id, itemIndex)}
             onOutdentListItem={(itemIndex) => handleOutdentListItem(block.id, itemIndex)}
+            onExitList={(itemIndex) => handleExitList(block.id, itemIndex)}
           />
         ))}
       </main>

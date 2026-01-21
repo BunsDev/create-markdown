@@ -25,11 +25,12 @@ export interface EditableBlockProps {
   onConvertToBlockquote?: (text: string) => void;
   onConvertToCodeBlock?: (text: string) => void;
   onConvertToDivider?: () => void;
-  onAddListItem?: (afterIndex: number) => void;
+  onAddListItem?: (afterIndex: number, currentItemContent: TextSpan[]) => void;
   onUpdateListItem?: (itemIndex: number, content: TextSpan[]) => void;
   onIndentListItem?: (itemIndex: number) => void;
   onOutdentListItem?: (itemIndex: number) => void;
   onRemoveListItem?: (itemIndex: number) => void;
+  onExitList?: (itemIndex: number) => void;
 }
 
 /**
@@ -334,6 +335,7 @@ export function EditableBlock({
   onIndentListItem,
   onOutdentListItem,
   onRemoveListItem,
+  onExitList,
 }: EditableBlockProps) {
   const ref = useRef<HTMLDivElement>(null);
   const listItemRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -619,19 +621,24 @@ export function EditableBlock({
       return;
     }
 
-    // Enter: create new list item
+    // Enter: create new list item OR exit list if empty
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      // First save current content
-      if (itemRef && onUpdateListItem) {
-        const html = itemRef.innerHTML;
-        const newContent = htmlToSpans(html);
-        onUpdateListItem(itemIndex, newContent);
+      
+      // If current item is empty, exit the list
+      if (content === '' && onExitList) {
+        onExitList(itemIndex);
+        return;
       }
-      // Then add new item
+      
+      // Get current content to save atomically with add
+      const html = itemRef?.innerHTML || '';
+      const currentContent = htmlToSpans(html);
+      
+      // Add new item (pass current content so it can be saved atomically)
       if (onAddListItem) {
         setFocusedItemIndex(itemIndex + 1);
-        onAddListItem(itemIndex);
+        onAddListItem(itemIndex, currentContent);
       }
       return;
     }
