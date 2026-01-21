@@ -10,7 +10,9 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@vercel/analytics": "^1.6.1",
     "create-markdown": "link:..",
+    "i": "^0.3.7",
     "next": "^16",
     "react": "^19",
     "react-dom": "^19"

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from './theme-context';
 import './globals.css';
 
@@ -85,6 +86,7 @@ export default function RootLayout({
       <body className="flex flex-col min-h-screen mx-auto">
         <ThemeProvider>
           {children}
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
