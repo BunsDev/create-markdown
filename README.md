@@ -13,6 +13,7 @@ A complete block-based markdown notes package with zero dependencies. Parse, cre
 - 🔄 **Bidirectional conversion** - Parse markdown to blocks, serialize blocks to markdown
 - 📝 **Rich inline styles** - Bold, italic, code, links, strikethrough, highlights
 - ⚛️ **React components** - Optional React bindings for rendering and editing
+- ✨ **Live WYSIWYG editing** - Interactive playground with real-time markdown rendering
 - 🪶 **Zero dependencies** - Core package has no runtime dependencies
 - 🔒 **Full TypeScript** - Complete type definitions with generics
 - 🚀 **Framework ready** - Works with Next.js, Vite, Remix, Astro, and more

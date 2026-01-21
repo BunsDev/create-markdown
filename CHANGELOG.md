@@ -14,6 +14,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.2] - 2026-01-21
+
+### Changed
+- Maintenance release with documentation updates
+
+---
+
+## [0.2.1] - 2026-01-20
+
+### Added
+- Live inline markdown rendering in playground editor
+- Real-time markdown pattern detection (`**bold**`, `*italic*`, `` `code` ``, `~~strikethrough~~`, `==highlight==`, `[link](url)`)
+- Block conversion shortcuts (type `#` for headings, `-` for lists, `>` for blockquotes, ``` for code blocks, `---` for dividers)
+- List item management (Enter to add, Backspace to remove, Tab for indent/outdent)
+- Arrow key navigation between blocks and list items
+- Keyboard shortcuts (Cmd/Ctrl+B for bold, Cmd/Ctrl+I for italic, Cmd/Ctrl+U for underline)
+
+### Fixed
+- Improved cursor position preservation during inline markdown rendering
+- Fixed list item content synchronization on Enter key press
+- Fixed blur handler to prevent content loss during list operations
+- Improved HTML-to-spans parsing to preserve link styles
+
+### Changed
+- Enhanced playground with full WYSIWYG editing capabilities
+- Improved content editable handling with atomic updates
+- Updated inline pattern detection to avoid partial matches
+
+---
+
 ## [0.2.0] - 2026-01-20
 
 ### Added - Complete Block-Based Architecture
@@ -67,5 +97,7 @@ This release introduces a complete block-based markdown notes system with zero d
 
 ---
 
-[Unreleased]: https://github.com/BunsDev/create-markdown/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/BunsDev/create-markdown/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/BunsDev/create-markdown/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/BunsDev/create-markdown/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/BunsDev/create-markdown/releases/tag/v0.2.0
