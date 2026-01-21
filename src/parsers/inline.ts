@@ -248,9 +248,12 @@ function matchLink(text: string, start: number, isImage: boolean = false): Match
     title = titleMatch[2];
   }
   
+  // Recursively parse link text for nested styles (bold, italic, etc.)
+  const children = parseInlineTokens(linkText);
+  
   const token: InlineToken = isImage
-    ? { type: 'image', content: linkText, url, title }
-    : { type: 'link', content: linkText, url, title };
+    ? { type: 'image', content: linkText, url, title, children }
+    : { type: 'link', content: linkText, url, title, children };
   
   return {
     token,

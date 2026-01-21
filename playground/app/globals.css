@@ -212,6 +212,22 @@ body {
   border-bottom-color: var(--accent);
 }
 
+.block-paragraph del {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.block-paragraph mark {
+  background: linear-gradient(120deg, rgba(255, 230, 0, 0.3) 0%, rgba(255, 200, 0, 0.4) 100%);
+  padding: 0.1em 0.2em;
+  border-radius: 2px;
+  color: inherit;
+}
+
+[data-theme="dark"] .block-paragraph mark {
+  background: linear-gradient(120deg, rgba(255, 200, 0, 0.2) 0%, rgba(255, 180, 0, 0.3) 100%);
+}
+
 /* ============================================================================
    Lists
    ============================================================================ */
@@ -229,6 +245,10 @@ body {
   line-height: 1.6;
 }
 
+.block-bullet-list li::marker {
+  color: var(--accent);
+}
+
 .block-bullet-list li span,
 .block-numbered-list li span {
   outline: none;
@@ -238,10 +258,6 @@ body {
 .block-bullet-list li span:focus,
 .block-numbered-list li span:focus {
   outline: none;
-}
-
-.block-bullet-list li::marker {
-  color: var(--accent);
 }
 
 .block-numbered-list li::marker {

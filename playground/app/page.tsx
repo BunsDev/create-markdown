@@ -5,8 +5,12 @@ import {
   h1,
   h2,
   h3,
+  h4,
+  h5,
+  h6,
   paragraph,
   bulletList,
+  numberedList,
   blockquote,
   codeBlock,
   divider,
@@ -44,6 +48,17 @@ const INITIAL_BLOCKS: Block[] = [
     'Use Cmd+B for bold, Cmd+I for italic',
     'Toggle between dark and light themes',
     'Export your document as markdown',
+  ]),
+  h2('Markdown Shortcuts'),
+  paragraph(spans(
+    text('Type markdown syntax and watch it render live:')
+  )),
+  bulletList([
+    '# Heading 1, ## Heading 2, ### Heading 3',
+    '- or * for bullet lists, 1. for numbered lists',
+    '> for blockquotes, ``` for code blocks',
+    '--- for dividers',
+    '**bold**, *italic*, `code`, ~~strikethrough~~, ==highlight==',
   ]),
   h2('Try it out!'),
   paragraph(spans(
@@ -161,7 +176,7 @@ export default function Editor() {
   const handleClear = useCallback(() => {
     doc.setBlocks([
       h1('New Document'),
-      paragraph('Start writing...'),
+      paragraph(''),
     ]);
     editor.selectBlock(null);
   }, [doc, editor]);
@@ -208,6 +223,116 @@ export default function Editor() {
     }
   }, [doc, editor]);
 
+  // Handle converting paragraph to bullet list
+  const handleConvertToList = useCallback((blockId: string, remainingText: string) => {
+    const index = doc.getBlockIndex(blockId);
+    const newBlock = bulletList([remainingText]);
+    newBlock.id = blockId;
+    doc.removeBlock(blockId);
+    doc.insertBlock(newBlock, index);
+    editor.selectBlock(newBlock.id);
+  }, [doc, editor]);
+
+  // Handle converting paragraph to numbered list
+  const handleConvertToNumberedList = useCallback((blockId: string, remainingText: string) => {
+    const index = doc.getBlockIndex(blockId);
+    const newBlock = numberedList([remainingText]);
+    newBlock.id = blockId;
+    doc.removeBlock(blockId);
+    doc.insertBlock(newBlock, index);
+    editor.selectBlock(newBlock.id);
+  }, [doc, editor]);
+
+  // Handle converting paragraph to heading
+  const handleConvertToHeading = useCallback((blockId: string, level: 1 | 2 | 3 | 4 | 5 | 6, remainingText: string) => {
+    const index = doc.getBlockIndex(blockId);
+    const headingCreators = { 1: h1, 2: h2, 3: h3, 4: h4, 5: h5, 6: h6 };
+    const newBlock = headingCreators[level](remainingText);
+    newBlock.id = blockId;
+    doc.removeBlock(blockId);
+    doc.insertBlock(newBlock, index);
+    editor.selectBlock(newBlock.id);
+  }, [doc, editor]);
+
+  // Handle converting paragraph to blockquote
+  const handleConvertToBlockquote = useCallback((blockId: string, remainingText: string) => {
+    const index = doc.getBlockIndex(blockId);
+    const newBlock = blockquote(remainingText);
+    newBlock.id = blockId;
+    doc.removeBlock(blockId);
+    doc.insertBlock(newBlock, index);
+    editor.selectBlock(newBlock.id);
+  }, [doc, editor]);
+
+  // Handle converting paragraph to code block
+  const handleConvertToCodeBlock = useCallback((blockId: string, remainingText: string) => {
+    const index = doc.getBlockIndex(blockId);
+    const newBlock = codeBlock(remainingText);
+    newBlock.id = blockId;
+    doc.removeBlock(blockId);
+    doc.insertBlock(newBlock, index);
+    editor.selectBlock(newBlock.id);
+  }, [doc, editor]);
+
+  // Handle converting paragraph to divider
+  const handleConvertToDivider = useCallback((blockId: string) => {
+    const index = doc.getBlockIndex(blockId);
+    const newBlock = divider();
+    newBlock.id = blockId;
+    doc.removeBlock(blockId);
+    doc.insertBlock(newBlock, index);
+    // Create a new paragraph after the divider for continued editing
+    const nextParagraph = paragraph('');
+    doc.insertBlock(nextParagraph, index + 1);
+    editor.selectBlock(nextParagraph.id);
+  }, [doc, editor]);
+
+  // Handle adding a new list item after the specified index
+  const handleAddListItem = useCallback((blockId: string, afterItemIndex: number) => {
+    const block = doc.blocks.find((b) => b.id === blockId);
+    if (!block || !block.children) return;
+
+    // Create new children array with empty paragraph item inserted
+    const newChildren = [...block.children];
+    const newItem = paragraph('');
+    newChildren.splice(afterItemIndex + 1, 0, newItem);
+
+    doc.updateBlock(blockId, { children: newChildren });
+  }, [doc]);
+
+  // Handle updating a specific list item's content
+  const handleUpdateListItem = useCallback((blockId: string, itemIndex: number, content: TextSpan[]) => {
+    const block = doc.blocks.find((b) => b.id === blockId);
+    if (!block || !block.children) return;
+
+    const newChildren = [...block.children];
+    if (newChildren[itemIndex]) {
+      newChildren[itemIndex] = { ...newChildren[itemIndex], content };
+      doc.updateBlock(blockId, { children: newChildren });
+    }
+  }, [doc]);
+
+  // Handle removing a list item
+  const handleRemoveListItem = useCallback((blockId: string, itemIndex: number) => {
+    const block = doc.blocks.find((b) => b.id === blockId);
+    if (!block || !block.children || block.children.length <= 1) return;
+
+    const newChildren = block.children.filter((_, i) => i !== itemIndex);
+    doc.updateBlock(blockId, { children: newChildren });
+  }, [doc]);
+
+  // Handle indenting a list item (placeholder for nested lists)
+  const handleIndentListItem = useCallback((blockId: string, itemIndex: number) => {
+    // TODO: Implement nested list support
+    console.log('Indent list item:', blockId, itemIndex);
+  }, []);
+
+  // Handle outdenting a list item (placeholder for nested lists)
+  const handleOutdentListItem = useCallback((blockId: string, itemIndex: number) => {
+    // TODO: Implement nested list support
+    console.log('Outdent list item:', blockId, itemIndex);
+  }, []);
+
   return (
     <>
       <Toolbar
@@ -230,6 +355,17 @@ export default function Editor() {
             onBackspaceEmpty={() => handleBackspaceEmpty(block.id)}
             onArrowUp={() => handleArrowUp(block.id)}
             onArrowDown={() => handleArrowDown(block.id)}
+            onConvertToList={(text) => handleConvertToList(block.id, text)}
+            onConvertToNumberedList={(text) => handleConvertToNumberedList(block.id, text)}
+            onConvertToHeading={(level, text) => handleConvertToHeading(block.id, level, text)}
+            onConvertToBlockquote={(text) => handleConvertToBlockquote(block.id, text)}
+            onConvertToCodeBlock={(text) => handleConvertToCodeBlock(block.id, text)}
+            onConvertToDivider={() => handleConvertToDivider(block.id)}
+            onAddListItem={(afterIndex) => handleAddListItem(block.id, afterIndex)}
+            onUpdateListItem={(itemIndex, content) => handleUpdateListItem(block.id, itemIndex, content)}
+            onRemoveListItem={(itemIndex) => handleRemoveListItem(block.id, itemIndex)}
+            onIndentListItem={(itemIndex) => handleIndentListItem(block.id, itemIndex)}
+            onOutdentListItem={(itemIndex) => handleOutdentListItem(block.id, itemIndex)}
           />
         ))}
       </main>

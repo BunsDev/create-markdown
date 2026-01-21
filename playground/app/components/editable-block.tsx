@@ -19,6 +19,17 @@ export interface EditableBlockProps {
   onBackspaceEmpty: () => void;
   onArrowUp: () => void;
   onArrowDown: () => void;
+  onConvertToList?: (text: string) => void;
+  onConvertToNumberedList?: (text: string) => void;
+  onConvertToHeading?: (level: 1 | 2 | 3 | 4 | 5 | 6, text: string) => void;
+  onConvertToBlockquote?: (text: string) => void;
+  onConvertToCodeBlock?: (text: string) => void;
+  onConvertToDivider?: () => void;
+  onAddListItem?: (afterIndex: number) => void;
+  onUpdateListItem?: (itemIndex: number, content: TextSpan[]) => void;
+  onIndentListItem?: (itemIndex: number) => void;
+  onOutdentListItem?: (itemIndex: number) => void;
+  onRemoveListItem?: (itemIndex: number) => void;
 }
 
 /**
@@ -212,6 +223,97 @@ function getPlaceholder(block: Block): string {
   }
 }
 
+// Patterns that trigger block conversions
+const BULLET_PATTERNS = /^[-*•+]\s$/;
+const NUMBERED_LIST_PATTERN = /^(\d+)\.\s$/;
+const HEADING_PATTERNS = /^(#{1,6})\s$/;
+const BLOCKQUOTE_PATTERN = /^>\s$/;
+const CODE_BLOCK_PATTERN = /^```$/;
+const DIVIDER_PATTERN = /^(-{3,}|_{3,}|\*{3,})$/;
+
+// Inline markdown patterns for live rendering
+const INLINE_PATTERNS = [
+  // Bold: **text** or __text__
+  { pattern: /\*\*([^*]+)\*\*/, replacement: '<strong>$1</strong>' },
+  { pattern: /__([^_]+)__/, replacement: '<strong>$1</strong>' },
+  // Italic: *text* or _text_ (single)
+  { pattern: /(?<!\*)\*([^*]+)\*(?!\*)/, replacement: '<em>$1</em>' },
+  { pattern: /(?<!_)_([^_]+)_(?!_)/, replacement: '<em>$1</em>' },
+  // Code: `text`
+  { pattern: /`([^`]+)`/, replacement: '<code>$1</code>' },
+  // Strikethrough: ~~text~~
+  { pattern: /~~([^~]+)~~/, replacement: '<del>$1</del>' },
+  // Highlight: ==text==
+  { pattern: /==([^=]+)==/, replacement: '<mark>$1</mark>' },
+];
+
+/**
+ * Parses inline markdown syntax and converts to HTML
+ * Processes markdown patterns first, then escapes remaining HTML
+ */
+function parseInlineMarkdown(text: string): string {
+  let result = text;
+  
+  // Process bold first (** and __)
+  result = result.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  result = result.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+  
+  // Process italic (* and _) - be careful not to match inside bold
+  result = result.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+  result = result.replace(/(?<!_)_([^_]+)_(?!_)/g, '<em>$1</em>');
+  
+  // Process code
+  result = result.replace(/`([^`]+)`/g, '<code>$1</code>');
+  
+  // Process strikethrough
+  result = result.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+  
+  // Process highlight
+  result = result.replace(/==([^=]+)==/g, '<mark>$1</mark>');
+  
+  return result;
+}
+
+/**
+ * Checks if text contains incomplete markdown patterns that shouldn't be rendered yet
+ * Returns true if the user is in the middle of typing a markdown pattern
+ */
+function hasIncompletePattern(text: string): boolean {
+  // Count opening and closing markers to detect incomplete patterns
+  // For bold (**), check if there's an odd number of ** sequences
+  const boldMatches = text.match(/\*\*/g);
+  if (boldMatches && boldMatches.length % 2 !== 0) return true;
+  
+  // For bold (__), check if there's an odd number of __ sequences  
+  const boldUnderMatches = text.match(/__/g);
+  if (boldUnderMatches && boldUnderMatches.length % 2 !== 0) return true;
+  
+  // For inline code (`), check if there's an odd number
+  const codeMatches = text.match(/`/g);
+  if (codeMatches && codeMatches.length % 2 !== 0) return true;
+  
+  // For strikethrough (~~), check if there's an odd number of ~~ sequences
+  const strikeMatches = text.match(/~~/g);
+  if (strikeMatches && strikeMatches.length % 2 !== 0) return true;
+  
+  // For highlight (==), check if there's an odd number of == sequences
+  const highlightMatches = text.match(/==/g);
+  if (highlightMatches && highlightMatches.length % 2 !== 0) return true;
+  
+  // For single * italic: count standalone * (not part of **)
+  // Replace ** with placeholder, then count remaining *
+  const textWithoutBold = text.replace(/\*\*/g, '');
+  const italicAstMatches = textWithoutBold.match(/\*/g);
+  if (italicAstMatches && italicAstMatches.length % 2 !== 0) return true;
+  
+  // For single _ italic: count standalone _ (not part of __)
+  const textWithoutBoldUnder = text.replace(/__/g, '');
+  const italicUnderMatches = textWithoutBoldUnder.match(/_/g);
+  if (italicUnderMatches && italicUnderMatches.length % 2 !== 0) return true;
+  
+  return false;
+}
+
 export function EditableBlock({
   block,
   isSelected,
@@ -221,8 +323,21 @@ export function EditableBlock({
   onBackspaceEmpty,
   onArrowUp,
   onArrowDown,
+  onConvertToList,
+  onConvertToNumberedList,
+  onConvertToHeading,
+  onConvertToBlockquote,
+  onConvertToCodeBlock,
+  onConvertToDivider,
+  onAddListItem,
+  onUpdateListItem,
+  onIndentListItem,
+  onOutdentListItem,
+  onRemoveListItem,
 }: EditableBlockProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const listItemRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const [focusedItemIndex, setFocusedItemIndex] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const initializedRef = useRef(false);
   const isListBlock = block.type === 'bulletList' || block.type === 'numberedList';
@@ -236,12 +351,30 @@ export function EditableBlock({
     }
   }, [block.content]);
 
-  // Focus: when selected
+  // Focus: when selected - use requestAnimationFrame to ensure DOM is ready
   useEffect(() => {
-    if (isSelected && ref.current && document.activeElement !== ref.current) {
-      ref.current.focus();
+    if (isSelected) {
+      // Use requestAnimationFrame to ensure DOM is updated with new refs
+      requestAnimationFrame(() => {
+        if (isListBlock) {
+          // Focus the appropriate list item
+          const itemRef = listItemRefs.current[focusedItemIndex];
+          if (itemRef && document.activeElement !== itemRef) {
+            itemRef.focus();
+            // Place cursor at end
+            const range = document.createRange();
+            range.selectNodeContents(itemRef);
+            range.collapse(false);
+            const sel = window.getSelection();
+            sel?.removeAllRanges();
+            sel?.addRange(range);
+          }
+        } else if (ref.current && document.activeElement !== ref.current) {
+          ref.current.focus();
+        }
+      });
     }
-  }, [isSelected]);
+  }, [isSelected, isListBlock, focusedItemIndex, block.children?.length]);
 
   // Sync content from props when not editing (for external updates like formatting)
   useEffect(() => {
@@ -254,9 +387,110 @@ export function EditableBlock({
   }, [block.content, isEditing]);
 
   const handleInput = useCallback(() => {
-    // Don't sync back to React state on every keystroke
-    // This prevents cursor jumping
-  }, []);
+    if (!ref.current) return;
+    
+    const text = ref.current.textContent || '';
+    
+    // Only check for block-level conversions on paragraph blocks
+    if (block.type === 'paragraph') {
+      // Check for heading patterns: # ## ### etc.
+      const headingMatch = text.match(HEADING_PATTERNS);
+      if (headingMatch && onConvertToHeading) {
+        const level = headingMatch[1].length as 1 | 2 | 3 | 4 | 5 | 6;
+        onConvertToHeading(level, '');
+        return;
+      }
+      
+      // Check for bullet list: - * + •
+      if (BULLET_PATTERNS.test(text) && onConvertToList) {
+        onConvertToList('');
+        return;
+      }
+      
+      // Check for numbered list: 1. 2. etc.
+      const numberedMatch = text.match(NUMBERED_LIST_PATTERN);
+      if (numberedMatch && onConvertToNumberedList) {
+        onConvertToNumberedList('');
+        return;
+      }
+      
+      // Check for blockquote: >
+      if (BLOCKQUOTE_PATTERN.test(text) && onConvertToBlockquote) {
+        onConvertToBlockquote('');
+        return;
+      }
+      
+      // Check for code block: ```
+      if (CODE_BLOCK_PATTERN.test(text) && onConvertToCodeBlock) {
+        onConvertToCodeBlock('');
+        return;
+      }
+      
+      // Check for divider: --- ___ ***
+      if (DIVIDER_PATTERN.test(text) && onConvertToDivider) {
+        onConvertToDivider();
+        return;
+      }
+    }
+    
+    // Live inline markdown rendering
+    // Only process if we have complete patterns
+    const html = ref.current.innerHTML;
+    const plainText = ref.current.textContent || '';
+    
+    // Don't process if text is too short or has incomplete patterns
+    if (plainText.length < 3 || hasIncompletePattern(plainText)) {
+      return;
+    }
+    
+    // Check if we have any complete inline markdown patterns
+    const hasCompletePattern = 
+      /\*\*[^*]+\*\*/.test(plainText) ||
+      /__[^_]+__/.test(plainText) ||
+      /(?<!\*)\*[^*]+\*(?!\*)/.test(plainText) ||
+      /(?<!_)_[^_]+_(?!_)/.test(plainText) ||
+      /`[^`]+`/.test(plainText) ||
+      /~~[^~]+~~/.test(plainText) ||
+      /==[^=]+==/.test(plainText);
+    
+    if (hasCompletePattern) {
+      // Save cursor position
+      const selection = window.getSelection();
+      const range = selection?.getRangeAt(0);
+      const cursorOffset = range?.startOffset || 0;
+      
+      // Parse and update the HTML
+      const newHtml = parseInlineMarkdown(plainText);
+      
+      if (newHtml !== html) {
+        ref.current.innerHTML = newHtml;
+        
+        // Restore cursor position at end
+        const newRange = document.createRange();
+        const textNode = ref.current.lastChild || ref.current;
+        try {
+          if (textNode.nodeType === Node.TEXT_NODE) {
+            newRange.setStart(textNode, Math.min(cursorOffset, textNode.textContent?.length || 0));
+          } else {
+            newRange.selectNodeContents(ref.current);
+            newRange.collapse(false);
+          }
+          selection?.removeAllRanges();
+          selection?.addRange(newRange);
+        } catch (e) {
+          // Fallback: just place cursor at end
+          newRange.selectNodeContents(ref.current);
+          newRange.collapse(false);
+          selection?.removeAllRanges();
+          selection?.addRange(newRange);
+        }
+        
+        // Update the block content
+        const newContent = htmlToSpans(newHtml);
+        onUpdate(newContent);
+      }
+    }
+  }, [block.type, onConvertToList, onConvertToNumberedList, onConvertToHeading, onConvertToBlockquote, onConvertToCodeBlock, onConvertToDivider, onUpdate]);
 
   const handleFocus = useCallback((e: FocusEvent) => {
     setIsEditing(true);
@@ -344,6 +578,125 @@ export function EditableBlock({
     );
   }
 
+  // Handle list item specific key events
+  const handleListItemKeyDown = useCallback((e: KeyboardEvent<HTMLSpanElement>, itemIndex: number) => {
+    const isMod = e.metaKey || e.ctrlKey;
+    const itemRef = listItemRefs.current[itemIndex];
+    const content = itemRef?.textContent || '';
+
+    // Undo/Redo - let browser handle
+    if (isMod && (e.key === 'z' || e.key === 'y')) {
+      return;
+    }
+
+    // Formatting shortcuts
+    if (isMod && e.key === 'b') {
+      e.preventDefault();
+      document.execCommand('bold', false);
+      return;
+    }
+    if (isMod && e.key === 'i') {
+      e.preventDefault();
+      document.execCommand('italic', false);
+      return;
+    }
+
+    // Tab: indent list item
+    if (e.key === 'Tab' && !e.shiftKey) {
+      e.preventDefault();
+      if (onIndentListItem) {
+        onIndentListItem(itemIndex);
+      }
+      return;
+    }
+
+    // Shift+Tab: outdent list item
+    if (e.key === 'Tab' && e.shiftKey) {
+      e.preventDefault();
+      if (onOutdentListItem) {
+        onOutdentListItem(itemIndex);
+      }
+      return;
+    }
+
+    // Enter: create new list item
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      // First save current content
+      if (itemRef && onUpdateListItem) {
+        const html = itemRef.innerHTML;
+        const newContent = htmlToSpans(html);
+        onUpdateListItem(itemIndex, newContent);
+      }
+      // Then add new item
+      if (onAddListItem) {
+        setFocusedItemIndex(itemIndex + 1);
+        onAddListItem(itemIndex);
+      }
+      return;
+    }
+
+    // Backspace on empty item: remove item or convert to paragraph
+    if (e.key === 'Backspace' && content === '') {
+      e.preventDefault();
+      if (block.children.length === 1) {
+        // Last item, convert to paragraph
+        onBackspaceEmpty();
+      } else if (onRemoveListItem) {
+        // Remove this item and focus previous
+        const newFocusIndex = Math.max(0, itemIndex - 1);
+        setFocusedItemIndex(newFocusIndex);
+        onRemoveListItem(itemIndex);
+      }
+      return;
+    }
+
+    // Arrow navigation between items
+    if (e.key === 'ArrowUp') {
+      const selection = window.getSelection();
+      if (selection && selection.anchorOffset === 0) {
+        e.preventDefault();
+        if (itemIndex > 0) {
+          setFocusedItemIndex(itemIndex - 1);
+        } else {
+          onArrowUp();
+        }
+      }
+    }
+
+    if (e.key === 'ArrowDown') {
+      const selection = window.getSelection();
+      const textLength = itemRef?.textContent?.length || 0;
+      if (selection && selection.anchorOffset >= textLength) {
+        e.preventDefault();
+        if (itemIndex < block.children.length - 1) {
+          setFocusedItemIndex(itemIndex + 1);
+        } else {
+          onArrowDown();
+        }
+      }
+    }
+  }, [block.children.length, onAddListItem, onUpdateListItem, onIndentListItem, onOutdentListItem, onRemoveListItem, onBackspaceEmpty, onArrowUp, onArrowDown]);
+
+  // Handle list item blur - save content
+  const handleListItemBlur = useCallback((itemIndex: number) => {
+    setIsEditing(false);
+    const itemRef = listItemRefs.current[itemIndex];
+    if (!itemRef || !onUpdateListItem) return;
+    const html = itemRef.innerHTML;
+    const newContent = htmlToSpans(html);
+    onUpdateListItem(itemIndex, newContent);
+  }, [onUpdateListItem]);
+
+  // Handle list item focus
+  const handleListItemFocus = useCallback((itemIndex: number) => {
+    setIsEditing(true);
+    setFocusedItemIndex(itemIndex);
+    if (!isSelected) {
+      onSelect();
+    }
+  }, [isSelected, onSelect]);
+
   // Render: lists with their items
   if (isListBlock) {
     const ListTag = block.type === 'bulletList' ? 'ul' : 'ol';
@@ -355,13 +708,13 @@ export function EditableBlock({
         {block.children.map((child, i) => (
           <li key={child.id || i}>
             <span
-              ref={i === 0 ? ref : undefined}
+              ref={(el) => { listItemRefs.current[i] = el; }}
               contentEditable
               suppressContentEditableWarning
               onInput={handleInput}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              onKeyDown={handleKeyDown}
+              onFocus={() => handleListItemFocus(i)}
+              onBlur={() => handleListItemBlur(i)}
+              onKeyDown={(e) => handleListItemKeyDown(e, i)}
               dangerouslySetInnerHTML={{ __html: spansToHtml(child.content) }}
             />
           </li>
