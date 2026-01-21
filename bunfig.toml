@@ -1,0 +1,9 @@
+[install]
+# Use exact versions for reproducible builds
+exact = true
+
+[build]
+# Default build settings
+target = "node"
+minify = false
+sourcemap = "external"
