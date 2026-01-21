@@ -70,7 +70,7 @@ const INITIAL_BLOCKS: Block[] = [
   ]),
   h2('Markdown Shortcuts ⚡'),
   paragraph(spans(
-    text('Type markdown syntax and watch it render live:')
+    text('Type markdown syntax (it renders live):')
   )),
   bulletList([
     '# Heading 1, ## Heading 2, ### Heading 3',
@@ -84,15 +84,14 @@ const INITIAL_BLOCKS: Block[] = [
   paragraph(spans(
     text('Select any text to see the formatting toolbar. Use keyboard shortcuts or markdown syntax.')
   )),
-  blockquote('🗒️ Something to quote or something to note.'),
+  blockquote('🗒️ Something to quote or to note.'),
   codeBlock('function hello() { console.log("TODO: add syntax highlighting"); }', 'typescript'),
   divider(),
   paragraph(spans(
     text('Enchanted by '),
     { text: 'Buns', styles: { bold: true, link: { url: 'https://bunsdev.com', title: 'BunsDev' } } },
     text(' with '),
-    bold('love (+ Alani)'),
-    text(' for the markdown community.')
+    bold('love (+ Alani)')
   )),
 ];
 
