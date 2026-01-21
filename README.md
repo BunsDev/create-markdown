@@ -1,6 +1,11 @@
 # create-markdown
 
+[![npm version](https://img.shields.io/npm/v/create-markdown.svg)](https://www.npmjs.com/package/create-markdown)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Markdown package to enable creating markdown interfaces seamlessly because it is complicated and annoying asf.
+
+📦 **[View on npm](https://www.npmjs.com/package/create-markdown)**
 
 ## Installation
 
@@ -82,6 +87,14 @@ bun run dev
 # Clean build artifacts
 bun run clean
 ```
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for release history.
 
 ## License
 
