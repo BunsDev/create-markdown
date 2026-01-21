@@ -669,6 +669,7 @@ When building custom editors with `contentEditable`, ensure you:
 1. Use `suppressContentEditableWarning` in React
 2. Sync content on blur, not on every keystroke
 3. Handle paste events to strip formatting
+4. Preserve cursor position when updating innerHTML
 
 ```tsx
 <div
@@ -677,6 +678,8 @@ When building custom editors with `contentEditable`, ensure you:
   onBlur={(e) => handleUpdate(e.currentTarget.innerHTML)}
 />
 ```
+
+**Tip:** See the playground source (`playground/app/components/editable-block.tsx`) for a full implementation with live inline markdown rendering, cursor preservation, and list item management.
 
 ### Block ID Collisions
 

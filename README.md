@@ -232,6 +232,24 @@ Quick links:
 - [Astro](./INTEGRATION.md#astro)
 - [Node.js / Server-side](./INTEGRATION.md#nodejs--server-side)
 
+## Playground
+
+The package includes a full WYSIWYG playground editor demonstrating all features:
+
+```bash
+# Run the interactive playground
+bun run playground
+```
+
+**Playground Features:**
+- Click-to-edit blocks with live markdown rendering
+- Markdown shortcuts (`#` headings, `-` lists, `>` quotes, ``` code, `---` dividers)
+- Inline formatting (`**bold**`, `*italic*`, `` `code` ``, `~~strike~~`, `==highlight==`, `[link](url)`)
+- Keyboard shortcuts (Cmd/Ctrl+B, Cmd/Ctrl+I, Cmd/Ctrl+U)
+- List item management with Enter/Backspace/Tab
+- Dark/light theme toggle
+- Export to markdown
+
 ## Development
 
 ```bash
