@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import {
   h1,
   h2,
@@ -24,7 +24,8 @@ import {
   useDocument,
   useBlockEditor,
 } from '../../dist/react/index.js';
-import { Toolbar, type BlockTypeOption } from './components/toolbar';
+import { SelectionToolbar } from './components/selection-toolbar';
+import { FloatingActions } from './components/floating-actions';
 import { EditableBlock } from './components/editable-block';
 import type { Block, TextSpan } from '../../dist/index.js';
 
@@ -63,7 +64,7 @@ const INITIAL_BLOCKS: Block[] = [
   ]),
   h2('Demo Instructions 👇🏻'),
   paragraph(spans(
-    text('Edit this text, add new blocks, or try the formatting toolbar above.')
+    text('Select any text to see the formatting toolbar. Use keyboard shortcuts or markdown syntax.')
   )),
   blockquote('🗒️ Something to quote or something to note.'),
   codeBlock('function hello() { console.log("TODO: add syntax highlighting"); }', 'typescript'),
@@ -84,80 +85,49 @@ const INITIAL_BLOCKS: Block[] = [
 export default function Editor() {
   const doc = useDocument(INITIAL_BLOCKS);
   const editor = useBlockEditor(doc);
+  const editorRef = useRef<HTMLElement>(null);
 
-  // Handle inline formatting
-  const handleFormat = useCallback((format: 'bold' | 'italic' | 'code' | 'link') => {
-    // For a full implementation, we'd apply formatting to the selection
-    // This is a simplified version that works with the document API
-    console.log('Format:', format);
-  }, []);
-
-  // Handle block type conversion
-  const handleBlockType = useCallback((type: BlockTypeOption) => {
-    if (!editor.selectedBlockId) {
-      // No selection, add a new block
-      switch (type) {
-        case 'h1':
-          doc.appendBlock(h1(''));
-          break;
-        case 'h2':
-          doc.appendBlock(h2(''));
-          break;
-        case 'h3':
-          doc.appendBlock(h3(''));
-          break;
-        case 'quote':
-          doc.appendBlock(blockquote(''));
-          break;
-        case 'bullet':
-          doc.appendBlock(bulletList(['']));
-          break;
-        case 'code':
-          doc.appendBlock(codeBlock(''));
-          break;
-        default:
-          doc.appendBlock(paragraph(''));
-      }
-      return;
-    }
-
-    // Convert selected block
-    const block = editor.selectedBlock;
-    if (!block) return;
-
-    const content = block.content;
-    let newBlock: Block;
-
-    switch (type) {
-      case 'h1':
-        newBlock = { ...h1(''), id: block.id, content };
+  // Handle inline formatting from selection toolbar
+  const handleFormat = useCallback((format: 'bold' | 'italic' | 'underline' | 'strikethrough' | 'code' | 'link') => {
+    // Use native browser commands for formatting
+    switch (format) {
+      case 'bold':
+        document.execCommand('bold', false);
         break;
-      case 'h2':
-        newBlock = { ...h2(''), id: block.id, content };
+      case 'italic':
+        document.execCommand('italic', false);
         break;
-      case 'h3':
-        newBlock = { ...h3(''), id: block.id, content };
+      case 'underline':
+        document.execCommand('underline', false);
         break;
-      case 'quote':
-        newBlock = { ...blockquote(''), id: block.id, content };
-        break;
-      case 'bullet':
-        newBlock = bulletList([content.map(s => s.text).join('')]);
-        newBlock.id = block.id;
+      case 'strikethrough':
+        document.execCommand('strikeThrough', false);
         break;
       case 'code':
-        newBlock = codeBlock(content.map(s => s.text).join(''));
-        newBlock.id = block.id;
+        // Wrap selection in <code> tags
+        const selection = window.getSelection();
+        if (selection && !selection.isCollapsed) {
+          const range = selection.getRangeAt(0);
+          const selectedText = range.toString();
+          const code = document.createElement('code');
+          code.textContent = selectedText;
+          range.deleteContents();
+          range.insertNode(code);
+          // Move cursor after the code element
+          range.setStartAfter(code);
+          range.setEndAfter(code);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
         break;
-      default:
-        newBlock = { ...paragraph(''), id: block.id, content };
+      case 'link':
+        const url = prompt('Enter URL:');
+        if (url) {
+          document.execCommand('createLink', false, url);
+        }
+        break;
     }
-
-    const index = doc.getBlockIndex(block.id);
-    doc.removeBlock(block.id);
-    doc.insertBlock(newBlock, index);
-    editor.selectBlock(newBlock.id);
-  }, [editor.selectedBlockId, editor.selectedBlock, doc]);
+  }, []);
 
   // Export document as markdown
   const handleExport = useCallback(() => {
@@ -371,42 +341,47 @@ export default function Editor() {
   }, [doc, editor]);
 
   return (
-    <>
-      <Toolbar
-        onFormat={handleFormat}
-        onBlockType={handleBlockType}
+    <div className="flex flex-col min-h-screen">
+      <SelectionToolbar onFormat={handleFormat} />
+      <FloatingActions
         onExport={handleExport}
         onClear={handleClear}
         blockCount={doc.blocks.length}
       />
 
-      <main className="editor-canvas" style={{ marginTop: '56px' }}>
-        {doc.blocks.map((block) => (
-          <EditableBlock
-            key={block.id}
-            block={block}
-            isSelected={editor.selectedBlockId === block.id}
-            onSelect={() => editor.selectBlock(block.id)}
-            onUpdate={(content) => handleUpdateBlock(block.id, content)}
-            onEnter={() => handleEnter(block.id)}
-            onBackspaceEmpty={() => handleBackspaceEmpty(block.id)}
-            onArrowUp={() => handleArrowUp(block.id)}
-            onArrowDown={() => handleArrowDown(block.id)}
-            onConvertToList={(text) => handleConvertToList(block.id, text)}
-            onConvertToNumberedList={(text) => handleConvertToNumberedList(block.id, text)}
-            onConvertToHeading={(level, text) => handleConvertToHeading(block.id, level, text)}
-            onConvertToBlockquote={(text) => handleConvertToBlockquote(block.id, text)}
-            onConvertToCodeBlock={(text) => handleConvertToCodeBlock(block.id, text)}
-            onConvertToDivider={() => handleConvertToDivider(block.id)}
-            onAddListItem={(afterIndex, currentContent) => handleAddListItem(block.id, afterIndex, currentContent)}
-            onUpdateListItem={(itemIndex, content) => handleUpdateListItem(block.id, itemIndex, content)}
-            onRemoveListItem={(itemIndex) => handleRemoveListItem(block.id, itemIndex)}
-            onIndentListItem={(itemIndex) => handleIndentListItem(block.id, itemIndex)}
-            onOutdentListItem={(itemIndex) => handleOutdentListItem(block.id, itemIndex)}
-            onExitList={(itemIndex) => handleExitList(block.id, itemIndex)}
-          />
-        ))}
-      </main>
-    </>
+      <div className="editor-wrapper">
+        <div className="doc-container">
+          <div className="doc-glow" />
+          <div className="doc-border" />
+          <main ref={editorRef} className="editor-canvas">
+            {doc.blocks.map((block) => (
+              <EditableBlock
+                key={block.id}
+                block={block}
+                isSelected={editor.selectedBlockId === block.id}
+                onSelect={() => editor.selectBlock(block.id)}
+                onUpdate={(content) => handleUpdateBlock(block.id, content)}
+                onEnter={() => handleEnter(block.id)}
+                onBackspaceEmpty={() => handleBackspaceEmpty(block.id)}
+                onArrowUp={() => handleArrowUp(block.id)}
+                onArrowDown={() => handleArrowDown(block.id)}
+                onConvertToList={(text) => handleConvertToList(block.id, text)}
+                onConvertToNumberedList={(text) => handleConvertToNumberedList(block.id, text)}
+                onConvertToHeading={(level, text) => handleConvertToHeading(block.id, level, text)}
+                onConvertToBlockquote={(text) => handleConvertToBlockquote(block.id, text)}
+                onConvertToCodeBlock={(text) => handleConvertToCodeBlock(block.id, text)}
+                onConvertToDivider={() => handleConvertToDivider(block.id)}
+                onAddListItem={(afterIndex, currentContent) => handleAddListItem(block.id, afterIndex, currentContent)}
+                onUpdateListItem={(itemIndex, content) => handleUpdateListItem(block.id, itemIndex, content)}
+                onRemoveListItem={(itemIndex) => handleRemoveListItem(block.id, itemIndex)}
+                onIndentListItem={(itemIndex) => handleIndentListItem(block.id, itemIndex)}
+                onOutdentListItem={(itemIndex) => handleOutdentListItem(block.id, itemIndex)}
+                onExitList={(itemIndex) => handleExitList(block.id, itemIndex)}
+              />
+            ))}
+          </main>
+        </div>
+      </div>
+    </div>
   );
 }

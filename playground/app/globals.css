@@ -80,14 +80,132 @@ body {
 }
 
 /* ============================================================================
-   Editor Canvas
+   Editor Wrapper & Document Container
    ============================================================================ */
 
+.editor-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 5rem 1.5rem 4rem;
+  min-height: 100vh;
+  background: 
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(168, 85, 247, 0.04) 0%, transparent 40%),
+    radial-gradient(ellipse 40% 30% at 20% 60%, rgba(59, 130, 246, 0.03) 0%, transparent 40%);
+}
+
+[data-theme="dark"] .editor-wrapper {
+  background: none;
+}
+
+.doc-container {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  min-height: calc(100vh - 9rem);
+}
+
+.doc-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.08) 0%,
+    rgba(168, 85, 247, 0.04) 50%,
+    rgba(99, 102, 241, 0.06) 100%
+  );
+  filter: blur(1px);
+  opacity: 1;
+  z-index: 0;
+}
+
+[data-theme="dark"] .doc-glow {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    transparent 50%
+  );
+  filter: none;
+  opacity: 1;
+}
+
+.doc-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  padding: 1px;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(99, 102, 241, 0.15) 60%,
+    rgba(168, 85, 247, 0.1) 100%
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+}
+
+[data-theme="dark"] .doc-border {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+}
+
 .editor-canvas {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 2rem 2rem 6rem;
-  min-height: calc(100vh - 60px);
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  padding: 3rem 3.5rem 4rem;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(40px) saturate(1.5);
+  -webkit-backdrop-filter: blur(40px) saturate(1.5);
+  border-radius: 18px;
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 8px 32px rgba(0, 0, 0, 0.04),
+    0 24px 60px rgba(0, 0, 0, 0.06),
+    0 40px 80px rgba(0, 0, 0, 0.03);
+  min-height: inherit;
+}
+
+[data-theme="dark"] .editor-canvas {
+  background: rgba(12, 12, 14, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 1px 0 0 rgba(255, 255, 255, 0.02),
+    0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 640px) {
+  .editor-wrapper {
+    padding: 4rem 1rem 3rem;
+  }
+  
+  .editor-canvas {
+    padding: 2rem 1.5rem 3rem;
+    border-radius: 14px;
+  }
+  
+  .doc-glow {
+    border-radius: 14px;
+  }
+  
+  .doc-border {
+    border-radius: 14px;
+  }
 }
 
 /* ============================================================================
@@ -321,108 +439,41 @@ body {
 }
 
 /* ============================================================================
-   Toolbar
+   Selection Toolbar (Floating on text selection)
    ============================================================================ */
 
-.toolbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 56px;
+.selection-toolbar {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
   background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1.5rem;
-  z-index: 100;
-  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  animation: selection-toolbar-appear 0.15s ease-out;
 }
 
-[data-theme="light"] .toolbar {
-  background: rgba(250, 250, 250, 0.9);
+[data-theme="dark"] .selection-toolbar {
+  background: #1a1a1f;
+  border-color: #2a2a30;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-[data-theme="dark"] .toolbar {
-  background: rgba(24, 24, 27, 0.9);
-}
-
-.toolbar-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.toolbar-logo-link {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: none;
-  border-radius: var(--radius-sm);
-  padding: 0.25rem 0.5rem;
-  margin: -0.25rem -0.5rem;
-  transition: background 0.15s ease;
-}
-
-.toolbar-logo-link:hover {
-  background: var(--bg-tertiary);
-}
-
-.toolbar-logo-link:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.toolbar-logo {
-  font-size: 0.9rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-@media (max-width: 640px) {
-  .toolbar-logo {
-    display: none;
+@keyframes selection-toolbar-appear {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.toolbar-version {
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  background: var(--bg-tertiary);
-  padding: 0.15rem 0.4rem;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-}
-
-.toolbar-center {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.toolbar-right {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.toolbar-divider {
-  width: 1px;
-  height: 24px;
-  background: var(--border);
-  margin: 0 0.5rem;
-}
-
-/* ============================================================================
-   Toolbar Buttons
-   ============================================================================ */
-
-.toolbar-btn {
+.selection-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -434,34 +485,146 @@ body {
   color: var(--text-secondary);
   cursor: pointer;
   font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.15s ease;
+  font-weight: 600;
+  transition: all 0.12s ease;
 }
 
-.toolbar-btn:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.toolbar-btn.active {
+.selection-btn:hover {
   background: var(--accent-bg);
   color: var(--accent);
 }
 
-.toolbar-btn-text {
-  width: auto;
-  padding: 0 0.75rem;
-  font-size: 0.75rem;
-  gap: 0.35rem;
+.selection-btn:active {
+  transform: scale(0.95);
 }
 
-.toolbar-btn-primary {
+.selection-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+/* ============================================================================
+   Floating Header & Actions
+   ============================================================================ */
+
+.floating-header {
+  position: fixed;
+  top: 1rem;
+  left: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 100;
+}
+
+.floating-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.6rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  transition: all 0.15s ease;
+}
+
+.floating-logo-link:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-strong);
+}
+
+.floating-logo-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (max-width: 640px) {
+  .floating-logo-text {
+    display: none;
+  }
+}
+
+.floating-badge {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .floating-badge {
+    display: none;
+  }
+}
+
+.floating-actions {
+  position: fixed;
+  top: 1rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 100;
+}
+
+.floating-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.6rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.floating-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.floating-btn span {
+  display: inline;
+}
+
+@media (max-width: 480px) {
+  .floating-btn span {
+    display: none;
+  }
+  .floating-btn {
+    padding: 0;
+    width: 36px;
+  }
+}
+
+.floating-btn-primary {
   background: var(--accent);
+  border-color: var(--accent);
   color: white;
 }
 
-.toolbar-btn-primary:hover {
+.floating-btn-primary:hover {
   background: var(--accent-light);
+  border-color: var(--accent-light);
   color: white;
 }
 
