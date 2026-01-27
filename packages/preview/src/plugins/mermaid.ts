@@ -48,6 +48,7 @@ export function mermaidPlugin(options?: MermaidPluginOptions): PreviewPlugin {
       
       try {
         // Dynamically import mermaid
+        // @ts-expect-error - mermaid is an optional peer dependency
         const mermaid = await import('mermaid');
         mermaidModule = mermaid.default || mermaid;
         
@@ -69,7 +70,7 @@ export function mermaidPlugin(options?: MermaidPluginOptions): PreviewPlugin {
       }
     },
     
-    renderBlock(block: Block, defaultRender: () => string): string | null {
+    renderBlock(block: Block, _defaultRender: () => string): string | null {
       if (block.type !== 'codeBlock') {
         return null;
       }

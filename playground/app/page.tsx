@@ -35,16 +35,16 @@ import {
   italic,
   spans,
   link,
-} from '../../dist/index.js';
+} from '@create-markdown/core';
 import {
   useDocument,
   useBlockEditor,
-} from '../../dist/react/index.js';
+} from '@create-markdown/react';
 import { SelectionToolbar } from './components/selection-toolbar';
 import { FloatingActions } from './components/floating-actions';
 import { EditableBlock } from './components/editable-block';
 import { SortableBlock, DragOverlayBlock } from './components/sortable-block';
-import type { Block, TextSpan } from '../../dist/index.js';
+import type { Block, TextSpan } from '@create-markdown/core';
 
 // ============================================================================
 // Initial Content

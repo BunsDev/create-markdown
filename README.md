@@ -124,9 +124,9 @@ This renders automatically!
 | [packages/core/README.md](./packages/core/README.md) | Core API reference |
 | [packages/react/README.md](./packages/react/README.md) | React components guide |
 | [packages/preview/README.md](./packages/preview/README.md) | Preview and plugins guide |
-| [ROADMAP.md](./ROADMAP.md) | Feature roadmap |
+| [ROADMAP.md](./docs/ROADMAP.md) | Feature roadmap |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Contribution guidelines |
-| [INTEGRATION.md](./INTEGRATION.md) | Framework integrations |
+| [INTEGRATION.md](./docs/INTEGRATION.md) | Framework integrations |
 
 ## Development
 

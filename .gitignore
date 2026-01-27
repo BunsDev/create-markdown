@@ -31,3 +31,5 @@ coverage/
 # Playground / Next.js
 playground/.next/
 playground/node_modules/
+
+.turbo

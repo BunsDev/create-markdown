@@ -50,6 +50,7 @@ export function shikiPlugin(options?: ShikiPluginOptions): PreviewPlugin {
       
       try {
         // Dynamically import shiki
+        // @ts-expect-error - shiki is an optional peer dependency
         const shikiModule = await import('shiki');
         const createHighlighter = shikiModule.createHighlighter || shikiModule.getHighlighter;
         
@@ -84,7 +85,7 @@ export function shikiPlugin(options?: ShikiPluginOptions): PreviewPlugin {
       }
     },
     
-    renderBlock(block: Block, defaultRender: () => string): string | null {
+    renderBlock(block: Block, _defaultRender: () => string): string | null {
       if (block.type !== 'codeBlock') {
         return null;
       }

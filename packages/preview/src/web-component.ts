@@ -24,7 +24,7 @@ export interface RegisterOptions {
 /**
  * Attributes supported by the web component
  */
-interface MarkdownPreviewAttributes {
+export interface MarkdownPreviewAttributes {
   /** Theme name */
   theme?: string;
   /** Link target */
