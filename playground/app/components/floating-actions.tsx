@@ -1,7 +1,7 @@
 'use client';
 
 import { useTheme } from '../theme-context';
-import { VERSION } from '../../../dist/index.js';
+import { VERSION } from '@create-markdown/core';
 import { LogoMark } from './logo';
 
 export interface FloatingActionsProps {
