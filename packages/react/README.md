@@ -1,0 +1,122 @@
+# @create-markdown/react
+
+React components and hooks for @create-markdown.
+
+## Installation
+
+```bash
+# Using bun
+bun add @create-markdown/react
+
+# Using npm
+npm install @create-markdown/react
+
+# Using yarn
+yarn add @create-markdown/react
+```
+
+## Quick Start
+
+### Render Blocks
+
+```tsx
+import { BlockRenderer, useDocument, h1, paragraph } from '@create-markdown/react';
+
+function Editor() {
+  const doc = useDocument([
+    h1('Welcome'),
+    paragraph('Start editing...'),
+  ]);
+  
+  return <BlockRenderer blocks={doc.blocks} />;
+}
+```
+
+### Bidirectional Markdown
+
+```tsx
+import { BlockRenderer, useMarkdown } from '@create-markdown/react';
+
+function MarkdownEditor() {
+  const { markdown, blocks, setMarkdown } = useMarkdown('# Hello');
+  
+  return (
+    <div>
+      <textarea
+        value={markdown}
+        onChange={(e) => setMarkdown(e.target.value)}
+      />
+      <BlockRenderer blocks={blocks} />
+    </div>
+  );
+}
+```
+
+### Block Selection and Editing
+
+```tsx
+import { BlockRenderer, useDocument, useBlockEditor, BlockElement } from '@create-markdown/react';
+
+function Editor() {
+  const doc = useDocument();
+  const editor = useBlockEditor(doc);
+  
+  return (
+    <div>
+      {doc.blocks.map((block) => (
+        <div
+          key={block.id}
+          onClick={() => editor.selectBlock(block.id)}
+          style={{
+            border: editor.selectedBlockId === block.id ? '2px solid blue' : 'none'
+          }}
+        >
+          <BlockElement block={block} />
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Components
+
+### `BlockRenderer`
+
+Renders an array of blocks as React elements.
+
+```tsx
+<BlockRenderer
+  blocks={blocks}
+  className="my-editor"
+  customRenderers={{
+    codeBlock: MyCustomCodeBlock,
+  }}
+/>
+```
+
+### `BlockElement`
+
+Renders a single block.
+
+### `InlineContent`
+
+Renders inline content (text spans with styles).
+
+## Hooks
+
+### `useDocument(initialBlocks?, options?)`
+
+Full document state management with CRUD operations.
+
+### `useMarkdown(initialMarkdown?)`
+
+Bidirectional markdown/blocks state.
+
+### `useBlockEditor(documentHook)`
+
+Block selection and editing operations.
+
+## License
+
+MIT

@@ -1,0 +1,106 @@
+{
+  "name": "create-markdown",
+  "version": "0.1.0",
+  "description": "Complete block-based markdown notes package - convenience bundle for @create-markdown packages",
+  "author": "Val Alexander <val@viewdue.ai>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BunsDev/create-markdown",
+    "directory": "packages/create-markdown"
+  },
+  "homepage": "https://github.com/BunsDev/create-markdown",
+  "bugs": {
+    "url": "https://github.com/BunsDev/create-markdown/issues"
+  },
+  "keywords": [
+    "markdown",
+    "md",
+    "blocks",
+    "notes",
+    "editor",
+    "parser",
+    "serializer",
+    "react",
+    "bun",
+    "typescript"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./react": {
+      "import": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.js"
+      },
+      "require": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.cjs"
+      }
+    },
+    "./preview": {
+      "import": {
+        "types": "./dist/preview.d.ts",
+        "default": "./dist/preview.js"
+      },
+      "require": {
+        "types": "./dist/preview.d.ts",
+        "default": "./dist/preview.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "bun run build:esm && bun run build:cjs && bun run build:types",
+    "build:esm": "bun build ./src/index.ts --outfile ./dist/index.js --format esm --external @create-markdown/core --external @create-markdown/react --external @create-markdown/preview --external react && bun build ./src/react.ts --outfile ./dist/react.js --format esm --external @create-markdown/core --external @create-markdown/react --external react && bun build ./src/preview.ts --outfile ./dist/preview.js --format esm --external @create-markdown/core --external @create-markdown/preview --external shiki --external mermaid",
+    "build:cjs": "bun build ./src/index.ts --outfile ./dist/index.cjs --format cjs --external @create-markdown/core --external @create-markdown/react --external @create-markdown/preview --external react && bun build ./src/react.ts --outfile ./dist/react.cjs --format cjs --external @create-markdown/core --external @create-markdown/react --external react && bun build ./src/preview.ts --outfile ./dist/preview.cjs --format cjs --external @create-markdown/core --external @create-markdown/preview --external shiki --external mermaid",
+    "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist",
+    "dev": "bun run --watch src/index.ts",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@create-markdown/core": "workspace:*",
+    "@create-markdown/react": "workspace:*",
+    "@create-markdown/preview": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "react": "^18.2.0",
+    "typescript": "^5.3.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "shiki": ">=1.0.0",
+    "mermaid": ">=10.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "shiki": {
+      "optional": true
+    },
+    "mermaid": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "bun@1.0.0"
+}

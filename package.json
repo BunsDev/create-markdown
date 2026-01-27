@@ -1,7 +1,10 @@
 {
-  "name": "create-markdown",
-  "version": "0.2.2",
+  "name": "create-markdown-monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Monorepo for @create-markdown packages",
   "author": "Val Alexander <val@viewdue.ai>",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/BunsDev/create-markdown"
@@ -10,79 +13,31 @@
   "bugs": {
     "url": "https://github.com/BunsDev/create-markdown/issues"
   },
-  "description": "Complete block-based markdown notes package with zero dependencies",
-  "license": "MIT",
-  "keywords": [
-    "markdown",
-    "md",
-    "blocks",
-    "notes",
-    "editor",
-    "parser",
-    "serializer",
-    "react",
-    "bun",
-    "typescript"
-  ],
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.cjs"
-      }
-    },
-    "./react": {
-      "import": {
-        "types": "./dist/react/index.d.ts",
-        "default": "./dist/react/index.js"
-      },
-      "require": {
-        "types": "./dist/react/index.d.ts",
-        "default": "./dist/react/index.cjs"
-      }
-    }
-  },
-  "files": [
-    "dist"
+  "workspaces": [
+    "packages/*",
+    "playground"
   ],
   "scripts": {
-    "build": "bun run build:esm && bun run build:cjs && bun run build:react-esm && bun run build:react-cjs && bun run build:types",
-    "build:esm": "bun build ./src/index.ts --outfile ./dist/index.js --format esm --external react",
-    "build:cjs": "bun build ./src/index.ts --outfile ./dist/index.cjs --format cjs --external react",
-    "build:react-esm": "bun build ./src/react/index.ts --outfile ./dist/react/index.js --format esm --external react",
-    "build:react-cjs": "bun build ./src/react/index.ts --outfile ./dist/react/index.cjs --format cjs --external react",
-    "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist",
-    "dev": "bun run --watch src/index.ts",
-    "clean": "rm -rf dist",
-    "prepublishOnly": "bun run clean && bun run build",
-    "deploy": "./deploy.sh",
-    "playground": "bun run build && cd playground && bun dev",
-    "playground:install": "cd playground && bun install",
-    "typecheck": "tsc --noEmit"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "playground": "turbo run build --filter=@create-markdown/core --filter=@create-markdown/react && cd playground && bun dev",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build && changeset publish",
+    "prepare": "turbo run build"
   },
   "devDependencies": {
-    "@types/react": "^18.2.0",
-    "react": "^18.2.0",
-    "typescript": "^5.3.0"
+    "@changesets/cli": "^2.27.0",
+    "turbo": "^2.3.0",
+    "typescript": "^5.3.0",
+    "vitest": "^2.1.0"
   },
-  "peerDependencies": {
-    "react": ">=18.0.0"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    }
-  },
+  "packageManager": "bun@1.0.0",
   "engines": {
     "node": ">=20.0.0"
-  },
-  "packageManager": "bun@1.0.0"
+  }
 }
