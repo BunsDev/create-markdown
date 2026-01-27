@@ -13,10 +13,8 @@ interface DocPageProps {
 export async function generateStaticParams() {
   const slugs = getAllDocSlugs();
   
-  return [
-    { slug: [] }, // /docs
-    ...slugs.map((slug) => ({ slug })),
-  ];
+  // getAllDocSlugs already includes [] for index.mdx
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: DocPageProps) {
