@@ -55,6 +55,8 @@
     "@create-markdown/core": "workspace:*"
   },
   "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^20.0.0",
     "typescript": "^5.3.0",
     "vitest": "^2.1.0"
   },

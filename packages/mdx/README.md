@@ -1,0 +1,186 @@
+# @create-markdown/mdx
+
+Convert markdown blocks to MDX with component mappings. Part of the [create-markdown](https://github.com/BunsDev/create-markdown) monorepo.
+
+## Installation
+
+```bash
+# Using bun
+bun add @create-markdown/mdx
+
+# Using npm
+npm install @create-markdown/mdx
+
+# Using yarn
+yarn add @create-markdown/mdx
+
+# Using pnpm
+pnpm add @create-markdown/mdx
+```
+
+## Quick Start
+
+### Convert Markdown to MDX
+
+```typescript
+import { markdownToMDX } from '@create-markdown/mdx';
+
+const markdown = `# Hello World
+
+This is **bold** and *italic* text.
+
+\`\`\`typescript
+const greeting = "Hello!";
+\`\`\`
+`;
+
+const mdx = markdownToMDX(markdown);
+console.log(mdx);
+// ---
+// title: "Hello World"
+// ---
+//
+// # Hello World
+//
+// This is **bold** and *italic* text.
+//
+// ```typescript
+// const greeting = "Hello!";
+// ```
+```
+
+### Use Custom Components
+
+```typescript
+import { markdownToMDX } from '@create-markdown/mdx';
+
+const mdx = markdownToMDX(markdown, {
+  components: {
+    codeBlock: 'CodeBlock',
+    callout: 'Callout',
+    image: 'Image',
+  },
+  imports: [
+    "import { CodeBlock } from '@/components/code-block'",
+    "import { Callout } from '@/components/callout'",
+    "import Image from 'next/image'",
+  ],
+});
+```
+
+### Convert Blocks Directly
+
+```typescript
+import { parse } from '@create-markdown/core';
+import { blocksToMDX } from '@create-markdown/mdx';
+
+const blocks = parse('# Hello\n\nWorld');
+const mdx = blocksToMDX(blocks, {
+  frontmatter: {
+    title: 'My Page',
+    description: 'A sample page',
+  },
+});
+```
+
+### Batch Convert Files
+
+```typescript
+import { convertDirectory, docsPreset } from '@create-markdown/mdx';
+
+// Convert all .md files in a directory to .mdx
+const results = await convertDirectory(
+  './content',
+  './pages',
+  {
+    ...docsPreset,
+    overwrite: true,
+  }
+);
+
+console.log(`Converted ${results.length} files`);
+```
+
+## API Reference
+
+### `markdownToMDX(markdown, options?)`
+
+Converts a markdown string to MDX.
+
+### `markdownToMDXWithMeta(markdown, options?)`
+
+Converts markdown and returns metadata (title, headings for TOC).
+
+### `blocksToMDX(blocks, options?)`
+
+Converts block array to MDX string.
+
+### `blocksToMDXWithMeta(blocks, options?)`
+
+Converts blocks and returns metadata.
+
+### `convertFile(inputPath, outputPath, options?)`
+
+Converts a single markdown file to MDX.
+
+### `convertDirectory(inputDir, outputDir, options?)`
+
+Batch converts all markdown files in a directory.
+
+## Options
+
+```typescript
+interface MDXSerializeOptions {
+  // Component name mappings
+  components?: {
+    codeBlock?: string;   // e.g., 'CodeBlock'
+    callout?: string;     // e.g., 'Callout'
+    table?: string;       // e.g., 'Table'
+    image?: string;       // e.g., 'Image'
+    heading?: string;     // e.g., 'Heading'
+    link?: string;        // e.g., 'Link'
+  };
+  
+  // Use JSX syntax for components
+  useJSX?: boolean;
+  
+  // Import statements to prepend
+  imports?: string[];
+  
+  // Frontmatter metadata
+  frontmatter?: {
+    title?: string;
+    description?: string;
+    [key: string]: unknown;
+  };
+  
+  // Extract title from first H1
+  extractTitle?: boolean;
+}
+```
+
+## Presets
+
+### `docsPreset`
+
+Pre-configured options for documentation sites:
+
+```typescript
+import { markdownToMDX, docsPreset } from '@create-markdown/mdx';
+
+const mdx = markdownToMDX(markdown, docsPreset);
+```
+
+### `minimalPreset`
+
+Minimal MDX without custom components:
+
+```typescript
+import { markdownToMDX, minimalPreset } from '@create-markdown/mdx';
+
+const mdx = markdownToMDX(markdown, minimalPreset);
+```
+
+## License
+
+MIT
