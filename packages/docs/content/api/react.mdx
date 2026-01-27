@@ -1,0 +1,138 @@
+---
+title: React API
+description: React components and hooks for create-markdown
+---
+
+# React API
+
+The `@create-markdown/react` package provides React components and hooks for rendering and editing markdown blocks.
+
+## Installation
+
+```bash
+bun add @create-markdown/react
+```
+
+## Components
+
+### BlockRenderer
+
+Renders an array of blocks as React elements.
+
+```tsx
+import { BlockRenderer } from '@create-markdown/react';
+
+function Preview({ blocks }) {
+  return (
+    <BlockRenderer
+      blocks={blocks}
+      className="my-editor"
+    />
+  );
+}
+```
+
+### Custom Renderers
+
+Override rendering for specific block types.
+
+```tsx
+<BlockRenderer
+  blocks={blocks}
+  customRenderers={{
+    codeBlock: ({ block }) => (
+      <MyCustomCodeBlock
+        code={block.content}
+        language={block.props.language}
+      />
+    ),
+  }}
+/>
+```
+
+## Hooks
+
+### useDocument
+
+Full document state management with CRUD operations.
+
+```tsx
+import { useDocument, h1, paragraph } from '@create-markdown/react';
+
+function Editor() {
+  const doc = useDocument([
+    h1('Welcome'),
+    paragraph('Start editing...'),
+  ]);
+  
+  return (
+    <div>
+      <BlockRenderer blocks={doc.blocks} />
+      <button onClick={() => doc.appendBlock(paragraph('New paragraph'))}>
+        Add Paragraph
+      </button>
+    </div>
+  );
+}
+```
+
+### useMarkdown
+
+Bidirectional markdown/blocks state.
+
+```tsx
+import { BlockRenderer, useMarkdown } from '@create-markdown/react';
+
+function MarkdownEditor() {
+  const { markdown, blocks, setMarkdown } = useMarkdown('# Hello');
+  
+  return (
+    <div>
+      <textarea
+        value={markdown}
+        onChange={(e) => setMarkdown(e.target.value)}
+      />
+      <BlockRenderer blocks={blocks} />
+    </div>
+  );
+}
+```
+
+### useBlockEditor
+
+Block selection and editing operations.
+
+```tsx
+import { useDocument, useBlockEditor, BlockElement } from '@create-markdown/react';
+
+function Editor() {
+  const doc = useDocument();
+  const editor = useBlockEditor(doc);
+  
+  return (
+    <div>
+      {doc.blocks.map((block) => (
+        <div
+          key={block.id}
+          onClick={() => editor.selectBlock(block.id)}
+          style={{
+            border: editor.selectedBlockId === block.id
+              ? '2px solid blue'
+              : 'none'
+          }}
+        >
+          <BlockElement block={block} />
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## TypeScript
+
+Full TypeScript support with generics.
+
+```typescript
+import type { Block, Document, TextSpan } from '@create-markdown/react';
+```

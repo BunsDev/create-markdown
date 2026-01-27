@@ -1,0 +1,83 @@
+---
+title: Introduction
+description: Block-based markdown parsing and serialization with zero dependencies
+---
+
+# Introduction
+
+**create-markdown** is a complete block-based markdown toolkit with zero dependencies. Parse, create, and serialize markdown with full TypeScript support.
+
+## Features
+
+- **Block-based architecture** - Work with structured blocks instead of raw strings
+- **Bidirectional conversion** - Parse markdown to blocks, serialize blocks to markdown
+- **Rich inline styles** - Bold, italic, code, links, strikethrough, highlights
+- **React components** - Optional React bindings for rendering and editing
+- **Zero dependencies** - Core package has no runtime dependencies
+- **Full TypeScript** - Complete type definitions with generics
+- **Framework ready** - Works with Next.js, Vite, Remix, Astro, and more
+
+## Quick Start
+
+### Installation
+
+```bash
+bun add create-markdown
+```
+
+### Parse Markdown
+
+```typescript
+import { parse } from 'create-markdown';
+
+const blocks = parse(`# Hello World
+
+This is **bold** and *italic* text.
+
+- Item one
+- Item two
+`);
+```
+
+### Create Blocks Programmatically
+
+```typescript
+import { h1, paragraph, bulletList, bold, spans } from 'create-markdown';
+
+const blocks = [
+  h1('My Document'),
+  paragraph(spans(
+    bold('Important: '),
+    { text: 'This is really cool!', styles: {} }
+  )),
+  bulletList(['First item', 'Second item', 'Third item']),
+];
+```
+
+### Serialize to Markdown
+
+```typescript
+import { stringify, h1, paragraph } from 'create-markdown';
+
+const markdown = stringify([
+  h1('Hello'),
+  paragraph('World'),
+]);
+```
+
+## Packages
+
+| Package | Description |
+|---------|-------------|
+| `create-markdown` | Main package - re-exports all functionality |
+| `@create-markdown/core` | Core parsing and serialization |
+| `@create-markdown/preview` | HTML rendering with Shiki and Mermaid |
+| `@create-markdown/react` | React components and hooks |
+| `@create-markdown/mdx` | MDX conversion utilities |
+
+## Next Steps
+
+- [Installation](/docs/installation) - Detailed installation guide
+- [Core API](/docs/api/core) - Block types and document operations
+- [React Components](/docs/api/react) - React bindings
+- [Integration Guide](/docs/guides/integration) - Framework-specific setup

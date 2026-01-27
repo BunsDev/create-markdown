@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd ../.. && bun install && bun run build --filter=@create-markdown/docs",
+  "outputDirectory": "out",
+  "framework": "nextjs",
+  "installCommand": "echo 'Install handled by buildCommand'"
+}

@@ -1,0 +1,84 @@
+---
+title: Installation
+description: How to install create-markdown in your project
+---
+
+# Installation
+
+Install create-markdown using your preferred package manager.
+
+## Package Managers
+
+### Bun (Recommended)
+
+```bash
+bun add create-markdown
+```
+
+### npm
+
+```bash
+npm install create-markdown
+```
+
+### Yarn
+
+```bash
+yarn add create-markdown
+```
+
+### pnpm
+
+```bash
+pnpm add create-markdown
+```
+
+## Package Options
+
+### Main Package
+
+The `create-markdown` package re-exports everything from the individual packages:
+
+```typescript
+import { parse, stringify, h1, paragraph } from 'create-markdown';
+import { BlockRenderer, useDocument } from 'create-markdown/react';
+import { markdownToHTML } from 'create-markdown/preview';
+```
+
+### Individual Packages
+
+You can also install packages individually for smaller bundle sizes:
+
+```bash
+# Core only (parsing and serialization)
+bun add @create-markdown/core
+
+# React components
+bun add @create-markdown/react
+
+# HTML preview with plugins
+bun add @create-markdown/preview
+
+# MDX conversion
+bun add @create-markdown/mdx
+```
+
+## Requirements
+
+- Node.js 20+
+- React 18+ (for React components)
+- TypeScript 5+ (recommended)
+
+## TypeScript
+
+Full TypeScript support is included. No additional types packages needed.
+
+```typescript
+import type { Block, TextSpan, Document } from 'create-markdown';
+```
+
+## Next Steps
+
+- [Core API](/docs/api/core) - Learn about block types
+- [React Components](/docs/api/react) - Use with React
+- [Integration Guide](/docs/guides/integration) - Framework setup

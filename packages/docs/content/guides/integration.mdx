@@ -1,0 +1,187 @@
+---
+title: Integration Guide
+description: Framework-specific setup guides for create-markdown
+---
+
+# Integration Guide
+
+This guide covers how to integrate create-markdown with popular frameworks.
+
+## Next.js (App Router)
+
+### Installation
+
+```bash
+bun add create-markdown
+```
+
+### Client Component Usage
+
+```tsx
+'use client';
+
+import { BlockRenderer, useDocument, h1, paragraph } from 'create-markdown/react';
+
+export function Editor() {
+  const doc = useDocument([
+    h1('Welcome'),
+    paragraph('Start editing...'),
+  ]);
+  
+  return <BlockRenderer blocks={doc.blocks} />;
+}
+```
+
+### Server Component Usage
+
+```tsx
+import { parse, stringify } from 'create-markdown';
+
+export default async function Page() {
+  const blocks = parse('# Hello\n\nWorld');
+  
+  return (
+    <pre>{JSON.stringify(blocks, null, 2)}</pre>
+  );
+}
+```
+
+## Vite + React
+
+### Installation
+
+```bash
+bun add create-markdown
+```
+
+### Usage
+
+```tsx
+import { BlockRenderer, useMarkdown } from 'create-markdown/react';
+
+function App() {
+  const { markdown, blocks, setMarkdown } = useMarkdown('# Hello');
+  
+  return (
+    <div>
+      <textarea
+        value={markdown}
+        onChange={(e) => setMarkdown(e.target.value)}
+      />
+      <BlockRenderer blocks={blocks} />
+    </div>
+  );
+}
+```
+
+## Remix
+
+### Loader Pattern
+
+```tsx
+import { json, type LoaderFunction } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
+import { parse } from 'create-markdown';
+
+export const loader: LoaderFunction = async () => {
+  const markdown = await fetchMarkdown();
+  const blocks = parse(markdown);
+  return json({ blocks });
+};
+
+export default function Page() {
+  const { blocks } = useLoaderData<typeof loader>();
+  return <BlockRenderer blocks={blocks} />;
+}
+```
+
+## Astro
+
+### Installation
+
+```bash
+bun add create-markdown @create-markdown/react
+```
+
+### Usage in .astro
+
+```astro
+---
+import { parse } from 'create-markdown';
+const blocks = parse('# Hello\n\nWorld');
+---
+
+<pre>{JSON.stringify(blocks, null, 2)}</pre>
+```
+
+### React Components
+
+```astro
+---
+import { Editor } from '../components/Editor';
+---
+
+<Editor client:load />
+```
+
+## Node.js / Server-side
+
+### CLI Tool
+
+```typescript
+import { parse, stringify } from 'create-markdown';
+import fs from 'fs';
+
+const markdown = fs.readFileSync('input.md', 'utf-8');
+const blocks = parse(markdown);
+
+// Process blocks...
+
+const output = stringify(blocks);
+fs.writeFileSync('output.md', output);
+```
+
+### Express.js API
+
+```typescript
+import express from 'express';
+import { parse, stringify } from 'create-markdown';
+
+const app = express();
+app.use(express.json());
+
+app.post('/api/parse', (req, res) => {
+  const { markdown } = req.body;
+  const blocks = parse(markdown);
+  res.json({ blocks });
+});
+
+app.post('/api/stringify', (req, res) => {
+  const { blocks } = req.body;
+  const markdown = stringify(blocks);
+  res.json({ markdown });
+});
+```
+
+## TypeScript Configuration
+
+For optimal TypeScript support:
+
+```json
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "strict": true
+  }
+}
+```
+
+## Bundle Size
+
+| Package | Size (minified + gzipped) |
+|---------|---------------------------|
+| @create-markdown/core | ~15KB |
+| @create-markdown/react | ~5KB |
+| @create-markdown/preview | ~8KB |
+| @create-markdown/mdx | ~8KB |

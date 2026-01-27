@@ -1,0 +1,169 @@
+---
+title: Core API
+description: Block-based markdown parsing and serialization
+---
+
+# Core API
+
+The `@create-markdown/core` package provides block-based markdown parsing and serialization with zero dependencies.
+
+## Installation
+
+```bash
+bun add @create-markdown/core
+```
+
+## Parsing
+
+### parse
+
+Parse a markdown string to an array of blocks.
+
+```typescript
+import { parse } from '@create-markdown/core';
+
+const blocks = parse(`# Hello World
+
+This is **bold** text.
+
+- Item one
+- Item two
+`);
+```
+
+### markdownToBlocks
+
+Full parser with options.
+
+```typescript
+import { markdownToBlocks } from '@create-markdown/core';
+
+const blocks = markdownToBlocks(markdown, {
+  generateId: () => crypto.randomUUID(),
+  strict: false,
+});
+```
+
+### markdownToDocument
+
+Parse to a Document object with metadata.
+
+```typescript
+import { markdownToDocument } from '@create-markdown/core';
+
+const doc = markdownToDocument(markdown);
+console.log(doc.blocks);
+console.log(doc.meta);
+```
+
+## Serialization
+
+### stringify
+
+Serialize blocks to markdown.
+
+```typescript
+import { stringify, h1, paragraph } from '@create-markdown/core';
+
+const markdown = stringify([
+  h1('Hello'),
+  paragraph('World'),
+]);
+```
+
+### blocksToMarkdown
+
+Full serializer with options.
+
+```typescript
+import { blocksToMarkdown } from '@create-markdown/core';
+
+const markdown = blocksToMarkdown(blocks, {
+  bulletChar: '-',
+  emphasisChar: '*',
+});
+```
+
+## Block Types
+
+| Type | Factory Function | Description |
+|------|-----------------|-------------|
+| paragraph | `paragraph(content)` | Text paragraph |
+| heading | `h1` - `h6` | Heading levels 1-6 |
+| bulletList | `bulletList(items)` | Unordered list |
+| numberedList | `numberedList(items)` | Ordered list |
+| checkList | `checkList(items)` | Task list with checkboxes |
+| codeBlock | `codeBlock(code, lang?)` | Fenced code block |
+| blockquote | `blockquote(content)` | Block quote |
+| image | `image(url, alt?)` | Image |
+| divider | `divider()` | Horizontal rule |
+| table | `table(headers, rows)` | Table with headers |
+| callout | `callout(type, content)` | Callout/admonition |
+
+## Block Factory Functions
+
+```typescript
+import {
+  h1, h2, h3, h4, h5, h6,
+  paragraph,
+  bulletList,
+  numberedList,
+  codeBlock,
+  blockquote,
+  image,
+  divider,
+  table,
+  callout,
+} from '@create-markdown/core';
+
+const blocks = [
+  h1('Welcome'),
+  paragraph('This is a paragraph.'),
+  codeBlock('const x = 1;', 'typescript'),
+  bulletList(['Item 1', 'Item 2']),
+  divider(),
+];
+```
+
+## Inline Styles
+
+```typescript
+import { bold, italic, code, link, strikethrough, highlight } from '@create-markdown/core';
+
+const content = [
+  bold('Bold text'),
+  italic('Italic text'),
+  code('inline code'),
+  link('Click here', 'https://example.com'),
+  strikethrough('deleted'),
+  highlight('highlighted'),
+];
+```
+
+## Document Operations
+
+```typescript
+import {
+  createDocument,
+  appendBlock,
+  removeBlock,
+  updateBlock,
+  moveBlock,
+  findBlock,
+} from '@create-markdown/core';
+
+// Create a document
+let doc = createDocument([paragraph('First')]);
+
+// Add a block
+doc = appendBlock(doc, paragraph('Second'));
+
+// Find a block
+const block = findBlock(doc, 'some-id');
+
+// Remove a block
+doc = removeBlock(doc, 'some-id');
+
+// Move a block
+doc = moveBlock(doc, 'block-id', 0);
+```

@@ -1,0 +1,123 @@
+---
+title: Preview API
+description: Framework-agnostic HTML rendering with syntax highlighting
+---
+
+# Preview API
+
+The `@create-markdown/preview` package provides HTML rendering with syntax highlighting (Shiki) and diagram support (Mermaid).
+
+## Installation
+
+```bash
+bun add @create-markdown/preview
+
+# Optional: Install plugins
+bun add shiki mermaid
+```
+
+## Basic Usage
+
+### markdownToHTML
+
+Convert markdown string to HTML.
+
+```typescript
+import { markdownToHTML } from '@create-markdown/preview';
+
+const html = markdownToHTML(`
+# Hello World
+
+This is **bold** and *italic* text.
+`);
+```
+
+### blocksToHTML
+
+Convert blocks to HTML.
+
+```typescript
+import { blocksToHTML } from '@create-markdown/preview';
+import { parse } from '@create-markdown/core';
+
+const blocks = parse('# Hello\n\nWorld');
+const html = blocksToHTML(blocks);
+```
+
+## Syntax Highlighting
+
+Use the Shiki plugin for syntax highlighting.
+
+```typescript
+import { renderAsync, shikiPlugin } from '@create-markdown/preview';
+import { parse } from '@create-markdown/core';
+
+const blocks = parse(`
+\`\`\`typescript
+const greeting = "Hello, World!";
+console.log(greeting);
+\`\`\`
+`);
+
+const html = await renderAsync(blocks, {
+  plugins: [shikiPlugin({ theme: 'github-dark' })],
+});
+```
+
+## Mermaid Diagrams
+
+Use the Mermaid plugin for diagrams.
+
+```typescript
+import { renderAsync, mermaidPlugin } from '@create-markdown/preview';
+import { parse } from '@create-markdown/core';
+
+const blocks = parse(`
+\`\`\`mermaid
+flowchart LR
+  A[Start] --> B[Process]
+  B --> C[End]
+\`\`\`
+`);
+
+const html = await renderAsync(blocks, {
+  plugins: [mermaidPlugin({ theme: 'default' })],
+});
+```
+
+## Web Component
+
+Use the web component for client-side rendering.
+
+```html
+<script type="module">
+  import { registerPreviewElement } from '@create-markdown/preview';
+  registerPreviewElement();
+</script>
+
+<markdown-preview theme="github">
+# Hello World
+
+This is rendered as HTML automatically!
+</markdown-preview>
+```
+
+## Themes
+
+CSS themes are available at:
+
+- `@create-markdown/preview/themes/github.css`
+- `@create-markdown/preview/themes/github-dark.css`
+- `@create-markdown/preview/themes/minimal.css`
+
+## Options
+
+```typescript
+interface PreviewOptions {
+  classPrefix?: string;       // CSS class prefix (default: 'cm-')
+  theme?: string;             // Theme name
+  linkTarget?: '_blank' | '_self';
+  sanitize?: boolean;         // Sanitize HTML output
+  plugins?: PreviewPlugin[];  // Plugins for enhanced rendering
+}
+```

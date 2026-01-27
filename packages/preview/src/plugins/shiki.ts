@@ -50,9 +50,8 @@ export function shikiPlugin(options?: ShikiPluginOptions): PreviewPlugin {
       
       try {
         // Dynamically import shiki
-        // @ts-expect-error - shiki is an optional peer dependency
         const shikiModule = await import('shiki');
-        const createHighlighter = shikiModule.createHighlighter || shikiModule.getHighlighter;
+        const createHighlighter = shikiModule.createHighlighter;
         
         if (!createHighlighter) {
           console.warn('@create-markdown/preview: Shiki module loaded but createHighlighter not found');

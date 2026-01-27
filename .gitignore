@@ -32,4 +32,9 @@ coverage/
 playground/.next/
 playground/node_modules/
 
-.turbo
+.turbo/
+
+.next/
+_next/
+
+**/out/**

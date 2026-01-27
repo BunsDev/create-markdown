@@ -1,0 +1,152 @@
+---
+title: MDX API
+description: Convert markdown blocks to MDX with component mappings
+---
+
+# MDX API
+
+The `@create-markdown/mdx` package converts markdown blocks to MDX format with custom component mappings.
+
+## Installation
+
+```bash
+bun add @create-markdown/mdx
+```
+
+## Basic Usage
+
+### markdownToMDX
+
+Convert markdown string to MDX.
+
+```typescript
+import { markdownToMDX } from '@create-markdown/mdx';
+
+const markdown = `# Hello World
+
+This is **bold** text.
+
+\`\`\`typescript
+const x = 1;
+\`\`\`
+`;
+
+const mdx = markdownToMDX(markdown);
+```
+
+### blocksToMDX
+
+Convert blocks directly to MDX.
+
+```typescript
+import { parse } from '@create-markdown/core';
+import { blocksToMDX } from '@create-markdown/mdx';
+
+const blocks = parse('# Hello\n\nWorld');
+const mdx = blocksToMDX(blocks);
+```
+
+## Custom Components
+
+Map block types to custom React components.
+
+```typescript
+import { markdownToMDX } from '@create-markdown/mdx';
+
+const mdx = markdownToMDX(markdown, {
+  components: {
+    codeBlock: 'CodeBlock',
+    callout: 'Callout',
+    image: 'Image',
+  },
+  imports: [
+    "import { CodeBlock } from '@/components/code-block'",
+    "import { Callout } from '@/components/callout'",
+    "import Image from 'next/image'",
+  ],
+});
+```
+
+## Frontmatter
+
+Add frontmatter metadata to MDX output.
+
+```typescript
+const mdx = markdownToMDX(markdown, {
+  frontmatter: {
+    title: 'My Page',
+    description: 'A sample page',
+    author: 'John Doe',
+  },
+});
+```
+
+## File Conversion
+
+### convertFile
+
+Convert a single file.
+
+```typescript
+import { convertFile } from '@create-markdown/mdx';
+
+await convertFile('README.md', 'content/index.mdx', {
+  overwrite: true,
+});
+```
+
+### convertDirectory
+
+Batch convert a directory.
+
+```typescript
+import { convertDirectory, docsPreset } from '@create-markdown/mdx';
+
+const results = await convertDirectory('./docs', './content', {
+  ...docsPreset,
+  overwrite: true,
+});
+
+console.log(`Converted ${results.length} files`);
+```
+
+## Presets
+
+### docsPreset
+
+Pre-configured options for documentation sites.
+
+```typescript
+import { markdownToMDX, docsPreset } from '@create-markdown/mdx';
+
+const mdx = markdownToMDX(markdown, docsPreset);
+```
+
+### minimalPreset
+
+Minimal MDX without custom components.
+
+```typescript
+import { markdownToMDX, minimalPreset } from '@create-markdown/mdx';
+
+const mdx = markdownToMDX(markdown, minimalPreset);
+```
+
+## Options
+
+```typescript
+interface MDXSerializeOptions {
+  components?: {
+    codeBlock?: string;
+    callout?: string;
+    table?: string;
+    image?: string;
+    heading?: string;
+    link?: string;
+  };
+  useJSX?: boolean;
+  imports?: string[];
+  frontmatter?: Record<string, unknown>;
+  extractTitle?: boolean;
+}
+```

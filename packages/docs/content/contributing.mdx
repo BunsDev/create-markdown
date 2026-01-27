@@ -1,0 +1,133 @@
+---
+title: Contributing
+description: Guidelines for contributing to create-markdown
+---
+
+# Contributing
+
+We welcome contributions to create-markdown! This guide will help you get started.
+
+## Getting Started
+
+### Prerequisites
+
+- [Bun](https://bun.sh) 1.0+
+- [Node.js](https://nodejs.org) 20+
+- Git
+
+### Setup
+
+1. Fork the repository
+2. Clone your fork:
+
+```bash
+git clone https://github.com/YOUR_USERNAME/create-markdown.git
+cd create-markdown
+```
+
+3. Install dependencies:
+
+```bash
+bun install
+```
+
+4. Build packages:
+
+```bash
+bun run build
+```
+
+5. Run tests:
+
+```bash
+bun run test
+```
+
+## Development
+
+### Project Structure
+
+```
+create-markdown/
+├── packages/
+│   ├── core/        # Parsing and serialization
+│   ├── preview/     # HTML rendering
+│   ├── react/       # React components
+│   ├── mdx/         # MDX conversion
+│   ├── docs/        # Documentation site
+│   └── create-markdown/  # Main package
+├── playground/      # Interactive demo
+└── src/            # Shared source (deprecated)
+```
+
+### Running the Playground
+
+```bash
+bun run playground
+```
+
+### Running the Docs
+
+```bash
+bun run docs
+```
+
+## Pull Requests
+
+1. Create a feature branch:
+
+```bash
+git checkout -b feature/my-feature
+```
+
+2. Make your changes
+
+3. Add a changeset:
+
+```bash
+bun run changeset
+```
+
+4. Commit using conventional commits:
+
+```bash
+git commit -m "feat: add new feature"
+```
+
+5. Push and create a PR
+
+## Commit Convention
+
+We use [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `feat:` New feature
+- `fix:` Bug fix
+- `docs:` Documentation
+- `chore:` Maintenance
+- `refactor:` Code refactoring
+- `test:` Adding tests
+
+## Testing
+
+Run all tests:
+
+```bash
+bun run test
+```
+
+Run tests for a specific package:
+
+```bash
+cd packages/core && bun run test
+```
+
+## Code Style
+
+- TypeScript with strict mode
+- Use functional patterns
+- Document public APIs with JSDoc
+- Keep functions small and focused
+
+## Questions?
+
+Open an issue or start a discussion on GitHub.
