@@ -8,7 +8,7 @@ import {
   type KeyboardEvent,
   type FocusEvent,
 } from 'react';
-import type { Block, TextSpan } from '../../../dist/index.js';
+import type { Block, TextSpan } from '@create-markdown/core';
 
 export interface EditableBlockProps {
   block: Block;
