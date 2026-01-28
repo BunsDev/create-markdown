@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import GitHubSlugger from 'github-slugger';
 import matter from 'gray-matter';
 
 const contentDirectory = path.join(process.cwd(), 'content');
@@ -106,20 +107,20 @@ export function getAllDocs(): Doc[] {
 }
 
 /**
- * Extract headings from MDX content
+ * Extract headings from MDX content.
+ * Uses github-slugger so ids match rehype-slug (used when compiling MDX).
  */
 export function extractHeadings(content: string): Array<{ id: string; text: string; level: number }> {
   const headingRegex = /^(#{2,3})\s+(.+)$/gm;
   const headings: Array<{ id: string; text: string; level: number }> = [];
+  const slugger = new GitHubSlugger();
   let match;
 
   while ((match = headingRegex.exec(content)) !== null) {
     const level = match[1].length;
-    const text = match[2].replace(/\*\*/g, '').replace(/`/g, '');
-    const id = text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
+    const rawText = match[2];
+    const text = rawText.replace(/\*\*/g, '').replace(/`/g, '').trim();
+    const id = slugger.slug(text);
 
     headings.push({ id, text, level });
   }

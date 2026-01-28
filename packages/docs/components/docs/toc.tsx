@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import GitHubSlugger from 'github-slugger';
 import { List, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -56,9 +57,9 @@ export function TableOfContents({ items = [] }: TableOfContentsProps) {
     <div className="space-y-2">
       <p className="font-medium">On This Page</p>
       <ul className="m-0 list-none text-sm">
-        {items.map((item) => (
+        {items.map((item, index) => (
           <li
-            key={item.id}
+            key={`${item.id}-${index}`}
             className={cn(
               'mt-0 pt-2',
               item.level === 3 && 'pl-4'
@@ -125,19 +126,19 @@ export function MobileTOC({ items = [] }: TableOfContentsProps) {
   );
 }
 
-// Utility to extract headings from content
+// Utility to extract headings from content (use @/lib/mdx extractHeadings for doc pages).
+// Uses github-slugger so ids are unique and match rehype-slug output.
 export function extractHeadings(content: string): TocItem[] {
   const headingRegex = /^(#{2,3})\s+(.+)$/gm;
   const headings: TocItem[] = [];
+  const slugger = new GitHubSlugger();
   let match;
 
   while ((match = headingRegex.exec(content)) !== null) {
     const level = match[1].length;
-    const text = match[2];
-    const id = text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
+    const rawText = match[2];
+    const text = rawText.replace(/\*\*/g, '').replace(/`/g, '').trim();
+    const id = slugger.slug(text);
 
     headings.push({ id, text, level });
   }

@@ -6,10 +6,12 @@
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import { markdownToMDXWithMeta } from '@create-markdown/mdx';
 
-const ROOT_DIR = join(import.meta.dir, '../../..');
-const OUTPUT_DIR = join(import.meta.dir, '../content');
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT_DIR = join(__dirname, '../../..');
+const OUTPUT_DIR = join(__dirname, '../content');
 
 interface FileMapping {
   source: string;

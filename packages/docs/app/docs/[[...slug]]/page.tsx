@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
+import rehypeSlug from 'rehype-slug';
 import { getDocBySlug, getAllDocSlugs, extractHeadings } from '@/lib/mdx';
 import { mdxComponents } from '@/components/docs/mdx-components';
 import { TableOfContents, MobileTOC } from '@/components/docs/toc';
@@ -69,7 +70,12 @@ export default async function DocPage({ params }: DocPageProps) {
             <MDXRemote
               source={doc.content}
               components={mdxComponents}
-              options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
+              options={{
+                mdxOptions: {
+                  remarkPlugins: [remarkGfm],
+                  rehypePlugins: [rehypeSlug],
+                },
+              }}
             />
           </div>
         </article>

@@ -4,7 +4,7 @@ This document outlines the planned features and development stages for the @crea
 
 ## Overview
 
-The @create-markdown project provides a complete block-based markdown solution with:
+`@create-markdown` provides a complete block-based markdown solution with:
 
 - **@create-markdown/core** - Zero-dependency parsing and serialization
 - **@create-markdown/preview** - Framework-agnostic HTML rendering with plugins
