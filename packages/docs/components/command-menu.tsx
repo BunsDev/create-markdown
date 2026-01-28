@@ -71,7 +71,7 @@ export function CommandMenu() {
           />
           
           {/* Dialog - above header (z-50) and mobile TOC (z-[60]) */}
-          <div className="fixed left-[50%] top-[20%] z-[201] w-full max-w-lg translate-x-[-50%] p-4">
+          <div className="fixed left-[50%] top-[20%] z-[201] w-full max-w-lg translate-x-[-50%] p-4 pointer-events-auto">
             <Command className={cn(
               'relative rounded-2xl overflow-hidden',
               'bg-zinc-900/95 dark:bg-zinc-900 border border-zinc-700',
@@ -86,7 +86,7 @@ export function CommandMenu() {
                 />
               </div>
               
-              <Command.List className="max-h-[320px] overflow-y-auto p-2 bg-zinc-900">
+              <Command.List className="max-h-[320px] overflow-y-auto p-2 bg-zinc-900 pointer-events-auto">
                 <Command.Empty className="py-8 text-center text-sm text-zinc-500">
                   No results found.
                 </Command.Empty>
@@ -100,8 +100,9 @@ export function CommandMenu() {
                       key={page.href}
                       value={page.title}
                       onSelect={() => runCommand(() => router.push(page.href))}
+                      onClick={() => runCommand(() => router.push(page.href))}
                       className={cn(
-                        'relative flex cursor-pointer select-none items-center rounded-lg px-3 py-2.5 text-sm outline-none',
+                        'relative flex cursor-pointer select-none items-center rounded-lg px-3 py-2.5 text-sm outline-none pointer-events-auto',
                         'transition-all duration-150',
                         'text-zinc-300',
                         'aria-selected:bg-violet-600/20 aria-selected:text-white',

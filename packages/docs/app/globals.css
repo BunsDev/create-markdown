@@ -272,10 +272,16 @@
   @apply block;
 }
 
-/* Hide scrollbar for command palette */
+/* Command palette - ensure mouse selection works */
 [cmdk-list] {
   overflow: auto;
   overscroll-behavior: contain;
+  pointer-events: auto;
+}
+
+[cmdk-item] {
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 [cmdk-list]::-webkit-scrollbar {
