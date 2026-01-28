@@ -245,33 +245,31 @@
   opacity: 0.4;
 }
 
-/* Code block styling - enhanced glassmorphic */
+/* Code block styling */
 .prose pre {
   @apply !bg-transparent !p-0 overflow-hidden;
 }
 
 .prose pre code {
-  @apply !bg-transparent block p-4 overflow-x-auto text-sm;
+  @apply !bg-transparent block p-5 overflow-x-auto text-[14px] leading-7;
 }
 
 .prose code:not(pre code) {
-  @apply backdrop-blur-sm px-1.5 py-0.5 rounded-md text-sm font-medium before:content-none after:content-none border;
+  @apply px-1.5 py-0.5 rounded-md text-sm font-medium before:content-none after:content-none;
   background: var(--muted);
-  border-color: var(--border);
 }
 
-/* Shiki code highlighting - enhanced */
+/* Shiki code highlighting */
 .shiki {
   @apply !bg-transparent;
 }
 
 .shiki code {
-  @apply block p-4 overflow-x-auto text-sm;
-  counter-reset: line;
+  @apply block overflow-x-auto text-[14px] leading-7;
 }
 
 .shiki code .line {
-  @apply inline-block w-full;
+  @apply block;
 }
 
 /* Hide scrollbar for command palette */

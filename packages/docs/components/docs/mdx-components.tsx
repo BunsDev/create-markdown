@@ -93,31 +93,25 @@ export const mdxComponents: MDXComponents = {
     );
   },
 
-  // Code - glassmorphic styling
+  // Code blocks - clean, readable styling
   pre: ({ children, ...props }) => {
     return (
-      <div className="group relative my-6 rounded-2xl overflow-hidden shadow-xl shadow-black/10 dark:shadow-black/30">
-        {/* Gradient hover overlay - Purple only */}
-        <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-        
-        {/* Glass container */}
-        <div className="relative border border-zinc-200/50 dark:border-white/10 bg-white dark:bg-gradient-to-br dark:from-slate-900/95 dark:to-slate-950/95 backdrop-blur-xl rounded-2xl overflow-hidden">
+      <div className="group relative my-6 rounded-xl overflow-hidden">
+        {/* Container with solid, readable background */}
+        <div className="relative border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 rounded-xl overflow-hidden">
           {/* Window chrome */}
-          <div className="flex items-center gap-2 border-b border-zinc-200/50 dark:border-white/10 bg-zinc-50/80 dark:bg-white/5 backdrop-blur-sm px-4 py-2.5">
+          <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 px-4 py-2.5">
             <div className="flex gap-1.5">
-              <div className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-600 group-hover:bg-red-400 transition-colors duration-300" />
-              <div className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-600 group-hover:bg-yellow-400 transition-colors duration-300" />
-              <div className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-600 group-hover:bg-green-400 transition-colors duration-300" />
+              <div className="h-3 w-3 rounded-full bg-red-500" />
+              <div className="h-3 w-3 rounded-full bg-yellow-500" />
+              <div className="h-3 w-3 rounded-full bg-green-500" />
             </div>
           </div>
           
-          <pre className="overflow-x-auto p-4 text-sm" {...props}>
+          <pre className="overflow-x-auto p-5 text-[15px] leading-relaxed" {...props}>
             {children}
           </pre>
         </div>
-        
-        {/* Subtle inner ring */}
-        <div className="absolute inset-0 pointer-events-none rounded-2xl ring-1 ring-inset ring-white/10 dark:ring-white/5" />
       </div>
     );
   },
@@ -127,7 +121,7 @@ export const mdxComponents: MDXComponents = {
     if (isInline) {
       return (
         <code
-          className="relative rounded-lg bg-muted/80 dark:bg-muted/50 backdrop-blur-sm px-1.5 py-0.5 font-mono text-sm border border-border/50"
+          className="relative rounded-md bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 font-mono text-sm text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700"
           {...props}
         >
           {children}
@@ -136,7 +130,7 @@ export const mdxComponents: MDXComponents = {
     }
 
     return (
-      <code className={cn('text-zinc-800 dark:text-zinc-100', className)} {...props}>
+      <code className={cn('text-zinc-800 dark:text-zinc-100 font-mono', className)} {...props}>
         {children}
       </code>
     );
