@@ -233,13 +233,16 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-border/50 rounded-full backdrop-blur-sm;
+  background: var(--border);
+  border-radius: 9999px;
   border: 2px solid transparent;
   background-clip: padding-box;
+  opacity: 0.5;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-muted-foreground/40;
+  background: var(--muted-foreground);
+  opacity: 0.4;
 }
 
 /* Code block styling - enhanced glassmorphic */
@@ -252,7 +255,9 @@
 }
 
 .prose code:not(pre code) {
-  @apply bg-muted/80 backdrop-blur-sm px-1.5 py-0.5 rounded-md text-sm font-medium before:content-none after:content-none border border-border/50;
+  @apply backdrop-blur-sm px-1.5 py-0.5 rounded-md text-sm font-medium before:content-none after:content-none border;
+  background: var(--muted);
+  border-color: var(--border);
 }
 
 /* Shiki code highlighting - enhanced */
