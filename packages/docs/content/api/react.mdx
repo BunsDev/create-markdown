@@ -1,63 +1,31 @@
 ---
-title: React API
-description: React components and hooks for create-markdown
+title: "React API"
+description: "React components and hooks for create-markdown"
 ---
 
-# React API
+# @create-markdown/react
 
-The `@create-markdown/react` package provides React components and hooks for rendering and editing markdown blocks.
+React components and hooks for @create-markdown.
 
 ## Installation
 
 ```bash
+# Using bun
 bun add @create-markdown/react
+
+# Using npm
+npm install @create-markdown/react
+
+# Using yarn
+yarn add @create-markdown/react
 ```
 
-## Components
+## Quick Start
 
-### BlockRenderer
-
-Renders an array of blocks as React elements.
+### Render Blocks
 
 ```tsx
-import { BlockRenderer } from '@create-markdown/react';
-
-function Preview({ blocks }) {
-  return (
-    <BlockRenderer
-      blocks={blocks}
-      className="my-editor"
-    />
-  );
-}
-```
-
-### Custom Renderers
-
-Override rendering for specific block types.
-
-```tsx
-<BlockRenderer
-  blocks={blocks}
-  customRenderers={{
-    codeBlock: ({ block }) => (
-      <MyCustomCodeBlock
-        code={block.content}
-        language={block.props.language}
-      />
-    ),
-  }}
-/>
-```
-
-## Hooks
-
-### useDocument
-
-Full document state management with CRUD operations.
-
-```tsx
-import { useDocument, h1, paragraph } from '@create-markdown/react';
+import { BlockRenderer, useDocument, h1, paragraph } from '@create-markdown/react';
 
 function Editor() {
   const doc = useDocument([
@@ -65,20 +33,11 @@ function Editor() {
     paragraph('Start editing...'),
   ]);
   
-  return (
-    <div>
-      <BlockRenderer blocks={doc.blocks} />
-      <button onClick={() => doc.appendBlock(paragraph('New paragraph'))}>
-        Add Paragraph
-      </button>
-    </div>
-  );
+  return <BlockRenderer blocks={doc.blocks} />;
 }
 ```
 
-### useMarkdown
-
-Bidirectional markdown/blocks state.
+### Bidirectional Markdown
 
 ```tsx
 import { BlockRenderer, useMarkdown } from '@create-markdown/react';
@@ -98,12 +57,10 @@ function MarkdownEditor() {
 }
 ```
 
-### useBlockEditor
-
-Block selection and editing operations.
+### Block Selection and Editing
 
 ```tsx
-import { useDocument, useBlockEditor, BlockElement } from '@create-markdown/react';
+import { BlockRenderer, useDocument, useBlockEditor, BlockElement } from '@create-markdown/react';
 
 function Editor() {
   const doc = useDocument();
@@ -116,9 +73,7 @@ function Editor() {
           key={block.id}
           onClick={() => editor.selectBlock(block.id)}
           style={{
-            border: editor.selectedBlockId === block.id
-              ? '2px solid blue'
-              : 'none'
+            border: editor.selectedBlockId === block.id ? '2px solid blue' : 'none'
           }}
         >
           <BlockElement block={block} />
@@ -129,10 +84,44 @@ function Editor() {
 }
 ```
 
-## TypeScript
+## Components
 
-Full TypeScript support with generics.
+### `BlockRenderer`
 
-```typescript
-import type { Block, Document, TextSpan } from '@create-markdown/react';
+Renders an array of blocks as React elements.
+
+```tsx
+<BlockRenderer
+  blocks={blocks}
+  className="my-editor"
+  customRenderers={{
+    codeBlock: MyCustomCodeBlock,
+  }}
+/>
 ```
+
+### `BlockElement`
+
+Renders a single block.
+
+### `InlineContent`
+
+Renders inline content (text spans with styles).
+
+## Hooks
+
+### `useDocument(initialBlocks?, options?)`
+
+Full document state management with CRUD operations.
+
+### `useMarkdown(initialMarkdown?)`
+
+Bidirectional markdown/blocks state.
+
+### `useBlockEditor(documentHook)`
+
+Block selection and editing operations.
+
+## License
+
+MIT

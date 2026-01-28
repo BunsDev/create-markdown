@@ -1,169 +1,113 @@
 ---
-title: Core API
-description: Block-based markdown parsing and serialization
+title: "Core API"
+description: "Block-based markdown parsing and serialization"
 ---
 
-# Core API
+# @create-markdown/core
 
-The `@create-markdown/core` package provides block-based markdown parsing and serialization with zero dependencies.
+Block-based markdown parsing and serialization with zero dependencies.
 
 ## Installation
 
 ```bash
+# Using bun
 bun add @create-markdown/core
+
+# Using npm
+npm install @create-markdown/core
+
+# Using yarn
+yarn add @create-markdown/core
+
+# Using pnpm
+pnpm add @create-markdown/core
 ```
 
-## Parsing
+## Quick Start
 
-### parse
-
-Parse a markdown string to an array of blocks.
+### Parse Markdown to Blocks
 
 ```typescript
 import { parse } from '@create-markdown/core';
 
 const blocks = parse(`# Hello World
 
-This is **bold** text.
+This is **bold** and *italic* text.
 
 - Item one
 - Item two
 `);
 ```
 
-### markdownToBlocks
-
-Full parser with options.
+### Create Blocks Programmatically
 
 ```typescript
-import { markdownToBlocks } from '@create-markdown/core';
+import { h1, paragraph, bulletList, bold, italic, spans } from '@create-markdown/core';
 
-const blocks = markdownToBlocks(markdown, {
-  generateId: () => crypto.randomUUID(),
-  strict: false,
-});
+const blocks = [
+  h1('My Document'),
+  paragraph(spans(
+    bold('Important: '),
+    { text: 'This is ', styles: {} },
+    italic('really'),
+    { text: ' cool!', styles: {} }
+  )),
+  bulletList(['First item', 'Second item', 'Third item']),
+];
 ```
 
-### markdownToDocument
-
-Parse to a Document object with metadata.
+### Serialize Blocks to Markdown
 
 ```typescript
-import { markdownToDocument } from '@create-markdown/core';
-
-const doc = markdownToDocument(markdown);
-console.log(doc.blocks);
-console.log(doc.meta);
-```
-
-## Serialization
-
-### stringify
-
-Serialize blocks to markdown.
-
-```typescript
-import { stringify, h1, paragraph } from '@create-markdown/core';
+import { stringify, h1, paragraph, codeBlock } from '@create-markdown/core';
 
 const markdown = stringify([
   h1('Hello'),
   paragraph('World'),
+  codeBlock('console.log("Hi!");', 'javascript'),
 ]);
-```
-
-### blocksToMarkdown
-
-Full serializer with options.
-
-```typescript
-import { blocksToMarkdown } from '@create-markdown/core';
-
-const markdown = blocksToMarkdown(blocks, {
-  bulletChar: '-',
-  emphasisChar: '*',
-});
 ```
 
 ## Block Types
 
 | Type | Factory Function | Description |
-|------|-----------------|-------------|
-| paragraph | `paragraph(content)` | Text paragraph |
-| heading | `h1` - `h6` | Heading levels 1-6 |
-| bulletList | `bulletList(items)` | Unordered list |
-| numberedList | `numberedList(items)` | Ordered list |
-| checkList | `checkList(items)` | Task list with checkboxes |
-| codeBlock | `codeBlock(code, lang?)` | Fenced code block |
-| blockquote | `blockquote(content)` | Block quote |
-| image | `image(url, alt?)` | Image |
-| divider | `divider()` | Horizontal rule |
-| table | `table(headers, rows)` | Table with headers |
-| callout | `callout(type, content)` | Callout/admonition |
+| --- | --- | --- |
+| `paragraph` | `paragraph(content)` | Text paragraph |
+| `heading` | `heading(level, content)` or `h1`-`h6` | Heading levels 1-6 |
+| `bulletList` | `bulletList(items)` | Unordered list |
+| `numberedList` | `numberedList(items)` | Ordered list |
+| `checkList` | `checkList(items)` | Task list with checkboxes |
+| `codeBlock` | `codeBlock(code, language?)` | Fenced code block |
+| `blockquote` | `blockquote(content)` | Block quote |
+| `image` | `image(url, alt?)` | Image |
+| `divider` | `divider()` | Horizontal rule |
+| `table` | `table(headers, rows)` | Table with headers |
+| `callout` | `callout(type, content)` | Callout/admonition |
 
-## Block Factory Functions
+## API Reference
 
-```typescript
-import {
-  h1, h2, h3, h4, h5, h6,
-  paragraph,
-  bulletList,
-  numberedList,
-  codeBlock,
-  blockquote,
-  image,
-  divider,
-  table,
-  callout,
-} from '@create-markdown/core';
+### Parsing
 
-const blocks = [
-  h1('Welcome'),
-  paragraph('This is a paragraph.'),
-  codeBlock('const x = 1;', 'typescript'),
-  bulletList(['Item 1', 'Item 2']),
-  divider(),
-];
-```
+- `parse(markdown)` - Parse markdown string to blocks
+- `markdownToBlocks(markdown, options?)` - Full parser with options
+- `markdownToDocument(markdown)` - Parse to a Document object
 
-## Inline Styles
+### Serialization
 
-```typescript
-import { bold, italic, code, link, strikethrough, highlight } from '@create-markdown/core';
+- `stringify(blocks)` - Serialize blocks to markdown
+- `blocksToMarkdown(blocks, options?)` - Full serializer with options
+- `documentToMarkdown(doc)` - Serialize a Document
 
-const content = [
-  bold('Bold text'),
-  italic('Italic text'),
-  code('inline code'),
-  link('Click here', 'https://example.com'),
-  strikethrough('deleted'),
-  highlight('highlighted'),
-];
-```
+### Document Operations
 
-## Document Operations
+- `createDocument(blocks?, options?)` - Create a new document
+- `insertBlock(doc, block, index?)` - Insert block at position
+- `appendBlock(doc, block)` - Add block at end
+- `removeBlock(doc, blockId)` - Remove block by ID
+- `updateBlock(doc, blockId, updates)` - Update block properties
+- `moveBlock(doc, blockId, newIndex)` - Reorder blocks
+- `findBlock(doc, blockId)` - Find block by ID
 
-```typescript
-import {
-  createDocument,
-  appendBlock,
-  removeBlock,
-  updateBlock,
-  moveBlock,
-  findBlock,
-} from '@create-markdown/core';
+## License
 
-// Create a document
-let doc = createDocument([paragraph('First')]);
-
-// Add a block
-doc = appendBlock(doc, paragraph('Second'));
-
-// Find a block
-const block = findBlock(doc, 'some-id');
-
-// Remove a block
-doc = removeBlock(doc, 'some-id');
-
-// Move a block
-doc = moveBlock(doc, 'block-id', 0);
-```
+MIT

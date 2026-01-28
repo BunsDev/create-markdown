@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/BunsDev/create-markdown",
+    "url": "git+https://github.com/BunsDev/create-markdown.git",
     "directory": "packages/create-markdown"
   },
   "homepage": "https://github.com/BunsDev/create-markdown",

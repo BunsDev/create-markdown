@@ -1,83 +1,173 @@
 ---
-title: Introduction
-description: Block-based markdown parsing and serialization with zero dependencies
+title: "Introduction"
+description: "Block-based markdown parsing and serialization with zero dependencies"
 ---
 
-# Introduction
+# @create-markdown
 
-**create-markdown** is a complete block-based markdown toolkit with zero dependencies. Parse, create, and serialize markdown with full TypeScript support.
+[[image: npm version]](https://www.npmjs.com/package/create-markdown) [[image: License: MIT]](https://opensource.org/licenses/MIT)
 
-## Features
-
-- **Block-based architecture** - Work with structured blocks instead of raw strings
-- **Bidirectional conversion** - Parse markdown to blocks, serialize blocks to markdown
-- **Rich inline styles** - Bold, italic, code, links, strikethrough, highlights
-- **React components** - Optional React bindings for rendering and editing
-- **Zero dependencies** - Core package has no runtime dependencies
-- **Full TypeScript** - Complete type definitions with generics
-- **Framework ready** - Works with Next.js, Vite, Remix, Astro, and more
-
-## Quick Start
-
-### Installation
-
-```bash
-bun add create-markdown
-```
-
-### Parse Markdown
-
-```typescript
-import { parse } from 'create-markdown';
-
-const blocks = parse(`# Hello World
-
-This is **bold** and *italic* text.
-
-- Item one
-- Item two
-`);
-```
-
-### Create Blocks Programmatically
-
-```typescript
-import { h1, paragraph, bulletList, bold, spans } from 'create-markdown';
-
-const blocks = [
-  h1('My Document'),
-  paragraph(spans(
-    bold('Important: '),
-    { text: 'This is really cool!', styles: {} }
-  )),
-  bulletList(['First item', 'Second item', 'Third item']),
-];
-```
-
-### Serialize to Markdown
-
-```typescript
-import { stringify, h1, paragraph } from 'create-markdown';
-
-const markdown = stringify([
-  h1('Hello'),
-  paragraph('World'),
-]);
-```
+A complete block-based markdown solution with zero dependencies. Parse, create, serialize, and render markdown with full TypeScript support.
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| `create-markdown` | Main package - re-exports all functionality |
-| `@create-markdown/core` | Core parsing and serialization |
-| `@create-markdown/preview` | HTML rendering with Shiki and Mermaid |
-| `@create-markdown/react` | React components and hooks |
-| `@create-markdown/mdx` | MDX conversion utilities |
+| Package | Version | Description |
+| --- | --- | --- |
+| [@create-markdown/core](./packages/core) | 0.1.0 | Zero-dependency parsing and serialization |
+| [@create-markdown/react](./packages/react) | 0.1.0 | React components and hooks |
+| [@create-markdown/preview](./packages/preview) | 0.1.0 | HTML rendering with Shiki and Mermaid |
+| [create-markdown](./packages/create-markdown) | 0.1.0 | Convenience bundle |
 
-## Next Steps
+## Features
 
-- [Installation](/docs/installation) - Detailed installation guide
-- [Core API](/docs/api/core) - Block types and document operations
-- [React Components](/docs/api/react) - React bindings
-- [Integration Guide](/docs/guides/integration) - Framework-specific setup
+- Block-based architecture - Work with structured blocks instead of raw strings
+- Bidirectional conversion - Parse markdown to blocks, serialize blocks to markdown
+- Rich inline styles - Bold, italic, code, links, strikethrough, highlights
+- React components - Optional React bindings for rendering and editing
+- HTML preview - Framework-agnostic HTML rendering with themes
+- Syntax highlighting - Shiki plugin for code blocks
+- Diagrams - Mermaid plugin for flowcharts, sequence diagrams, etc.
+- Web Component - `<markdown-preview>` custom element
+- Zero dependencies - Core package has no runtime dependencies
+- Full TypeScript - Complete type definitions with generics
+
+## Installation
+
+```bash
+# Install individual packages (recommended)
+bun add @create-markdown/core
+bun add @create-markdown/react
+bun add @create-markdown/preview
+
+# Or install the convenience bundle
+bun add create-markdown
+```
+
+## Quick Start
+
+### Parse and Serialize Markdown
+
+```typescript
+import { parse, stringify, h1, paragraph } from '@create-markdown/core';
+
+// Parse markdown to blocks
+const blocks = parse('# Hello\n\nWorld');
+
+// Create blocks programmatically
+const doc = [
+  h1('Hello'),
+  paragraph('World'),
+];
+
+// Serialize back to markdown
+const markdown = stringify(doc);
+```
+
+### React Components
+
+```tsx
+import { BlockRenderer, useDocument, paragraph } from '@create-markdown/react';
+
+function Editor() {
+  const doc = useDocument([paragraph('Start typing...')]);
+  
+  return (
+    <div>
+      <BlockRenderer blocks={doc.blocks} />
+      <button onClick={() => doc.appendBlock(paragraph('New paragraph'))}>
+        Add Paragraph
+      </button>
+    </div>
+  );
+}
+```
+
+### HTML Preview with Plugins
+
+```typescript
+import { renderAsync, shikiPlugin, mermaidPlugin } from '@create-markdown/preview';
+import { parse } from '@create-markdown/core';
+
+const blocks = parse(`
+# Code Example
+
+\`\`\`typescript
+const x = 42;
+\`\`\`
+
+\`\`\`mermaid
+flowchart LR
+  A --> B --> C
+\`\`\`
+`);
+
+const html = await renderAsync(blocks, {
+  plugins: [shikiPlugin(), mermaidPlugin()],
+});
+```
+
+### Web Component
+
+```html
+<script type="module">
+  import { registerPreviewElement } from '@create-markdown/preview';
+  registerPreviewElement();
+</script>
+
+<markdown-preview theme="github-dark">
+# Hello World
+
+This renders automatically!
+</markdown-preview>
+```
+
+## Documentation
+
+| Document | Description |
+| --- | --- |
+| [packages/core/README.md](./packages/core/README.md) | Core API reference |
+| [packages/react/README.md](./packages/react/README.md) | React components guide |
+| [packages/preview/README.md](./packages/preview/README.md) | Preview and plugins guide |
+| [ROADMAP.md](./docs/ROADMAP.md) | Feature roadmap |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | Contribution guidelines |
+| [INTEGRATION.md](./docs/INTEGRATION.md) | Framework integrations |
+
+## Development
+
+```bash
+# Install dependencies
+bun install
+
+# Build all packages
+bun run build
+
+# Run tests
+bun run test
+
+# Type check
+bun run typecheck
+
+# Run the playground
+bun run playground
+```
+
+## Monorepo Structure
+
+```
+create-markdown/
+├── packages/
+│   ├── core/           # @create-markdown/core
+│   ├── react/          # @create-markdown/react
+│   ├── preview/        # @create-markdown/preview
+│   └── create-markdown/ # Convenience bundle
+├── playground/         # Demo application
+└── .github/            # CI/CD workflows
+```
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+## License
+
+MIT

@@ -1,151 +1,402 @@
 ---
-title: Integration Guide
-description: Framework-specific setup guides for create-markdown
+title: "Integration Guide"
+description: "Framework-specific setup guides for create-markdown"
 ---
 
 # Integration Guide
 
-This guide covers how to integrate create-markdown with popular frameworks.
+Complete guide for integrating `@create-markdown` packages into your project.
 
-## Next.js (App Router)
+## Table of Contents
 
-### Installation
+- [Package Overview](#package-overview)
+- [Installation](#installation)
+- [Framework Integrations](#framework-integrations)
+- [Common Patterns](#common-patterns)
+- [TypeScript Configuration](#typescript-configuration)
+- [Bundle Size Optimization](#bundle-size-optimization)
+- [Troubleshooting](#troubleshooting)
+
+---
+
+## Package Overview
+
+The `@create-markdown` monorepo provides several packages:
+
+| Package | Description |
+| --- | --- |
+| `@create-markdown/core` | Block-based markdown parsing and serialization (zero dependencies) |
+| `@create-markdown/react` | React components and hooks for rendering and editing |
+| `@create-markdown/preview` | Framework-agnostic HTML rendering with syntax highlighting (Shiki) and diagrams (Mermaid) |
+| `@create-markdown/mdx` | Convert markdown blocks to MDX with component mappings |
+| `create-markdown` | Convenience bundle that re-exports all packages |
+
+---
+
+## Installation
+
+### Individual Packages (Recommended)
+
+Install only what you need for smaller bundle sizes:
+
+```bash
+# Core only (parsing/serialization)
+bun add @create-markdown/core
+# or
+npm install @create-markdown/core
+
+# With React support
+bun add @create-markdown/core @create-markdown/react
+# or
+npm install @create-markdown/core @create-markdown/react
+
+# With HTML preview (for non-React projects or SSG)
+bun add @create-markdown/core @create-markdown/preview
+# or
+npm install @create-markdown/core @create-markdown/preview
+
+# With syntax highlighting and diagrams
+bun add @create-markdown/core @create-markdown/preview shiki mermaid
+```
+
+### Convenience Bundle
+
+For projects that need everything:
 
 ```bash
 bun add create-markdown
+# or
+npm install create-markdown
+
+# With optional peer dependencies
+bun add create-markdown react shiki mermaid
 ```
 
-### Client Component Usage
+---
+
+## Framework Integrations
+
+### Next.js (App Router)
+
+#### Installation
+
+```bash
+bun add @create-markdown/core @create-markdown/react
+```
+
+#### Client Components
+
+For interactive editors, use the `'use client'` directive:
 
 ```tsx
+// app/components/markdown-editor.tsx
 'use client';
 
-import { BlockRenderer, useDocument, h1, paragraph } from 'create-markdown/react';
+import { useDocument, useBlockEditor, BlockRenderer } from '@create-markdown/react';
+import { h1, paragraph, bulletList } from '@create-markdown/react';
 
-export function Editor() {
+export function MarkdownEditor() {
   const doc = useDocument([
     h1('Welcome'),
     paragraph('Start editing...'),
   ]);
   
-  return <BlockRenderer blocks={doc.blocks} />;
-}
-```
+  const editor = useBlockEditor(doc);
 
-### Server Component Usage
-
-```tsx
-import { parse, stringify } from 'create-markdown';
-
-export default async function Page() {
-  const blocks = parse('# Hello\n\nWorld');
-  
-  return (
-    <pre>{JSON.stringify(blocks, null, 2)}</pre>
-  );
-}
-```
-
-## Vite + React
-
-### Installation
-
-```bash
-bun add create-markdown
-```
-
-### Usage
-
-```tsx
-import { BlockRenderer, useMarkdown } from 'create-markdown/react';
-
-function App() {
-  const { markdown, blocks, setMarkdown } = useMarkdown('# Hello');
-  
   return (
     <div>
-      <textarea
-        value={markdown}
-        onChange={(e) => setMarkdown(e.target.value)}
+      <BlockRenderer 
+        blocks={doc.blocks}
+        onBlockClick={(block) => editor.selectBlock(block.id)}
       />
-      <BlockRenderer blocks={blocks} />
+      <button onClick={() => doc.appendBlock(paragraph('New paragraph'))}>
+        Add Paragraph
+      </button>
+      <button onClick={() => console.log(doc.toMarkdown())}>
+        Export
+      </button>
     </div>
   );
 }
 ```
 
-## Remix
+#### Server Components
 
-### Loader Pattern
+For static markdown rendering:
 
 ```tsx
-import { json, type LoaderFunction } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
-import { parse } from 'create-markdown';
+// app/blog/[slug]/page.tsx
+import { parse } from '@create-markdown/core';
+import { BlockRenderer } from '@create-markdown/react';
+import fs from 'fs/promises';
 
-export const loader: LoaderFunction = async () => {
-  const markdown = await fetchMarkdown();
+async function getPost(slug: string) {
+  const content = await fs.readFile(`./content/${slug}.md`, 'utf-8');
+  return parse(content);
+}
+
+export default async function BlogPost({ params }: { params: { slug: string } }) {
+  const blocks = await getPost(params.slug);
+  
+  return (
+    <article>
+      <BlockRenderer blocks={blocks} />
+    </article>
+  );
+}
+```
+
+#### API Routes
+
+Process markdown in API routes:
+
+```ts
+// app/api/markdown/route.ts
+import { parse, stringify } from '@create-markdown/core';
+
+export async function POST(request: Request) {
+  const { markdown } = await request.json();
   const blocks = parse(markdown);
-  return json({ blocks });
+  
+  // Process blocks...
+  
+  return Response.json({ blocks });
+}
+```
+
+---
+
+### Next.js (Pages Router)
+
+```tsx
+// pages/editor.tsx
+import dynamic from 'next/dynamic';
+
+// Dynamic import for client-only editor
+const MarkdownEditor = dynamic(
+  () => import('../components/markdown-editor'),
+  { ssr: false }
+);
+
+export default function EditorPage() {
+  return <MarkdownEditor />;
+}
+```
+
+```tsx
+// components/markdown-editor.tsx
+import { useDocument, BlockRenderer } from '@create-markdown/react';
+import { h1, paragraph } from '@create-markdown/react';
+
+export default function MarkdownEditor() {
+  const doc = useDocument([h1('Hello'), paragraph('World')]);
+  
+  return <BlockRenderer blocks={doc.blocks} />;
+}
+```
+
+For SSG/SSR markdown rendering:
+
+```tsx
+// pages/blog/[slug].tsx
+import { GetStaticProps, GetStaticPaths } from 'next';
+import { parse } from '@create-markdown/core';
+import { BlockRenderer } from '@create-markdown/react';
+import type { Block } from '@create-markdown/core';
+import fs from 'fs/promises';
+
+interface Props {
+  blocks: Block[];
+}
+
+export default function BlogPost({ blocks }: Props) {
+  return <BlockRenderer blocks={blocks} />;
+}
+
+export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
+  const content = await fs.readFile(`./content/${params?.slug}.md`, 'utf-8');
+  const blocks = parse(content);
+  
+  return { props: { blocks } };
 };
 
-export default function Page() {
-  const { blocks } = useLoaderData<typeof loader>();
+export const getStaticPaths: GetStaticPaths = async () => {
+  // Return paths for your blog posts
+  return { paths: [], fallback: 'blocking' };
+};
+```
+
+---
+
+### Vite + React
+
+```tsx
+// src/App.tsx
+import { useDocument, BlockRenderer } from '@create-markdown/react';
+import { h1, paragraph, bulletList } from '@create-markdown/react';
+
+function App() {
+  const doc = useDocument([
+    h1('My Document'),
+    paragraph('Edit me!'),
+    bulletList(['Item 1', 'Item 2', 'Item 3']),
+  ]);
+
+  return (
+    <div className="app">
+      <BlockRenderer blocks={doc.blocks} />
+      <button onClick={() => {
+        const md = doc.toMarkdown();
+        navigator.clipboard.writeText(md);
+      }}>
+        Copy as Markdown
+      </button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+#### Vite Configuration
+
+No special configuration needed. The packages export ESM and CJS:
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+});
+```
+
+---
+
+### Remix
+
+```tsx
+// app/routes/editor.tsx
+import { useDocument, BlockRenderer } from '@create-markdown/react';
+import { h1, paragraph } from '@create-markdown/react';
+
+export default function Editor() {
+  const doc = useDocument([h1('Remix Editor'), paragraph('Start writing...')]);
+  
+  return (
+    <div>
+      <BlockRenderer blocks={doc.blocks} />
+    </div>
+  );
+}
+```
+
+For loader-based markdown:
+
+```tsx
+// app/routes/blog.$slug.tsx
+import { json, LoaderFunctionArgs } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
+import { parse } from '@create-markdown/core';
+import { BlockRenderer } from '@create-markdown/react';
+import type { Block } from '@create-markdown/core';
+import fs from 'fs/promises';
+
+export async function loader({ params }: LoaderFunctionArgs) {
+  const content = await fs.readFile(`./content/${params.slug}.md`, 'utf-8');
+  const blocks = parse(content);
+  return json({ blocks });
+}
+
+export default function BlogPost() {
+  const { blocks } = useLoaderData<{ blocks: Block[] }>();
   return <BlockRenderer blocks={blocks} />;
 }
 ```
 
-## Astro
+---
 
-### Installation
+### Astro
 
-```bash
-bun add create-markdown @create-markdown/react
-```
-
-### Usage in .astro
+#### Static Markdown Pages
 
 ```astro
 ---
-import { parse } from 'create-markdown';
-const blocks = parse('# Hello\n\nWorld');
+// src/pages/blog/[slug].astro
+import { parse } from '@create-markdown/core';
+import BlockRenderer from '../components/BlockRenderer.tsx';
+
+const { slug } = Astro.params;
+const content = await Astro.glob(`../content/${slug}.md`);
+const blocks = parse(content.rawContent());
 ---
 
-<pre>{JSON.stringify(blocks, null, 2)}</pre>
+<article>
+  <BlockRenderer blocks={blocks} client:load />
+</article>
 ```
 
-### React Components
+#### React Component in Astro
 
-```astro
+```tsx
+// src/components/BlockRenderer.tsx
+import { BlockRenderer as CMBlockRenderer } from '@create-markdown/react';
+import type { Block } from '@create-markdown/core';
+
+interface Props {
+  blocks: Block[];
+}
+
+export default function BlockRenderer({ blocks }: Props) {
+  return <CMBlockRenderer blocks={blocks} />;
+}
+```
+
+```ts
+// astro.config.mjs
+import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
+
+export default defineConfig({
+  integrations: [react()],
+});
+```
+
 ---
-import { Editor } from '../components/Editor';
----
 
-<Editor client:load />
+### Node.js / Server-side
+
+For CLI tools, scripts, or server processing:
+
+```ts
+// scripts/process-markdown.ts
+import { parse, stringify, h1, paragraph } from '@create-markdown/core';
+import fs from 'fs/promises';
+
+async function processMarkdown(inputPath: string, outputPath: string) {
+  const content = await fs.readFile(inputPath, 'utf-8');
+  const blocks = parse(content);
+  
+  // Add a title if missing
+  if (blocks[0]?.type !== 'heading') {
+    blocks.unshift(h1('Untitled Document'));
+  }
+  
+  // Serialize back to markdown
+  const output = stringify(blocks);
+  await fs.writeFile(outputPath, output);
+}
+
+processMarkdown('./input.md', './output.md');
 ```
 
-## Node.js / Server-side
+#### Express.js API
 
-### CLI Tool
-
-```typescript
-import { parse, stringify } from 'create-markdown';
-import fs from 'fs';
-
-const markdown = fs.readFileSync('input.md', 'utf-8');
-const blocks = parse(markdown);
-
-// Process blocks...
-
-const output = stringify(blocks);
-fs.writeFileSync('output.md', output);
-```
-
-### Express.js API
-
-```typescript
+```ts
+// server.ts
 import express from 'express';
-import { parse, stringify } from 'create-markdown';
+import { parse, stringify } from '@create-markdown/core';
 
 const app = express();
 app.use(express.json());
@@ -161,27 +412,580 @@ app.post('/api/stringify', (req, res) => {
   const markdown = stringify(blocks);
   res.json({ markdown });
 });
+
+app.listen(3000);
 ```
+
+---
+
+### Vanilla JavaScript / Web Components
+
+The preview package includes a Web Component for framework-agnostic usage:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="@create-markdown/preview/themes/github.css">
+</head>
+<body>
+  <markdown-preview id="preview"></markdown-preview>
+  
+  <script type="module">
+    import { autoRegister, blocksToHTML } from '@create-markdown/preview';
+    import { parse } from '@create-markdown/core';
+    
+    // Register the <markdown-preview> custom element
+    autoRegister();
+    
+    const markdown = `# Hello World
+    
+This is a **bold** statement.
+
+\`\`\`javascript
+console.log('Hello!');
+\`\`\`
+`;
+    
+    const blocks = parse(markdown);
+    const html = await blocksToHTML(blocks);
+    
+    document.getElementById('preview').innerHTML = html;
+  </script>
+</body>
+</html>
+```
+
+---
+
+## Common Patterns
+
+### Building a Markdown Editor
+
+Complete example of a WYSIWYG markdown editor:
+
+```tsx
+'use client';
+
+import { useState, useCallback } from 'react';
+import { 
+  useDocument, 
+  useBlockEditor,
+  BlockRenderer 
+} from '@create-markdown/react';
+import { 
+  h1, h2, paragraph, bulletList, codeBlock, blockquote 
+} from '@create-markdown/react';
+import type { Block, TextSpan } from '@create-markdown/core';
+
+export function MarkdownEditor() {
+  const doc = useDocument([
+    h1('My Document'),
+    paragraph('Click to edit...'),
+  ]);
+  
+  const editor = useBlockEditor(doc);
+  const [preview, setPreview] = useState(false);
+
+  const handleAddBlock = useCallback((type: string) => {
+    switch (type) {
+      case 'h1': doc.appendBlock(h1('')); break;
+      case 'h2': doc.appendBlock(h2('')); break;
+      case 'paragraph': doc.appendBlock(paragraph('')); break;
+      case 'bullet': doc.appendBlock(bulletList([''])); break;
+      case 'code': doc.appendBlock(codeBlock('')); break;
+      case 'quote': doc.appendBlock(blockquote('')); break;
+    }
+  }, [doc]);
+
+  const handleExport = useCallback(() => {
+    const markdown = doc.toMarkdown();
+    const blob = new Blob([markdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'document.md';
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [doc]);
+
+  return (
+    <div className="editor">
+      {/* Toolbar */}
+      <div className="toolbar">
+        <button onClick={() => handleAddBlock('h1')}>H1</button>
+        <button onClick={() => handleAddBlock('h2')}>H2</button>
+        <button onClick={() => handleAddBlock('paragraph')}>¶</button>
+        <button onClick={() => handleAddBlock('bullet')}>•</button>
+        <button onClick={() => handleAddBlock('code')}>{'</>'}</button>
+        <button onClick={() => handleAddBlock('quote')}>"</button>
+        <span className="separator" />
+        <button onClick={() => setPreview(!preview)}>
+          {preview ? 'Edit' : 'Preview'}
+        </button>
+        <button onClick={handleExport}>Export</button>
+      </div>
+
+      {/* Content */}
+      <div className="content">
+        {preview ? (
+          <pre>{doc.toMarkdown()}</pre>
+        ) : (
+          <BlockRenderer 
+            blocks={doc.blocks}
+            onBlockClick={(block) => editor.selectBlock(block.id)}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### Rendering Markdown Content
+
+For read-only markdown display:
+
+```tsx
+import { parse } from '@create-markdown/core';
+import { BlockRenderer } from '@create-markdown/react';
+
+interface MarkdownViewerProps {
+  content: string;
+  className?: string;
+}
+
+export function MarkdownViewer({ content, className }: MarkdownViewerProps) {
+  const blocks = parse(content);
+  
+  return (
+    <article className={className}>
+      <BlockRenderer blocks={blocks} />
+    </article>
+  );
+}
+```
+
+---
+
+### Server-side Markdown Processing
+
+Transform markdown in build pipelines:
+
+```ts
+import { parse, stringify, createDocument } from '@create-markdown/core';
+import type { Block } from '@create-markdown/core';
+
+// Extract headings for TOC
+function extractHeadings(blocks: Block[]) {
+  return blocks
+    .filter(b => b.type === 'heading')
+    .map(b => ({
+      level: b.props.level,
+      text: b.content.map(s => s.text).join(''),
+      id: b.id,
+    }));
+}
+
+// Add IDs to headings
+function addHeadingIds(blocks: Block[]): Block[] {
+  return blocks.map(block => {
+    if (block.type === 'heading') {
+      const text = block.content.map(s => s.text).join('');
+      const id = text.toLowerCase().replace(/\s+/g, '-');
+      return { ...block, props: { ...block.props, id } };
+    }
+    return block;
+  });
+}
+
+// Process markdown file
+async function processFile(content: string) {
+  const blocks = parse(content);
+  const withIds = addHeadingIds(blocks);
+  const toc = extractHeadings(withIds);
+  const markdown = stringify(withIds);
+  
+  return { markdown, toc, blocks: withIds };
+}
+```
+
+---
+
+### Custom Block Renderers
+
+Override default rendering for specific block types:
+
+```tsx
+import { BlockRenderer, BlockElement } from '@create-markdown/react';
+import type { Block, BlockRenderers } from '@create-markdown/react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+const customRenderers: BlockRenderers = {
+  // Custom code block with syntax highlighting
+  codeBlock: ({ block }) => {
+    const language = block.props?.language || 'text';
+    const code = block.content.map(s => s.text).join('');
+    
+    return (
+      <SyntaxHighlighter language={language} style={vscDarkPlus}>
+        {code}
+      </SyntaxHighlighter>
+    );
+  },
+  
+  // Custom callout styling
+  callout: ({ block }) => {
+    const type = block.props?.type || 'info';
+    const icons: Record<string, string> = { 
+      info: 'ℹ️', 
+      warning: '⚠️', 
+      tip: '💡', 
+      danger: '🚨' 
+    };
+    
+    return (
+      <div className={`callout callout-${type}`}>
+        <span className="callout-icon">{icons[type]}</span>
+        <div className="callout-content">
+          <BlockElement block={block} />
+        </div>
+      </div>
+    );
+  },
+  
+  // Custom image with lazy loading
+  image: ({ block }) => (
+    <figure>
+      <img 
+        src={block.props.url} 
+        alt={block.props.alt || ''} 
+        loading="lazy"
+      />
+      {block.props.alt && <figcaption>{block.props.alt}</figcaption>}
+    </figure>
+  ),
+};
+
+export function CustomRenderer({ blocks }: { blocks: Block[] }) {
+  return <BlockRenderer blocks={blocks} renderers={customRenderers} />;
+}
+```
+
+---
+
+### HTML Preview with Syntax Highlighting
+
+Use the preview package for server-side HTML rendering with syntax highlighting:
+
+```ts
+import { parse } from '@create-markdown/core';
+import { 
+  blocksToHTML, 
+  renderAsync, 
+  shikiPlugin, 
+  mermaidPlugin 
+} from '@create-markdown/preview';
+
+const markdown = `
+# Hello World
+
+\`\`\`typescript
+const greeting = 'Hello!';
+console.log(greeting);
+\`\`\`
+
+\`\`\`mermaid
+graph TD
+    A[Start] --> B[End]
+\`\`\`
+`;
+
+// Basic HTML (no syntax highlighting)
+const blocks = parse(markdown);
+const basicHTML = await blocksToHTML(blocks);
+
+// With Shiki syntax highlighting
+const highlightedHTML = await renderAsync(markdown, {
+  plugins: [shikiPlugin({ theme: 'github-dark' })],
+});
+
+// With both Shiki and Mermaid diagrams
+const fullHTML = await renderAsync(markdown, {
+  plugins: [
+    shikiPlugin({ theme: 'github-dark' }),
+    mermaidPlugin(),
+  ],
+});
+```
+
+#### Using Preview Themes
+
+```ts
+import { themes, getThemePath } from '@create-markdown/preview';
+
+// Available themes
+console.log(themes); // ['github', 'github-dark', 'minimal']
+
+// Get path to theme CSS
+const themePath = getThemePath('github-dark');
+// Use in your HTML: <link rel="stylesheet" href="${themePath}">
+```
+
+---
+
+### MDX Conversion
+
+Convert markdown blocks to MDX for use with Next.js, Astro, or other MDX-compatible frameworks:
+
+```ts
+import { parse } from '@create-markdown/core';
+import { blocksToMDX, configureMDXConverter } from '@create-markdown/mdx';
+
+const markdown = `
+# Welcome
+
+This is a paragraph with **bold** text.
+
+> A blockquote
+
+\`\`\`javascript
+console.log('Hello');
+\`\`\`
+`;
+
+const blocks = parse(markdown);
+
+// Basic MDX conversion
+const mdx = blocksToMDX(blocks);
+
+// With custom component mappings
+const converter = configureMDXConverter({
+  components: {
+    codeBlock: 'CodeBlock',
+    blockquote: 'Callout',
+  },
+  imports: [
+    "import { CodeBlock } from './components/CodeBlock'",
+    "import { Callout } from './components/Callout'",
+  ],
+});
+
+const customMDX = converter(blocks);
+```
+
+---
 
 ## TypeScript Configuration
 
-For optimal TypeScript support:
+### Recommended tsconfig.json
 
 ```json
 {
   "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
     "moduleResolution": "bundler",
+    "strict": true,
     "esModuleInterop": true,
-    "strict": true
+    "skipLibCheck": true,
+    "types": ["node"]
   }
 }
 ```
 
-## Bundle Size
+### Type Imports
 
-| Package | Size (minified + gzipped) |
-|---------|---------------------------|
-| @create-markdown/core | ~15KB |
-| @create-markdown/react | ~5KB |
-| @create-markdown/preview | ~8KB |
-| @create-markdown/mdx | ~8KB |
+```ts
+// Core types
+import type { 
+  Block, 
+  BlockType,
+  TextSpan, 
+  InlineStyle,
+  Document, 
+  DocumentMeta,
+  HeadingBlock,
+  ParagraphBlock,
+  CodeBlockBlock,
+  BulletListBlock,
+  CalloutBlock,
+  CalloutType,
+  MarkdownParseOptions,
+  MarkdownSerializeOptions,
+} from '@create-markdown/core';
+
+// React types
+import type {
+  UseDocumentReturn,
+  UseMarkdownReturn,
+  UseBlockEditorReturn,
+  BlockRenderers,
+  BlockRendererProps,
+} from '@create-markdown/react';
+
+// Preview types
+import type {
+  PreviewPlugin,
+  PreviewOptions,
+  ThemeName,
+} from '@create-markdown/preview';
+```
+
+---
+
+## Bundle Size Optimization
+
+### Import Only What You Need
+
+```ts
+// ✅ Good - tree-shakeable
+import { parse, stringify } from '@create-markdown/core';
+import { h1, paragraph } from '@create-markdown/core';
+
+// ❌ Avoid - imports everything
+import * as CM from '@create-markdown/core';
+```
+
+### Use Separate Packages
+
+The packages are designed for optimal tree-shaking:
+
+```ts
+// Core only (no React dependency) - ~8KB min+gzip
+import { parse, stringify } from '@create-markdown/core';
+
+// With React components - adds ~3KB
+import { BlockRenderer, useDocument } from '@create-markdown/react';
+
+// Preview package (optional deps) - ~2KB base
+import { blocksToHTML } from '@create-markdown/preview';
+```
+
+### Convenience Bundle Import Paths
+
+The `create-markdown` bundle provides subpath exports:
+
+```ts
+// Core functionality
+import { parse, stringify } from 'create-markdown';
+
+// React components (separate entry point)
+import { BlockRenderer, useDocument } from 'create-markdown/react';
+
+// Preview functionality (separate entry point)
+import { blocksToHTML, shikiPlugin } from 'create-markdown/preview';
+```
+
+---
+
+## Troubleshooting
+
+### "Module not found: @create-markdown/react"
+
+Ensure your bundler supports the `exports` field in package.json. For older setups:
+
+```ts
+// Check your bundler's moduleResolution settings
+// tsconfig.json should have: "moduleResolution": "bundler" or "node16"
+```
+
+### SSR Hydration Mismatch
+
+The library generates unique IDs for blocks. For SSR, pass stable IDs:
+
+```ts
+import { h1, paragraph } from '@create-markdown/core';
+
+const blocks = [
+  { ...h1('Title'), id: 'title-1' },
+  { ...paragraph('Content'), id: 'content-1' },
+];
+```
+
+Or use the `generateId` function consistently:
+
+```ts
+import { generateId } from '@create-markdown/core';
+
+// Use seeded IDs for SSR consistency
+const titleId = `title-${generateId()}`;
+```
+
+### contentEditable Issues
+
+When building custom editors with `contentEditable`, ensure you:
+
+1. Use `suppressContentEditableWarning` in React
+2. Sync content on blur, not on every keystroke
+3. Handle paste events to strip formatting
+4. Preserve cursor position when updating innerHTML
+
+```tsx
+<div
+  contentEditable
+  suppressContentEditableWarning
+  onBlur={(e) => handleUpdate(e.currentTarget.innerHTML)}
+/>
+```
+
+**Tip:** See the playground source (`playground/app/components/editable-block.tsx`) for a full implementation with live inline markdown rendering, cursor preservation, and list item management.
+
+### Block ID Collisions
+
+Each block needs a unique ID. The library generates UUIDs by default, but if you're creating blocks programmatically in bulk:
+
+```ts
+import { generateId, paragraph } from '@create-markdown/core';
+
+const blocks = items.map((item, index) => ({
+  ...paragraph(item.text),
+  id: `block-${index}-${generateId()}`,
+}));
+```
+
+### Peer Dependency Warnings
+
+Some packages have optional peer dependencies:
+
+```bash
+# If using syntax highlighting with @create-markdown/preview
+bun add shiki
+
+# If using Mermaid diagrams
+bun add mermaid
+
+# If using @create-markdown/react
+bun add react react-dom
+```
+
+### TypeScript Path Resolution
+
+If you're using path aliases, ensure they're configured:
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+---
+
+## Need Help?
+
+- 📖 [API Reference - Core](/docs/api/core.mdx)
+- 📖 [API Reference - React](/docs/api/react.mdx)
+- 📖 [API Reference - Preview](/docs/api/preview.mdx)
+- 📖 [API Reference - MDX](/docs/api/mdx.mdx)
+- 🐛 [Report Issues](https://github.com/BunsDev/create-markdown/issues)
+- 💬 [Discussions](https://github.com/BunsDev/create-markdown/discussions)
+- 🎮 [Playground](https://create-markdown.vercel.app)

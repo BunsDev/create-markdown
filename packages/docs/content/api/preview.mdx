@@ -1,26 +1,28 @@
 ---
-title: Preview API
-description: Framework-agnostic HTML rendering with syntax highlighting
+title: "Preview API"
+description: "Framework-agnostic HTML rendering with syntax highlighting"
 ---
 
-# Preview API
+# @create-markdown/preview
 
-The `@create-markdown/preview` package provides HTML rendering with syntax highlighting (Shiki) and diagram support (Mermaid).
+Framework-agnostic HTML rendering for @create-markdown with syntax highlighting (Shiki) and diagram support (Mermaid).
 
 ## Installation
 
 ```bash
+# Using bun
 bun add @create-markdown/preview
 
+# Using npm
+npm install @create-markdown/preview
+
 # Optional: Install plugins
-bun add shiki mermaid
+npm install shiki mermaid
 ```
 
-## Basic Usage
+## Quick Start
 
-### markdownToHTML
-
-Convert markdown string to HTML.
+### Basic HTML Rendering
 
 ```typescript
 import { markdownToHTML } from '@create-markdown/preview';
@@ -30,23 +32,11 @@ const html = markdownToHTML(`
 
 This is **bold** and *italic* text.
 `);
+
+document.getElementById('preview').innerHTML = html;
 ```
 
-### blocksToHTML
-
-Convert blocks to HTML.
-
-```typescript
-import { blocksToHTML } from '@create-markdown/preview';
-import { parse } from '@create-markdown/core';
-
-const blocks = parse('# Hello\n\nWorld');
-const html = blocksToHTML(blocks);
-```
-
-## Syntax Highlighting
-
-Use the Shiki plugin for syntax highlighting.
+### With Syntax Highlighting (Shiki)
 
 ```typescript
 import { renderAsync, shikiPlugin } from '@create-markdown/preview';
@@ -64,9 +54,7 @@ const html = await renderAsync(blocks, {
 });
 ```
 
-## Mermaid Diagrams
-
-Use the Mermaid plugin for diagrams.
+### With Mermaid Diagrams
 
 ```typescript
 import { renderAsync, mermaidPlugin } from '@create-markdown/preview';
@@ -85,9 +73,7 @@ const html = await renderAsync(blocks, {
 });
 ```
 
-## Web Component
-
-Use the web component for client-side rendering.
+### Web Component
 
 ```html
 <script type="module">
@@ -102,7 +88,39 @@ This is rendered as HTML automatically!
 </markdown-preview>
 ```
 
-## Themes
+With plugins:
+
+```typescript
+import { registerPreviewElement, shikiPlugin, mermaidPlugin } from '@create-markdown/preview';
+
+registerPreviewElement({
+  plugins: [
+    shikiPlugin(),
+    mermaidPlugin(),
+  ],
+});
+```
+
+## API
+
+### `blocksToHTML(blocks, options?)`
+
+Converts blocks to HTML string synchronously.
+
+### `markdownToHTML(markdown, options?)`
+
+Converts markdown string to HTML.
+
+### `renderAsync(blocks, options?)`
+
+Async version that initializes plugins before rendering.
+
+### Plugins
+
+- `shikiPlugin(options?)` - Syntax highlighting with Shiki
+- `mermaidPlugin(options?)` - Mermaid diagram rendering
+
+### Themes
 
 CSS themes are available at:
 
@@ -121,3 +139,7 @@ interface PreviewOptions {
   plugins?: PreviewPlugin[];  // Plugins for enhanced rendering
 }
 ```
+
+## License
+
+MIT

@@ -1,133 +1,356 @@
 ---
-title: Contributing
-description: Guidelines for contributing to create-markdown
+title: "Contributing"
+description: "Guidelines for contributing to create-markdown"
 ---
 
-# Contributing
+# Contributing to @create-markdown
 
-We welcome contributions to create-markdown! This guide will help you get started.
+Thank you for your interest in contributing to @create-markdown! This document provides guidelines and instructions for contributing.
 
-## Getting Started
+## Code of Conduct
 
-### Prerequisites
+Please read and follow our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
-- [Bun](https://bun.sh) 1.0+
-- [Node.js](https://nodejs.org) 20+
-- Git
+## Monorepo Structure
 
-### Setup
-
-1. Fork the repository
-2. Clone your fork:
-
-```bash
-git clone https://github.com/YOUR_USERNAME/create-markdown.git
-cd create-markdown
-```
-
-3. Install dependencies:
-
-```bash
-bun install
-```
-
-4. Build packages:
-
-```bash
-bun run build
-```
-
-5. Run tests:
-
-```bash
-bun run test
-```
-
-## Development
-
-### Project Structure
+This project is a monorepo managed with [Turborepo](https://turbo.build/) and [Bun](https://bun.sh/).
 
 ```
 create-markdown/
 ├── packages/
-│   ├── core/        # Parsing and serialization
-│   ├── preview/     # HTML rendering
-│   ├── react/       # React components
-│   ├── mdx/         # MDX conversion
-│   ├── docs/        # Documentation site
-│   └── create-markdown/  # Main package
-├── playground/      # Interactive demo
-└── src/            # Shared source (deprecated)
+│   ├── core/           # @create-markdown/core - Zero-dep parsing/serialization
+│   ├── react/          # @create-markdown/react - React components and hooks
+│   ├── preview/        # @create-markdown/preview - HTML rendering with plugins
+│   └── create-markdown/ # Convenience bundle re-exporting all packages
+├── playground/         # Demo application
+└── .changeset/         # Changesets for version management
 ```
 
-### Running the Playground
+## Prerequisites
+
+- [Bun](https://bun.sh/) v1.0.0+
+- [Node.js](https://nodejs.org/) 20+
+
+## Getting Started
+
+1. **Fork and clone the repository**
 
 ```bash
-bun run playground
+   git clone https://github.com/YOUR_USERNAME/create-markdown.git
+   cd create-markdown
 ```
 
-### Running the Docs
+1. **Install dependencies**
 
 ```bash
-bun run docs
+   bun install
 ```
 
-## Pull Requests
-
-1. Create a feature branch:
+1. **Build all packages**
 
 ```bash
-git checkout -b feature/my-feature
+   bun run build
 ```
 
-2. Make your changes
-
-3. Add a changeset:
+1. **Run tests**
 
 ```bash
-bun run changeset
+   bun run test
 ```
 
-4. Commit using conventional commits:
+1. **Run the playground**
 
 ```bash
-git commit -m "feat: add new feature"
+   bun run playground
 ```
 
-5. Push and create a PR
+## Development Workflow
 
-## Commit Convention
+### Working on a Package
 
-We use [Conventional Commits](https://www.conventionalcommits.org/):
-
-- `feat:` New feature
-- `fix:` Bug fix
-- `docs:` Documentation
-- `chore:` Maintenance
-- `refactor:` Code refactoring
-- `test:` Adding tests
-
-## Testing
-
-Run all tests:
+Each package can be developed independently:
 
 ```bash
+# Build a specific package
+cd packages/core
+bun run build
+
+# Watch mode
+bun run dev
+
+# Run package tests
 bun run test
 ```
 
-Run tests for a specific package:
+### Available Scripts
+
+| Script | Description |
+| --- | --- |
+| `bun run build` | Build all packages |
+| `bun run test` | Run all tests |
+| `bun run typecheck` | Type check all packages |
+| `bun run lint` | Lint all packages |
+| `bun run clean` | Clean all build artifacts |
+| `bun run playground` | Run the demo playground |
+
+### Adding a Changeset
+
+When making changes that should be released, add a changeset:
 
 ```bash
-cd packages/core && bun run test
+bun changeset
 ```
+
+This will prompt you to:
+
+1. Select which packages have changed
+2. Choose the semver bump type (major, minor, patch)
+3. Write a summary of the changes
+
+**When to add a changeset:**
+
+- Bug fixes (patch)
+- New features (minor)
+- Breaking changes (major)
+- Documentation changes affecting usage (patch)
+
+**When NOT to add a changeset:**
+
+- Internal refactoring without API changes
+- Test additions
+- CI/CD changes
+- README updates (unless affecting usage)
+
+## Branch Naming
+
+Use descriptive branch names with prefixes:
+
+- `feature/` - New features
+- `fix/` - Bug fixes
+- `docs/` - Documentation
+- `refactor/` - Code refactoring
+- `test/` - Test additions/changes
+
+Examples:
+
+- `feature/katex-plugin`
+- `fix/inline-code-parsing`
+- `docs/react-hooks-guide`
+
+## Commit Messages
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+type(scope): description
+
+[optional body]
+
+[optional footer]
+```
+
+Types:
+
+- `feat` - New feature
+- `fix` - Bug fix
+- `docs` - Documentation
+- `style` - Formatting (no code change)
+- `refactor` - Code refactoring
+- `test` - Adding tests
+- `chore` - Maintenance tasks
+
+Scopes:
+
+- `core` - @create-markdown/core
+- `react` - @create-markdown/react
+- `preview` - @create-markdown/preview
+- `playground` - Demo app
+- `ci` - CI/CD
+- `deps` - Dependencies
+
+Examples:
+
+```
+feat(preview): add KaTeX plugin for math rendering
+fix(core): handle empty code blocks correctly
+docs(react): add useBlockEditor examples
+```
+
+## Pull Request Process
+
+1. **Create a feature branch**
+
+```bash
+   git checkout -b feature/my-feature
+```
+
+1. **Make your changes**
+
+- Write clear, documented code
+- Add tests for new functionality
+- Update documentation as needed
+
+1. **Run checks locally**
+
+```bash
+   bun run build
+   bun run typecheck
+   bun run test
+```
+
+1. **Add a changeset** (if applicable)
+
+```bash
+   bun changeset
+```
+
+1. **Push and create a PR**
+
+```bash
+   git push origin feature/my-feature
+```
+
+1. **Fill out the PR template**
+
+- Describe your changes
+- Link related issues
+- Check the checklist
 
 ## Code Style
 
-- TypeScript with strict mode
-- Use functional patterns
-- Document public APIs with JSDoc
-- Keep functions small and focused
+### TypeScript
+
+- Use explicit types for function parameters and returns
+- Prefer interfaces over type aliases for object shapes
+- Use JSDoc comments for public APIs
+- Follow existing patterns in the codebase
+
+```typescript
+/**
+ * Parses markdown string into blocks
+ * 
+ * @param markdown - The markdown string to parse
+ * @param options - Optional parsing options
+ * @returns Array of parsed blocks
+ * 
+ * @example
+ * ```ts
+ * const blocks = parse('# Hello\n\nWorld');
+ * ```
+ */
+export function parse(
+  markdown: string,
+  options?: MarkdownParseOptions
+): Block[] {
+  // ...
+}
+```
+
+### Formatting
+
+- 2-space indentation
+- Single quotes for strings
+- No semicolons (Bun style)
+- Max line length: 100 characters
+
+### File Organization
+
+```typescript
+// 1. Imports (external, then internal)
+import React from 'react';
+import type { Block } from '@create-markdown/core';
+
+// 2. Types and interfaces
+export interface MyProps {
+  // ...
+}
+
+// 3. Constants
+const DEFAULT_OPTIONS = {
+  // ...
+};
+
+// 4. Helper functions (private)
+function helperFunction() {
+  // ...
+}
+
+// 5. Main exports
+export function mainFunction() {
+  // ...
+}
+```
+
+## Testing
+
+We use [Vitest](https://vitest.dev/) for testing.
+
+### Running Tests
+
+```bash
+# Run all tests
+bun run test
+
+# Run tests for a specific package
+cd packages/core
+bun run test
+
+# Watch mode
+bun run test:watch
+
+# With coverage
+bun run test -- --coverage
+```
+
+### Writing Tests
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { parse, stringify } from '../src';
+
+describe('parse', () => {
+  it('should parse headings', () => {
+    const blocks = parse('# Hello');
+    expect(blocks[0].type).toBe('heading');
+    expect(blocks[0].props.level).toBe(1);
+  });
+});
+```
+
+### Test Coverage
+
+Aim for 80%+ coverage. Focus on:
+
+- Core parsing/serialization logic
+- Edge cases and error handling
+- Public API contracts
+
+## Package-Specific Guidelines
+
+### @create-markdown/core
+
+- Zero dependencies (except devDependencies)
+- All functions should be pure when possible
+- Comprehensive JSDoc comments
+
+### @create-markdown/react
+
+- Peer dependency on React 18+
+- Server component compatible when possible
+- Hooks follow React conventions
+
+### @create-markdown/preview
+
+- Plugins are optional peer dependencies
+- Web Component follows custom elements spec
+- CSS themes are self-contained
 
 ## Questions?
 
-Open an issue or start a discussion on GitHub.
+- Open a [GitHub Discussion](https://github.com/BunsDev/create-markdown/discussions)
+- Check existing [issues](https://github.com/BunsDev/create-markdown/issues)
+- Read the [ROADMAP](./docs/ROADMAP.md) for planned features
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the MIT License.
