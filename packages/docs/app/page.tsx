@@ -1,6 +1,44 @@
 import Link from 'next/link';
 import { ArrowRight, Blocks, Zap, Package, Code2, Sparkles } from 'lucide-react';
-import { HeroCode } from '@/components/docs/highlighted-code';
+
+// Beautiful SVG-based code block component
+function CodeWindow({ filename, children }: { filename: string; children: React.ReactNode }) {
+  return (
+    <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/20">
+      {/* Glow effect */}
+      <div className="absolute -inset-1 bg-gradient-to-r from-violet-600/20 via-purple-600/20 to-fuchsia-600/20 rounded-2xl blur-xl opacity-50" />
+      
+      <div className="relative bg-[#1a1b26] rounded-2xl overflow-hidden border border-white/10">
+        {/* Window chrome */}
+        <div className="flex items-center gap-3 px-4 py-3 bg-[#16161e] border-b border-white/5">
+          <div className="flex gap-2">
+            <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+            <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+            <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+          </div>
+          <span className="text-sm font-medium text-zinc-400">{filename}</span>
+        </div>
+        
+        {/* Code content */}
+        <div className="p-5 font-mono text-[13px] leading-6 overflow-x-auto">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Syntax highlighting colors (Tokyo Night inspired)
+const c = {
+  keyword: 'text-[#bb9af7]',    // purple - import, const, from
+  function: 'text-[#7aa2f7]',   // blue - function names
+  string: 'text-[#9ece6a]',     // green - strings
+  comment: 'text-[#565f89]',    // gray - comments
+  variable: 'text-[#c0caf5]',   // light - variables
+  property: 'text-[#73daca]',   // cyan - properties
+  punctuation: 'text-[#a9b1d6]', // light gray - brackets, etc
+  number: 'text-[#ff9e64]',     // orange - numbers
+};
 
 const features = [
   {
@@ -33,65 +71,96 @@ const features = [
   },
 ];
 
-const heroCode = `import { parse, stringify, h1, paragraph } from 'create-markdown';
+// Hero code display with beautiful syntax highlighting
+function HeroCodeBlock() {
+  return (
+    <CodeWindow filename="example.ts">
+      <div className="space-y-1">
+        <p><span className={c.keyword}>import</span> <span className={c.punctuation}>{'{'}</span> <span className={c.variable}>parse</span><span className={c.punctuation}>,</span> <span className={c.variable}>stringify</span><span className={c.punctuation}>,</span> <span className={c.variable}>h1</span><span className={c.punctuation}>,</span> <span className={c.variable}>paragraph</span> <span className={c.punctuation}>{'}'}</span> <span className={c.keyword}>from</span> <span className={c.string}>'create-markdown'</span><span className={c.punctuation}>;</span></p>
+        <p>&nbsp;</p>
+        <p><span className={c.comment}>// Parse markdown to blocks</span></p>
+        <p><span className={c.keyword}>const</span> <span className={c.variable}>blocks</span> <span className={c.punctuation}>=</span> <span className={c.function}>parse</span><span className={c.punctuation}>(</span><span className={c.string}>`# Hello World</span></p>
+        <p><span className={c.string}>This is **bold** text.`</span><span className={c.punctuation}>);</span></p>
+        <p>&nbsp;</p>
+        <p><span className={c.comment}>// Create blocks programmatically</span></p>
+        <p><span className={c.keyword}>const</span> <span className={c.variable}>doc</span> <span className={c.punctuation}>=</span> <span className={c.punctuation}>[</span></p>
+        <p>  <span className={c.function}>h1</span><span className={c.punctuation}>(</span><span className={c.string}>'Welcome'</span><span className={c.punctuation}>),</span></p>
+        <p>  <span className={c.function}>paragraph</span><span className={c.punctuation}>(</span><span className={c.string}>'Start building with blocks.'</span><span className={c.punctuation}>),</span></p>
+        <p><span className={c.punctuation}>];</span></p>
+        <p>&nbsp;</p>
+        <p><span className={c.comment}>// Serialize back to markdown</span></p>
+        <p><span className={c.keyword}>const</span> <span className={c.variable}>markdown</span> <span className={c.punctuation}>=</span> <span className={c.function}>stringify</span><span className={c.punctuation}>(</span><span className={c.variable}>doc</span><span className={c.punctuation}>);</span></p>
+      </div>
+    </CodeWindow>
+  );
+}
 
-// Parse markdown to blocks
-const blocks = parse(\`# Hello World
-This is **bold** text.\`);
+// Parse example
+function ParseCodeBlock() {
+  return (
+    <CodeWindow filename="parse.ts">
+      <div className="space-y-1">
+        <p><span className={c.keyword}>import</span> <span className={c.punctuation}>{'{'}</span> <span className={c.variable}>parse</span> <span className={c.punctuation}>{'}'}</span> <span className={c.keyword}>from</span> <span className={c.string}>'create-markdown'</span><span className={c.punctuation}>;</span></p>
+        <p>&nbsp;</p>
+        <p><span className={c.keyword}>const</span> <span className={c.variable}>blocks</span> <span className={c.punctuation}>=</span> <span className={c.function}>parse</span><span className={c.punctuation}>(</span><span className={c.string}>`</span></p>
+        <p><span className={c.string}># Getting Started</span></p>
+        <p>&nbsp;</p>
+        <p><span className={c.string}>Welcome to **create-markdown**!</span></p>
+        <p>&nbsp;</p>
+        <p><span className={c.string}>- Zero dependencies</span></p>
+        <p><span className={c.string}>- Full TypeScript support</span></p>
+        <p><span className={c.string}>- Block-based architecture</span></p>
+        <p><span className={c.string}>`</span><span className={c.punctuation}>);</span></p>
+        <p>&nbsp;</p>
+        <p><span className={c.variable}>console</span><span className={c.punctuation}>.</span><span className={c.function}>log</span><span className={c.punctuation}>(</span><span className={c.variable}>blocks</span><span className={c.punctuation}>);</span></p>
+        <p><span className={c.comment}>// → [HeadingBlock, ParagraphBlock, ListBlock]</span></p>
+      </div>
+    </CodeWindow>
+  );
+}
 
-// Create blocks programmatically  
-const doc = [
-  h1('Welcome'),
-  paragraph('Start building with blocks.'),
-];
+// Create example
+function CreateCodeBlock() {
+  return (
+    <CodeWindow filename="create.ts">
+      <div className="space-y-1">
+        <p><span className={c.keyword}>import</span> <span className={c.punctuation}>{'{'}</span> <span className={c.variable}>h1</span><span className={c.punctuation}>,</span> <span className={c.variable}>paragraph</span><span className={c.punctuation}>,</span> <span className={c.variable}>bulletList</span> <span className={c.punctuation}>{'}'}</span> <span className={c.keyword}>from</span> <span className={c.string}>'create-markdown'</span><span className={c.punctuation}>;</span></p>
+        <p>&nbsp;</p>
+        <p><span className={c.keyword}>const</span> <span className={c.variable}>doc</span> <span className={c.punctuation}>=</span> <span className={c.punctuation}>[</span></p>
+        <p>  <span className={c.function}>h1</span><span className={c.punctuation}>(</span><span className={c.string}>'My Document'</span><span className={c.punctuation}>),</span></p>
+        <p>  <span className={c.function}>paragraph</span><span className={c.punctuation}>(</span><span className={c.string}>'Build docs programmatically.'</span><span className={c.punctuation}>),</span></p>
+        <p>  <span className={c.function}>bulletList</span><span className={c.punctuation}>([</span></p>
+        <p>    <span className={c.string}>'Type-safe block creation'</span><span className={c.punctuation}>,</span></p>
+        <p>    <span className={c.string}>'Intuitive API design'</span><span className={c.punctuation}>,</span></p>
+        <p>    <span className={c.string}>'Full markdown support'</span><span className={c.punctuation}>,</span></p>
+        <p>  <span className={c.punctuation}>]),</span></p>
+        <p><span className={c.punctuation}>];</span></p>
+      </div>
+    </CodeWindow>
+  );
+}
 
-// Serialize back to markdown
-const markdown = stringify(doc);`;
-
-const parseExample = `import { parse } from 'create-markdown';
-
-const blocks = parse(\`
-# Getting Started
-
-Welcome to **create-markdown**!
-
-- Zero dependencies
-- Full TypeScript support
-- Block-based architecture
-\`);
-
-console.log(blocks);
-// → [HeadingBlock, ParagraphBlock, BulletListBlock]`;
-
-const createExample = `import { h1, paragraph, bulletList, codeBlock } from 'create-markdown';
-
-const doc = [
-  h1('My Document'),
-  paragraph('Build documents programmatically.'),
-  bulletList([
-    'Type-safe block creation',
-    'Intuitive API design', 
-    'Full markdown support',
-  ]),
-  codeBlock('console.log("Hello!");', { language: 'js' }),
-];`;
-
-const serializeExample = `import { stringify } from 'create-markdown';
-
-const markdown = stringify(doc);
-
-// Output:
-// # My Document
-//
-// Build documents programmatically.
-//
-// - Type-safe block creation
-// - Intuitive API design
-// - Full markdown support
-//
-// \\\`\\\`\\\`js
-// console.log("Hello!");
-// \\\`\\\`\\\``;
+// Serialize example
+function SerializeCodeBlock() {
+  return (
+    <CodeWindow filename="serialize.ts">
+      <div className="space-y-1">
+        <p><span className={c.keyword}>import</span> <span className={c.punctuation}>{'{'}</span> <span className={c.variable}>stringify</span> <span className={c.punctuation}>{'}'}</span> <span className={c.keyword}>from</span> <span className={c.string}>'create-markdown'</span><span className={c.punctuation}>;</span></p>
+        <p>&nbsp;</p>
+        <p><span className={c.keyword}>const</span> <span className={c.variable}>markdown</span> <span className={c.punctuation}>=</span> <span className={c.function}>stringify</span><span className={c.punctuation}>(</span><span className={c.variable}>doc</span><span className={c.punctuation}>);</span></p>
+        <p>&nbsp;</p>
+        <p><span className={c.comment}>// Output:</span></p>
+        <p><span className={c.comment}>// # My Document</span></p>
+        <p><span className={c.comment}>//</span></p>
+        <p><span className={c.comment}>// Build docs programmatically.</span></p>
+        <p><span className={c.comment}>//</span></p>
+        <p><span className={c.comment}>// - Type-safe block creation</span></p>
+        <p><span className={c.comment}>// - Intuitive API design</span></p>
+        <p><span className={c.comment}>// - Full markdown support</span></p>
+      </div>
+    </CodeWindow>
+  );
+}
 
 export default function HomePage() {
   return (
@@ -178,14 +247,12 @@ export default function HomePage() {
                 Parse markdown to blocks, manipulate them, and serialize back to markdown.
               </p>
             </div>
-            <div className="group">
-              <HeroCode code={heroCode} language="typescript" filename="example.ts" />
-            </div>
+            <HeroCodeBlock />
           </div>
         </div>
       </section>
 
-      {/* Three-column code examples - Glassmorphic */}
+      {/* Bento Grid - Code Examples */}
       <section className="py-20 md:py-28">
         <div className="container">
           <div className="mx-auto max-w-6xl">
@@ -198,48 +265,101 @@ export default function HomePage() {
               </p>
             </div>
             
-            <div className="grid gap-8 lg:grid-cols-3">
-              {/* Parse */}
-              <div className="group space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20 backdrop-blur-sm border border-primary/30 text-primary font-bold shadow-lg">
-                    1
+            {/* Bento Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-min">
+              
+              {/* Parse - Large card spanning 2 rows on lg */}
+              <div className="lg:row-span-2 group">
+                <div className="h-full rounded-3xl bg-gradient-to-br from-violet-500/10 to-purple-600/5 border border-white/10 p-6 transition-all duration-300 hover:border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-white text-lg font-bold shadow-lg shadow-violet-500/30">
+                      1
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold">Parse</h3>
+                      <p className="text-sm text-muted-foreground">Markdown → Blocks</p>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-semibold">Parse</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+                    Convert any markdown string into structured, typed blocks that you can manipulate programmatically.
+                  </p>
+                  <ParseCodeBlock />
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Convert markdown strings into structured blocks.
-                </p>
-                <HeroCode code={parseExample} language="typescript" filename="parse.ts" />
               </div>
               
-              {/* Create */}
-              <div className="group space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20 backdrop-blur-sm border border-primary/30 text-primary font-bold shadow-lg">
-                    2
+              {/* Create - Regular card */}
+              <div className="group">
+                <div className="h-full rounded-3xl bg-gradient-to-br from-blue-500/10 to-cyan-500/5 border border-white/10 p-6 transition-all duration-300 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white text-lg font-bold shadow-lg shadow-blue-500/30">
+                      2
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold">Create</h3>
+                      <p className="text-sm text-muted-foreground">Type-safe builders</p>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-semibold">Create</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+                    Build documents programmatically with intuitive factory functions.
+                  </p>
+                  <CreateCodeBlock />
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Build documents programmatically with type-safe factories.
-                </p>
-                <HeroCode code={createExample} language="typescript" filename="create.ts" />
               </div>
               
-              {/* Serialize */}
-              <div className="group space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20 backdrop-blur-sm border border-primary/30 text-primary font-bold shadow-lg">
-                    3
+              {/* Serialize - Regular card */}
+              <div className="group">
+                <div className="h-full rounded-3xl bg-gradient-to-br from-emerald-500/10 to-green-500/5 border border-white/10 p-6 transition-all duration-300 hover:border-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-green-500 text-white text-lg font-bold shadow-lg shadow-emerald-500/30">
+                      3
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold">Serialize</h3>
+                      <p className="text-sm text-muted-foreground">Blocks → Markdown</p>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-semibold">Serialize</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+                    Convert blocks back to clean, formatted markdown output.
+                  </p>
+                  <SerializeCodeBlock />
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Convert blocks back to clean markdown output.
-                </p>
-                <HeroCode code={serializeExample} language="typescript" filename="serialize.ts" />
               </div>
+              
+              {/* Feature highlights - spans 2 columns */}
+              <div className="md:col-span-2 group">
+                <div className="h-full rounded-3xl bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-rose-500/10 border border-white/10 p-6 transition-all duration-300 hover:border-amber-500/30">
+                  <div className="flex flex-wrap items-center justify-center gap-8 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                        <Zap className="h-5 w-5 text-amber-500" />
+                      </div>
+                      <div>
+                        <p className="font-semibold">Zero Dependencies</p>
+                        <p className="text-sm text-muted-foreground">Lightweight core</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-orange-500/20 flex items-center justify-center">
+                        <Code2 className="h-5 w-5 text-orange-500" />
+                      </div>
+                      <div>
+                        <p className="font-semibold">Full TypeScript</p>
+                        <p className="text-sm text-muted-foreground">Complete types</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-rose-500/20 flex items-center justify-center">
+                        <Package className="h-5 w-5 text-rose-500" />
+                      </div>
+                      <div>
+                        <p className="font-semibold">Framework Ready</p>
+                        <p className="text-sm text-muted-foreground">Works everywhere</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
             </div>
           </div>
         </div>
