@@ -63,41 +63,36 @@ export function CommandMenu() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50">
-          {/* Glassmorphic backdrop */}
+        <div className="fixed inset-0 z-[100]">
+          {/* Solid backdrop */}
           <div 
-            className="fixed inset-0 bg-background/60 backdrop-blur-md" 
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm" 
             onClick={() => setOpen(false)}
           />
           
-          {/* Glassmorphic dialog */}
-          <div className="fixed left-[50%] top-[20%] z-50 w-full max-w-lg translate-x-[-50%] p-4">
-            {/* Gradient glow behind - Purple only */}
-            <div className="absolute inset-0 -m-4 bg-primary/20 blur-3xl opacity-50" />
-            
+          {/* Dialog */}
+          <div className="fixed left-[50%] top-[20%] z-[101] w-full max-w-lg translate-x-[-50%] p-4">
             <Command className={cn(
               'relative rounded-2xl overflow-hidden',
-              'bg-popover/90 dark:bg-popover/80 backdrop-blur-2xl',
-              'border border-white/20 dark:border-white/10',
-              'shadow-2xl shadow-black/20',
-              'text-popover-foreground'
+              'bg-zinc-900 border border-zinc-700',
+              'shadow-2xl shadow-black/50'
             )}>
               {/* Search input */}
-              <div className="flex items-center border-b border-border/50 px-4 bg-muted/30">
-                <Search className="mr-3 h-4 w-4 shrink-0 text-muted-foreground" />
+              <div className="flex items-center border-b border-zinc-700 px-4 bg-zinc-800">
+                <Search className="mr-3 h-4 w-4 shrink-0 text-zinc-400" />
                 <Command.Input
                   placeholder="Search documentation..."
-                  className="flex h-12 w-full bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-12 w-full bg-transparent py-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-500 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
               
-              <Command.List className="max-h-[320px] overflow-y-auto p-2">
-                <Command.Empty className="py-8 text-center text-sm text-muted-foreground">
+              <Command.List className="max-h-[320px] overflow-y-auto p-2 bg-zinc-900">
+                <Command.Empty className="py-8 text-center text-sm text-zinc-500">
                   No results found.
                 </Command.Empty>
                 
                 <Command.Group heading="Pages" className="px-2 py-2">
-                  <div className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider mb-2">
+                  <div className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">
                     Pages
                   </div>
                   {pages.map((page) => (
@@ -108,28 +103,27 @@ export function CommandMenu() {
                       className={cn(
                         'relative flex cursor-pointer select-none items-center rounded-lg px-3 py-2.5 text-sm outline-none',
                         'transition-all duration-150',
-                        'aria-selected:bg-primary/10',
-                        'aria-selected:border-l-2 aria-selected:border-primary',
-                        'hover:bg-muted/50',
+                        'text-zinc-300',
+                        'aria-selected:bg-violet-600/20 aria-selected:text-white',
+                        'hover:bg-zinc-800',
                         'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
                       )}
                     >
                       <div className={cn(
                         'mr-3 flex h-8 w-8 items-center justify-center rounded-lg',
-                        'bg-muted/50 dark:bg-white/5',
-                        'border border-border/50 dark:border-white/10'
+                        'bg-zinc-800 border border-zinc-700'
                       )}>
-                        <page.icon className="h-4 w-4 text-muted-foreground" />
+                        <page.icon className="h-4 w-4 text-zinc-400" />
                       </div>
                       <span className="flex-1 font-medium">{page.title}</span>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground/50 group-aria-selected:text-foreground transition-transform group-aria-selected:translate-x-0.5" />
+                      <ArrowRight className="h-4 w-4 text-zinc-600" />
                     </Command.Item>
                   ))}
                 </Command.Group>
               </Command.List>
               
               {/* Footer hint */}
-              <div className="flex items-center justify-between border-t border-border/50 bg-muted/20 px-4 py-2 text-xs text-muted-foreground">
+              <div className="flex items-center justify-between border-t border-zinc-700 bg-zinc-800 px-4 py-2 text-xs text-zinc-500">
                 <span>Navigate with ↑↓</span>
                 <span>Select with ↵</span>
               </div>

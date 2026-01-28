@@ -205,7 +205,7 @@ export default function HomePage() {
             <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/docs"
-                className="inline-flex items-center justify-center rounded-xl px-8 py-4 text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-600/25 hover:shadow-xl hover:shadow-violet-500/30 transition-all duration-300 hover:scale-105"
+                className="inline-flex items-center justify-center rounded-3xl px-8 py-4 font-mono text-sm font-medium bg-[#1e1e2e] hover:bg-[#2a2a3e] text-violet-400 border border-violet-500/20 hover:border-violet-500/40 transition-all duration-300"
               >
                 Get Started
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -213,7 +213,7 @@ export default function HomePage() {
 
               <Link
                 href="https://github.com/BunsDev/create-markdown"
-                className="inline-flex items-center justify-center rounded-xl px-8 py-4 text-sm font-medium bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 hover:border-zinc-600 shadow-lg transition-all duration-300"
+                className="inline-flex items-center justify-center rounded-3xl px-8 py-4 text-sm font-medium bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 hover:border-zinc-600 shadow-lg transition-all duration-300"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -417,30 +417,20 @@ export default function HomePage() {
               Install create-markdown and start building in minutes.
             </p>
 
-            {/* Glassmorphic install command */}
-            <div className="mt-10 inline-block rounded-2xl overflow-hidden">
-              <div className="relative">
-                {/* Gradient border */}
-                <div className="absolute -inset-[1px] bg-primary rounded-2xl opacity-30" />
-
-                <div className="relative bg-background/80 dark:bg-card/80 backdrop-blur-xl border border-white/10 rounded-2xl px-8 py-4">
-                  <code className="font-mono text-sm sm:text-base text-primary font-medium">
-                    bun add create-markdown
-                  </code>
-                </div>
-              </div>
+            {/* Install command */}
+            <div className="mt-10 inline-flex items-center justify-center rounded-full px-8 py-4 bg-[#1e1e2e] border border-violet-500/20">
+              <code className="font-mono text-sm sm:text-base text-violet-400 font-medium">
+                bun add create-markdown
+              </code>
             </div>
 
             <div className="mt-10">
               <Link
                 href="/docs"
-                className="group relative inline-flex items-center justify-center rounded-xl px-8 py-4 text-sm font-medium overflow-hidden transition-all duration-300 hover:scale-105 bg-primary text-primary-foreground shadow-lg hover:shadow-xl"
+                className="inline-flex items-center justify-center rounded-full px-8 py-4 font-mono text-sm font-medium bg-[#1e1e2e] hover:bg-[#2a2a3e] text-violet-400 border border-violet-500/20 hover:border-violet-500/40 transition-all duration-300"
               >
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-primary/80 blur-xl" />
-                <span className="relative flex items-center">
-                  Read the docs
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </span>
+                Read the docs
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </div>
           </div>
