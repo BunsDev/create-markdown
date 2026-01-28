@@ -8,11 +8,27 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'rounded-xl border bg-card text-card-foreground shadow',
+      'group relative rounded-2xl overflow-hidden',
+      'bg-card/80 dark:bg-card/50 backdrop-blur-xl',
+      'border border-border/50 dark:border-white/10',
+      'shadow-lg shadow-black/5 dark:shadow-black/20',
+      'hover:shadow-xl hover:shadow-purple-500/5 dark:hover:shadow-purple-500/10',
+      'transition-all duration-300',
       className
     )}
     {...props}
-  />
+  >
+    {/* Gradient hover overlay - Purple only */}
+    <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+    
+    {/* Inner ring */}
+    <div className="absolute inset-0 pointer-events-none rounded-2xl ring-1 ring-inset ring-white/10 dark:ring-white/5" />
+    
+    {/* Content wrapper */}
+    <div className="relative">
+      {props.children}
+    </div>
+  </div>
 ));
 Card.displayName = 'Card';
 
@@ -72,4 +88,36 @@ const CardFooter = React.forwardRef<
 ));
 CardFooter.displayName = 'CardFooter';
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };
+// Glassmorphic variant for special use cases
+const GlassCard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      'group relative rounded-2xl overflow-hidden',
+      'bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl',
+      'border border-white/20 dark:border-white/10',
+      'shadow-xl shadow-black/10 dark:shadow-black/30',
+      'hover:shadow-2xl hover:shadow-purple-500/10',
+      'hover:border-white/30 dark:hover:border-white/20',
+      'transition-all duration-300',
+      className
+    )}
+    {...props}
+  >
+    {/* Animated gradient border on hover - Purple only */}
+    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+      <div className="absolute inset-0 bg-primary/20 blur-xl" />
+    </div>
+    
+    {/* Content wrapper */}
+    <div className="relative">
+      {props.children}
+    </div>
+  </div>
+));
+GlassCard.displayName = 'GlassCard';
+
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, GlassCard };
