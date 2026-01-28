@@ -63,19 +63,19 @@ export function CommandMenu() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[100]">
-          {/* Solid backdrop */}
+        <div className="fixed inset-0 z-[200]">
+          {/* Light backdrop - less opaque */}
           <div 
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm" 
+            className="fixed inset-0 bg-black/40 backdrop-blur-[2px]" 
             onClick={() => setOpen(false)}
           />
           
-          {/* Dialog */}
-          <div className="fixed left-[50%] top-[20%] z-[101] w-full max-w-lg translate-x-[-50%] p-4">
+          {/* Dialog - above header (z-50) and mobile TOC (z-[60]) */}
+          <div className="fixed left-[50%] top-[20%] z-[201] w-full max-w-lg translate-x-[-50%] p-4">
             <Command className={cn(
               'relative rounded-2xl overflow-hidden',
-              'bg-zinc-900 border border-zinc-700',
-              'shadow-2xl shadow-black/50'
+              'bg-zinc-900/95 dark:bg-zinc-900 border border-zinc-700',
+              'shadow-2xl shadow-black/30'
             )}>
               {/* Search input */}
               <div className="flex items-center border-b border-zinc-700 px-4 bg-zinc-800">

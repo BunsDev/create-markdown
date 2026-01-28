@@ -17,7 +17,7 @@ export default function DocsLayout({ children }: DocsLayoutProps) {
       </aside>
 
       {/* Main content */}
-      <main className="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_200px]">
+      <main className="relative py-6 lg:gap-10 lg:py-8">
         <div className="mx-auto w-full min-w-0">
           {/* Mobile sidebar trigger - Glassmorphic */}
           <div className="flex items-center md:hidden mb-6 p-3 rounded-xl bg-background/50 dark:bg-background/30 backdrop-blur-md border border-white/10 dark:border-white/5">

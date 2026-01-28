@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { List, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TocItem {
@@ -78,6 +79,49 @@ export function TableOfContents({ items = [] }: TableOfContentsProps) {
         ))}
       </ul>
     </div>
+  );
+}
+
+/** Collapsible TOC for small screens - shown at top like the menu */
+export function MobileTOC({ items = [] }: TableOfContentsProps) {
+  const [open, setOpen] = React.useState(false);
+
+  if (items.length === 0) return null;
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="xl:hidden flex items-center gap-2 w-full mb-4 p-3 rounded-xl bg-background/50 dark:bg-background/30 backdrop-blur-md border border-white/10 dark:border-white/5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-all"
+      >
+        <List className="h-4 w-4 shrink-0" />
+        On this page
+      </button>
+
+      {open && (
+        <div className="xl:hidden fixed inset-0 z-[60]">
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setOpen(false)}
+          />
+          <div className="fixed inset-x-0 top-0 z-[61] max-h-[70vh] overflow-auto rounded-b-2xl border-b border-x border-white/10 bg-background/95 dark:bg-background/90 backdrop-blur-xl shadow-xl">
+            <div className="flex items-center justify-between p-4 border-b border-white/10">
+              <span className="font-semibold text-sm">On this page</span>
+              <button
+                onClick={() => setOpen(false)}
+                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="p-4">
+              <TableOfContents items={items} />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
