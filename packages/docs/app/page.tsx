@@ -179,7 +179,7 @@ export default function HomePage() {
             {/* Glass badge */}
             <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-muted-foreground mb-8 bg-background/60 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg">
               <Sparkles className="h-4 w-4 text-violet-500" />
-              <span>Block-based markdown for the modern web</span>
+              <span>Block-based markdown for modern web</span>
             </div>
 
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
