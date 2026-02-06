@@ -3,10 +3,9 @@
 [![npm version](https://img.shields.io/npm/v/create-markdown.svg)](https://www.npmjs.com/package/create-markdown)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A complete block-based markdown solution with zero dependencies. Parse, create, serialize, and render markdown with full TypeScript support.
+Lightweight, block-based markdown solution (_zero dependencies_). Parse, create, serialize, and render markdown with TypeScript support.
 
 ## Packages
-
 | Package | Version | Description |
 |---------|---------|-------------|
 | [@create-markdown/core](./packages/core) | 0.1.0 | Zero-dependency parsing and serialization |
@@ -14,21 +13,19 @@ A complete block-based markdown solution with zero dependencies. Parse, create, 
 | [@create-markdown/preview](./packages/preview) | 0.1.0 | HTML rendering with Shiki and Mermaid |
 | [create-markdown](./packages/create-markdown) | 0.1.0 | Convenience bundle |
 
-## Features
-
-- Block-based architecture - Work with structured blocks instead of raw strings
-- Bidirectional conversion - Parse markdown to blocks, serialize blocks to markdown
-- Rich inline styles - Bold, italic, code, links, strikethrough, highlights
-- React components - Optional React bindings for rendering and editing
-- HTML preview - Framework-agnostic HTML rendering with themes
-- Syntax highlighting - Shiki plugin for code blocks
-- Diagrams - Mermaid plugin for flowcharts, sequence diagrams, etc.
-- Web Component - `<markdown-preview>` custom element
-- Zero dependencies - Core package has no runtime dependencies
-- Full TypeScript - Complete type definitions with generics
+## Key Features
+- **Block-based architecture**: Work with structured blocks instead of raw strings
+-  **Bidirectional conversion**: Parse markdown to blocks, serialize blocks to markdown
+-  **Rich inline styles**: Bold, italic, code, links, strikethrough, highlights
+-  **React components**: Optional React bindings for rendering and editing
+-  **HTML preview**: Framework-agnostic HTML rendering with themes
+-  **Syntax highlighting**: Shiki plugin for code blocks
+-  **Diagrams**: Mermaid plugin for flowcharts, sequence diagrams, etc.
+-  **Web Component**: `<markdown-preview>` custom element
+-  **Zero dependencies**: Core package has no runtime dependencies
+-  **Full TypeScript**: Complete type definitions with generics
 
 ## Installation
-
 ```bash
 # Install individual packages (recommended)
 bun add @create-markdown/core
@@ -40,9 +37,7 @@ bun add create-markdown
 ```
 
 ## Quick Start
-
 ### Parse and Serialize Markdown
-
 ```typescript
 import { parse, stringify, h1, paragraph } from '@create-markdown/core';
 
