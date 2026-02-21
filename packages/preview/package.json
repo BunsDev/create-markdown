@@ -1,6 +1,6 @@
 {
   "name": "@create-markdown/preview",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Framework-agnostic HTML rendering for @create-markdown with syntax highlighting and diagrams",
   "author": "Val Alexander <val@viewdue.ai>",
   "license": "MIT",
@@ -67,7 +67,7 @@
     "vitest": "^2.1.0"
   },
   "peerDependencies": {
-    "@create-markdown/core": ">=0.1.0",
+    "@create-markdown/core": ">=0.2.0",
     "shiki": ">=1.0.0",
     "mermaid": ">=10.0.0"
   },

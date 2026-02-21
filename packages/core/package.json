@@ -1,6 +1,6 @@
 {
   "name": "@create-markdown/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Block-based markdown parsing and serialization with zero dependencies",
   "author": "Val Alexander <val@viewdue.ai>",
   "license": "MIT",
