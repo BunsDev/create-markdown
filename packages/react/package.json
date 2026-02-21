@@ -41,17 +41,14 @@
   ],
   "scripts": {
     "build": "bun run build:esm && bun run build:cjs && bun run build:types",
-    "build:esm": "bun build ./src/index.ts --outfile ./dist/index.js --format esm --external react --external @create-markdown/core",
-    "build:cjs": "bun build ./src/index.ts --outfile ./dist/index.cjs --format cjs --external react --external @create-markdown/core",
+    "build:esm": "bun build ./src/index.ts --outfile ./dist/index.js --format esm --external react --external @create-markdown/core --production",
+    "build:cjs": "bun build ./src/index.ts --outfile ./dist/index.cjs --format cjs --external react --external @create-markdown/core --production",
     "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist",
     "dev": "bun run --watch src/index.ts",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
-  },
-  "dependencies": {
-    "@create-markdown/core": "workspace:*"
   },
   "devDependencies": {
     "@testing-library/react": "^16.0.0",
@@ -63,6 +60,7 @@
     "vitest": "^2.1.0"
   },
   "peerDependencies": {
+    "@create-markdown/core": ">=0.1.0",
     "react": ">=18.0.0"
   },
   "engines": {

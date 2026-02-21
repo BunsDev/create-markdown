@@ -62,14 +62,12 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "dependencies": {
-    "@create-markdown/core": "workspace:*"
-  },
   "devDependencies": {
     "typescript": "^5.3.0",
     "vitest": "^2.1.0"
   },
   "peerDependencies": {
+    "@create-markdown/core": ">=0.1.0",
     "shiki": ">=1.0.0",
     "mermaid": ">=10.0.0"
   },

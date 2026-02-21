@@ -74,9 +74,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@create-markdown/core": "workspace:*",
-    "@create-markdown/react": "workspace:*",
-    "@create-markdown/preview": "workspace:*"
+    "@create-markdown/core": "^0.1.0",
+    "@create-markdown/react": "^0.1.0",
+    "@create-markdown/preview": "^0.1.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

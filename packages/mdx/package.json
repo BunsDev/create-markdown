@@ -51,9 +51,6 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "dependencies": {
-    "@create-markdown/core": "workspace:*"
-  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/node": "^20.0.0",
