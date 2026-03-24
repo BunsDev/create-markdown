@@ -65,7 +65,19 @@ sync_version_constants() {
     for src_file in "$pkg_dir"src/index.ts "$pkg_dir"src/index.js; do
       [[ -f "$src_file" ]] || continue
       if grep -q "VERSION\s*=" "$src_file"; then
-        sed -i '' "s/VERSION\s*=\s*['\"][^'\"]*['\"]/VERSION = '${pkg_ver}'/" "$src_file"
+        python3 - "$src_file" "$pkg_ver" <<'PY'
+from pathlib import Path
+import re
+import sys
+
+path = Path(sys.argv[1])
+version = sys.argv[2]
+source = path.read_text()
+updated = re.sub(r"VERSION\s*=\s*['\"][^'\"]*['\"]", f"VERSION = '{version}'", source)
+
+if updated != source:
+    path.write_text(updated)
+PY
         info "Synced VERSION in $src_file → $pkg_ver"
       fi
     done
