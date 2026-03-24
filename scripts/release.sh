@@ -53,6 +53,22 @@ pick_one() {
   done
 }
 
+publish_package() {
+  local pkg_dir="$1"
+  (
+    cd "$pkg_dir"
+    pnpm publish --access public --tag latest
+  )
+}
+
+dry_run_publish_package() {
+  local pkg_dir="$1"
+  (
+    cd "$pkg_dir"
+    pnpm publish --access public --tag latest --dry-run 2>&1
+  )
+}
+
 # ─── Sync VERSION constants ──────────────────────────────────────────────────
 
 sync_version_constants() {
@@ -382,7 +398,7 @@ elif [[ "$MODE" == *"Direct publish"* ]]; then
     i="${SELECTED_INDICES[$idx]}"
     pkg_dir="${PUBLISHABLE_DIRS[$i]}"
     info "Publishing ${PUBLISHABLE_NAMES[$i]}..."
-    (cd "$pkg_dir" && npm publish --access public)
+    publish_package "$pkg_dir"
     success "Published ${PUBLISHABLE_NAMES[$i]}@${NEW_VERSIONS[$idx]}"
   done
 
@@ -426,7 +442,7 @@ elif [[ "$MODE" == *"Dry run"* ]]; then
   for i in "${!PUBLISHABLE_NAMES[@]}"; do
     pkg_dir="${PUBLISHABLE_DIRS[$i]}"
     info "Dry-run: ${PUBLISHABLE_NAMES[$i]}"
-    (cd "$pkg_dir" && npm publish --access public --dry-run 2>&1) || true
+    dry_run_publish_package "$pkg_dir" || true
     echo ""
   done
 
