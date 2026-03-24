@@ -200,7 +200,7 @@ if [[ "$MODE" == *"Changeset flow"* ]]; then
   npx changeset
 
   if ! confirm "Apply version bumps now?"; then
-    success "Changeset created. Run 'bun run version-packages' when ready."
+    success "Changeset created. Run 'pnpm run version-packages' when ready."
     exit 0
   fi
 
@@ -223,17 +223,17 @@ if [[ "$MODE" == *"Changeset flow"* ]]; then
   success "VERSION constants synced"
 
   step "Building all packages"
-  bun run build
+  pnpm run build
   success "Build complete"
 
   step "Running checks"
   if confirm "Run typecheck before publish?" "y"; then
-    bun run typecheck
+    pnpm run typecheck
     success "Typecheck passed"
   fi
 
   if confirm "Run tests before publish?" "y"; then
-    bun run test
+    pnpm run test
     success "Tests passed"
   fi
 
@@ -333,17 +333,17 @@ elif [[ "$MODE" == *"Direct publish"* ]]; then
   success "VERSION constants synced"
 
   step "Building all packages"
-  bun run build
+  pnpm run build
   success "Build complete"
 
   step "Running checks"
   if confirm "Run typecheck before publish?" "y"; then
-    bun run typecheck
+    pnpm run typecheck
     success "Typecheck passed"
   fi
 
   if confirm "Run tests before publish?" "y"; then
-    bun run test
+    pnpm run test
     success "Tests passed"
   fi
 
@@ -384,7 +384,7 @@ elif [[ "$MODE" == *"Direct publish"* ]]; then
 elif [[ "$MODE" == *"Publish only"* ]]; then
 
   step "Building all packages"
-  bun run build
+  pnpm run build
   success "Build complete"
 
   step "Publishing with Changesets"
@@ -400,14 +400,14 @@ elif [[ "$MODE" == *"Publish only"* ]]; then
 elif [[ "$MODE" == *"Dry run"* ]]; then
 
   step "Building all packages"
-  bun run build
+  pnpm run build
   success "Build complete"
 
   step "Running checks"
-  bun run typecheck
+  pnpm run typecheck
   success "Typecheck passed"
 
-  bun run test
+  pnpm run test
   success "Tests passed"
 
   step "Dry-run publish (nothing will be uploaded)"

@@ -4,6 +4,8 @@
  */
 
 import { parse } from '@create-markdown/core';
+import { access, mkdir, readdir, readFile as readNodeFile, writeFile as writeNodeFile } from 'node:fs/promises';
+import { basename, dirname, join, relative } from 'node:path';
 import { blocksToMDX, blocksToMDXWithMeta } from './serializer';
 import type { MDXSerializeOptions, ConvertOptions, MDXConversionResult } from './types';
 
@@ -34,34 +36,23 @@ export function markdownToMDXWithMeta(
 }
 
 // ============================================================================
-// File Conversion (Bun/Node compatible)
+// File Conversion
 // ============================================================================
 
 /**
  * Reads a file and returns its contents
- * Works in both Bun and Node environments
+ * Works in Node.js environments
  */
 async function readFile(path: string): Promise<string> {
-  if (typeof Bun !== 'undefined') {
-    return Bun.file(path).text();
-  }
-  // Node.js fallback
-  const fs = await import('node:fs/promises');
-  return fs.readFile(path, 'utf-8');
+  return readNodeFile(path, 'utf-8');
 }
 
 /**
  * Writes content to a file
- * Works in both Bun and Node environments
+ * Works in Node.js environments
  */
 async function writeFile(path: string, content: string): Promise<void> {
-  if (typeof Bun !== 'undefined') {
-    await Bun.write(path, content);
-    return;
-  }
-  // Node.js fallback
-  const fs = await import('node:fs/promises');
-  await fs.writeFile(path, content, 'utf-8');
+  await writeNodeFile(path, content, 'utf-8');
 }
 
 /**
@@ -69,11 +60,7 @@ async function writeFile(path: string, content: string): Promise<void> {
  */
 async function fileExists(path: string): Promise<boolean> {
   try {
-    if (typeof Bun !== 'undefined') {
-      return Bun.file(path).exists();
-    }
-    const fs = await import('node:fs/promises');
-    await fs.access(path);
+    await access(path);
     return true;
   } catch {
     return false;
@@ -84,9 +71,7 @@ async function fileExists(path: string): Promise<boolean> {
  * Creates directory if it doesn't exist
  */
 async function ensureDir(path: string): Promise<void> {
-  const fs = await import('node:fs/promises');
-  const { dirname } = await import('node:path');
-  await fs.mkdir(dirname(path), { recursive: true });
+  await mkdir(dirname(path), { recursive: true });
 }
 
 /**
@@ -122,14 +107,11 @@ export async function convertDirectory(
   outputDir: string,
   options?: ConvertOptions
 ): Promise<Array<{ input: string; output: string; result: MDXConversionResult }>> {
-  const { join, relative, dirname, basename } = await import('node:path');
-  const fs = await import('node:fs/promises');
-  
   const results: Array<{ input: string; output: string; result: MDXConversionResult }> = [];
   
   // Find all markdown files recursively
   async function* walkDir(dir: string): AsyncGenerator<string> {
-    const entries = await fs.readdir(dir, { withFileTypes: true });
+    const entries = await readdir(dir, { withFileTypes: true });
     for (const entry of entries) {
       const fullPath = join(dir, entry.name);
       if (entry.isDirectory()) {

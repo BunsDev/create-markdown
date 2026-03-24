@@ -62,13 +62,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun run build:theme-strings && bun run build:esm && bun run build:cjs && bun run build:types && bun run build:css",
-    "build:theme-strings": "bun scripts/generate-css-strings.ts",
-    "build:esm": "bun build ./src/index.ts --outfile ./dist/index.js --format esm --external @create-markdown/core --external shiki --external mermaid",
-    "build:cjs": "bun build ./src/index.ts --outfile ./dist/index.cjs --format cjs --external @create-markdown/core --external shiki --external mermaid",
+    "build": "pnpm run build:theme-strings && pnpm run build:js && pnpm run build:types && pnpm run build:css",
+    "build:theme-strings": "tsx scripts/generate-css-strings.ts",
+    "build:js": "tsup --config tsup.config.ts",
     "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist",
     "build:css": "mkdir -p dist/themes && cp src/themes/*.css dist/themes/",
-    "dev": "bun run --watch src/index.ts",
+    "dev": "pnpm run build:theme-strings && tsup --config tsup.config.ts --watch",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

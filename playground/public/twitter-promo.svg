@@ -94,7 +94,7 @@
     <g transform="translate(40, 85)">
       <text font-family="JetBrains Mono, SF Mono, Fira Code, monospace" font-size="26" font-weight="500">
         <tspan fill="#10b981">❯</tspan>
-        <tspan fill="#e4e4e7" dx="16">bun add </tspan>
+        <tspan fill="#e4e4e7" dx="16">pnpm add </tspan>
         <tspan fill="url(#neon)" font-weight="700">create-markdown</tspan>
       </text>
     </g>

@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd ../.. && bun install && bun run build --filter=@create-markdown/docs",
+  "buildCommand": "cd ../.. && pnpm install && pnpm run build --filter=@create-markdown/docs",
   "outputDirectory": "out",
   "framework": null,
   "installCommand": "echo 'Install handled by buildCommand'"

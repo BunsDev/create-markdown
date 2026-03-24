@@ -5,14 +5,14 @@ Framework-agnostic HTML rendering for @create-markdown with syntax highlighting 
 ## Installation
 
 ```bash
-# Using bun
-bun add @create-markdown/preview
+# Using pnpm
+pnpm add @create-markdown/preview
 
 # Using npm
 npm install @create-markdown/preview
 
 # Optional: Install plugins
-npm install shiki mermaid
+pnpm add shiki mermaid
 ```
 
 ## Quick Start

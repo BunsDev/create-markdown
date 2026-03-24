@@ -24,10 +24,10 @@
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
     "clean": "turbo run clean && rm -rf node_modules",
-    "playground": "turbo run build --filter=@create-markdown/core --filter=@create-markdown/react && cd playground && bun dev",
-    "docs": "turbo run build --filter=@create-markdown/core --filter=@create-markdown/mdx && cd packages/docs && bun run dev",
+    "playground": "turbo run build --filter=@create-markdown/core --filter=@create-markdown/react && cd playground && pnpm dev",
+    "docs": "turbo run build --filter=@create-markdown/core --filter=@create-markdown/mdx && cd packages/docs && pnpm dev",
     "docs:build": "turbo run build --filter=@create-markdown/docs",
-    "docs:convert": "bun packages/docs/scripts/convert.ts",
+    "docs:convert": "pnpm tsx packages/docs/scripts/convert.ts",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "security-audit": "bash scripts/security-audit.sh",
@@ -40,11 +40,13 @@
     "@testing-library/react": "^16.0.0",
     "@vitejs/plugin-react": "^4.3.0",
     "jsdom": "^25.0.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
     "turbo": "^2.3.0",
     "typescript": "^5.3.0",
     "vitest": "^2.1.0"
   },
-  "packageManager": "bun@1.0.0",
+  "packageManager": "pnpm@10.11.1",
   "engines": {
     "node": ">=20.0.0"
   }

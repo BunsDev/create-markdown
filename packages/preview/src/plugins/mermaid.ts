@@ -48,7 +48,6 @@ export function mermaidPlugin(options?: MermaidPluginOptions): PreviewPlugin {
       
       try {
         // Dynamically import mermaid
-        // @ts-expect-error - mermaid is an optional peer dependency
         const mermaid = await import('mermaid');
         mermaidModule = mermaid.default || mermaid;
         
@@ -66,7 +65,7 @@ export function mermaidPlugin(options?: MermaidPluginOptions): PreviewPlugin {
         
         mermaidInitialized = true;
       } catch (error) {
-        console.warn('@create-markdown/preview: Mermaid not available. Install with: npm install mermaid');
+        console.warn('@create-markdown/preview: Mermaid not available. Install with: pnpm add mermaid');
       }
     },
     

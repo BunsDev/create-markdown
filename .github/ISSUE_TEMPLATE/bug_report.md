@@ -36,7 +36,7 @@ What actually happened.
 
 - Package version: 
 - Node.js version: 
-- Runtime: [e.g., Bun, Node.js, Browser]
+- Runtime: [e.g., Node.js, Browser]
 - Framework: [e.g., Next.js, Vite, Remix]
 - OS: [e.g., macOS, Windows, Linux]
 

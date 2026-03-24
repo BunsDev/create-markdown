@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 /**
  * Convert existing markdown docs to MDX
  * Uses @create-markdown/mdx for conversion

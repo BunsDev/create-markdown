@@ -40,11 +40,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun run build:esm && bun run build:cjs && bun run build:types",
-    "build:esm": "bun build ./src/index.ts --outfile ./dist/index.js --format esm",
-    "build:cjs": "bun build ./src/index.ts --outfile ./dist/index.cjs --format cjs",
+    "build": "pnpm run build:js && pnpm run build:types",
+    "build:js": "tsup --config tsup.config.ts",
     "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist",
-    "dev": "bun run --watch src/index.ts",
+    "dev": "tsup --config tsup.config.ts --watch",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

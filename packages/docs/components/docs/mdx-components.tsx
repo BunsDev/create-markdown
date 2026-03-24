@@ -8,7 +8,7 @@ import { CodeBlock } from './code-block';
 // Custom components for MDX with glassmorphic design
 export const mdxComponents: MDXComponents = {
   // Headings with anchor links and gradient accents
-  h1: ({ children, ...props }) => (
+  h1: ({ children, ref: _ref, ...props }) => (
     <h1
       className="font-heading mt-2 scroll-m-20 text-4xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text"
       {...props}
@@ -16,7 +16,7 @@ export const mdxComponents: MDXComponents = {
       {children}
     </h1>
   ),
-  h2: ({ children, id, ...props }) => (
+  h2: ({ children, id, ref: _ref, ...props }) => (
     <h2
       id={id}
       className="group font-heading mt-12 scroll-m-20 border-b border-border/50 pb-2 text-2xl font-semibold tracking-tight first:mt-0"
@@ -28,7 +28,7 @@ export const mdxComponents: MDXComponents = {
       </a>
     </h2>
   ),
-  h3: ({ children, id, ...props }) => (
+  h3: ({ children, id, ref: _ref, ...props }) => (
     <h3
       id={id}
       className="group font-heading mt-8 scroll-m-20 text-xl font-semibold tracking-tight"
@@ -40,7 +40,7 @@ export const mdxComponents: MDXComponents = {
       </a>
     </h3>
   ),
-  h4: ({ children, id, ...props }) => (
+  h4: ({ children, id, ref: _ref, ...props }) => (
     <h4
       id={id}
       className="font-heading mt-8 scroll-m-20 text-lg font-semibold tracking-tight"
@@ -65,7 +65,7 @@ export const mdxComponents: MDXComponents = {
   li: ({ children }) => <li className="text-foreground/90">{children}</li>,
 
   // Links with gradient hover effect
-  a: ({ href, children, ...props }) => {
+  a: ({ href, children, ref: _ref, ...props }) => {
     const isExternal = href?.startsWith('http');
     
     if (isExternal) {
@@ -94,7 +94,7 @@ export const mdxComponents: MDXComponents = {
   },
 
   // Code blocks - clean, readable styling
-  pre: ({ children, ...props }) => {
+  pre: ({ children, ref: _ref, ...props }) => {
     return (
       <div className="group relative my-6 rounded-xl overflow-hidden">
         {/* Container with solid, readable background */}
@@ -115,7 +115,7 @@ export const mdxComponents: MDXComponents = {
       </div>
     );
   },
-  code: ({ className, children, ...props }) => {
+  code: ({ className, children, ref: _ref, ...props }) => {
     const isInline = !className;
     
     if (isInline) {
@@ -176,13 +176,13 @@ export const mdxComponents: MDXComponents = {
   ),
 
   // Images - glassmorphic frame
-  img: ({ src, alt, ...props }) => (
+  img: ({ src, alt, width, height, ref: _ref, ...props }) => (
     <div className="my-6 rounded-xl overflow-hidden border border-border/50 shadow-lg bg-muted/10 backdrop-blur-sm">
       <Image
         src={src || ''}
         alt={alt || ''}
-        width={800}
-        height={400}
+        width={typeof width === 'number' ? width : Number(width) || 800}
+        height={typeof height === 'number' ? height : Number(height) || 400}
         className="w-full"
         {...props}
       />

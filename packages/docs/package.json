@@ -9,7 +9,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "convert": "bun run scripts/convert.ts"
+    "convert": "tsx scripts/convert.ts"
   },
   "dependencies": {
     "@create-markdown/core": "workspace:*",

@@ -5,8 +5,8 @@ React components and hooks for @create-markdown.
 ## Installation
 
 ```bash
-# Using bun
-bun add @create-markdown/react
+# Using pnpm
+pnpm add @create-markdown/react
 
 # Using npm
 npm install @create-markdown/react

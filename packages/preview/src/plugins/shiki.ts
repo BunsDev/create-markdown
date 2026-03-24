@@ -80,7 +80,7 @@ export function shikiPlugin(options?: ShikiPluginOptions): PreviewPlugin {
         
         highlighter = await highlighterPromise;
       } catch (error) {
-        console.warn('@create-markdown/preview: Shiki not available. Install with: npm install shiki');
+        console.warn('@create-markdown/preview: Shiki not available. Install with: pnpm add shiki');
       }
     },
     

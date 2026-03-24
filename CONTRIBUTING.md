@@ -8,7 +8,7 @@ Please read and follow our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## Monorepo Structure
 
-This project is a monorepo managed with [Turborepo](https://turbo.build/) and [Bun](https://bun.sh/).
+This project is a monorepo managed with [Turborepo](https://turbo.build/) and [pnpm](https://pnpm.io/).
 
 ```
 create-markdown/
@@ -23,7 +23,7 @@ create-markdown/
 
 ## Prerequisites
 
-- [Bun](https://bun.sh/) v1.0.0+
+- [pnpm](https://pnpm.io/) v10+
 - [Node.js](https://nodejs.org/) 20+
 
 ## Getting Started
@@ -38,25 +38,25 @@ create-markdown/
 2. **Install dependencies**
 
    ```bash
-   bun install
+   pnpm install
    ```
 
 3. **Build all packages**
 
    ```bash
-   bun run build
+   pnpm run build
    ```
 
 4. **Run tests**
 
    ```bash
-   bun run test
+   pnpm run test
    ```
 
 5. **Run the playground**
 
    ```bash
-   bun run playground
+   pnpm run playground
    ```
 
 ## Development Workflow
@@ -68,32 +68,32 @@ Each package can be developed independently:
 ```bash
 # Build a specific package
 cd packages/core
-bun run build
+pnpm run build
 
 # Watch mode
-bun run dev
+pnpm run dev
 
 # Run package tests
-bun run test
+pnpm run test
 ```
 
 ### Available Scripts
 
 | Script | Description |
 |--------|-------------|
-| `bun run build` | Build all packages |
-| `bun run test` | Run all tests |
-| `bun run typecheck` | Type check all packages |
-| `bun run lint` | Lint all packages |
-| `bun run clean` | Clean all build artifacts |
-| `bun run playground` | Run the demo playground |
+| `pnpm run build` | Build all packages |
+| `pnpm run test` | Run all tests |
+| `pnpm run typecheck` | Type check all packages |
+| `pnpm run lint` | Lint all packages |
+| `pnpm run clean` | Clean all build artifacts |
+| `pnpm run playground` | Run the demo playground |
 
 ### Adding a Changeset
 
 When making changes that should be released, add a changeset:
 
 ```bash
-bun changeset
+pnpm changeset
 ```
 
 This will prompt you to:
@@ -180,15 +180,15 @@ docs(react): add useBlockEditor examples
 3. **Run checks locally**
 
    ```bash
-   bun run build
-   bun run typecheck
-   bun run test
+   pnpm run build
+   pnpm run typecheck
+   pnpm run test
    ```
 
 4. **Add a changeset** (if applicable)
 
    ```bash
-   bun changeset
+   pnpm changeset
    ```
 
 5. **Push and create a PR**
@@ -236,7 +236,7 @@ export function parse(
 
 - 2-space indentation
 - Single quotes for strings
-- No semicolons (Bun style)
+- No semicolons
 - Max line length: 100 characters
 
 ### File Organization
@@ -275,17 +275,17 @@ We use [Vitest](https://vitest.dev/) for testing.
 
 ```bash
 # Run all tests
-bun run test
+pnpm run test
 
 # Run tests for a specific package
 cd packages/core
-bun run test
+pnpm run test
 
 # Watch mode
-bun run test:watch
+pnpm run test:watch
 
 # With coverage
-bun run test -- --coverage
+pnpm run test -- --coverage
 ```
 
 ### Writing Tests

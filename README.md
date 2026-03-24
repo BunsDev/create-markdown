@@ -33,12 +33,12 @@ Lightweight, block-based markdown solution (_zero dependencies_). Parse, create,
 ## Installation
 ```bash
 # Install individual packages (recommended)
-bun add @create-markdown/core
-bun add @create-markdown/react
-bun add @create-markdown/preview
+pnpm add @create-markdown/core
+pnpm add @create-markdown/react
+pnpm add @create-markdown/preview
 
 # Or install the convenience bundle
-bun add create-markdown
+pnpm add create-markdown
 ```
 
 ## Quick Start
@@ -208,19 +208,19 @@ registerPreviewElement({ shadowMode: 'none' });
 
 ```bash
 # Install dependencies
-bun install
+pnpm install
 
 # Build all packages
-bun run build
+pnpm run build
 
 # Run tests
-bun run test
+pnpm run test
 
 # Type check
-bun run typecheck
+pnpm run typecheck
 
 # Run the playground
-bun run playground
+pnpm run playground
 ```
 
 ## Monorepo Structure

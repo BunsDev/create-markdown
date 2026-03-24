@@ -355,9 +355,7 @@ done
 
 step "8/8  Lockfile & supply chain"
 
-if [[ -f "bun.lock" ]] || [[ -f "bun.lockb" ]]; then
-  record_pass "Lockfile present (bun.lock)"
-elif [[ -f "pnpm-lock.yaml" ]]; then
+if [[ -f "pnpm-lock.yaml" ]]; then
   record_pass "Lockfile present (pnpm-lock.yaml)"
 elif [[ -f "package-lock.json" ]]; then
   record_pass "Lockfile present (package-lock.json)"

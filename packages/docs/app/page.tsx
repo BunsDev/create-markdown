@@ -420,7 +420,7 @@ export default function HomePage() {
             {/* Install command */}
             <div className="mt-10 inline-flex items-center justify-center rounded-full px-8 py-4 bg-[#1e1e2e] border border-violet-500/20">
               <code className="font-mono text-sm sm:text-base text-violet-400 font-medium">
-                bun add create-markdown
+                pnpm add create-markdown
               </code>
             </div>
 

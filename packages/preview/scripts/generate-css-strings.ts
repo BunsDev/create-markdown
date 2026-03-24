@@ -2,12 +2,14 @@
  * Reads all theme CSS files and generates src/themes/css-strings.ts
  * with their contents exported as string constants.
  *
- * Run: bun scripts/generate-css-strings.ts
+ * Run: pnpm tsx scripts/generate-css-strings.ts
  */
 
-import { readFileSync, writeFileSync, readdirSync } from 'fs';
-import { join, basename } from 'path';
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { basename, dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const themesDir = join(__dirname, '..', 'src', 'themes');
 const outFile = join(themesDir, 'css-strings.ts');
 
@@ -32,7 +34,7 @@ for (const file of cssFiles) {
 
 const source = `/**
  * Auto-generated theme CSS string constants.
- * Do not edit — regenerate with: bun scripts/generate-css-strings.ts
+ * Do not edit — regenerate with: pnpm tsx scripts/generate-css-strings.ts
  */
 
 ${entries.join('\n\n')}

@@ -22,7 +22,6 @@
     "parser",
     "serializer",
     "react",
-    "bun",
     "typescript"
   ],
   "type": "module",
@@ -65,18 +64,17 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun run build:esm && bun run build:cjs && bun run build:types",
-    "build:esm": "bun build ./src/index.ts --outfile ./dist/index.js --format esm --external @create-markdown/core --external @create-markdown/react --external @create-markdown/preview --external react && bun build ./src/react.ts --outfile ./dist/react.js --format esm --external @create-markdown/core --external @create-markdown/react --external react && bun build ./src/preview.ts --outfile ./dist/preview.js --format esm --external @create-markdown/core --external @create-markdown/preview --external shiki --external mermaid",
-    "build:cjs": "bun build ./src/index.ts --outfile ./dist/index.cjs --format cjs --external @create-markdown/core --external @create-markdown/react --external @create-markdown/preview --external react && bun build ./src/react.ts --outfile ./dist/react.cjs --format cjs --external @create-markdown/core --external @create-markdown/react --external react && bun build ./src/preview.ts --outfile ./dist/preview.cjs --format cjs --external @create-markdown/core --external @create-markdown/preview --external shiki --external mermaid",
+    "build": "pnpm run build:js && pnpm run build:types",
+    "build:js": "tsup --config tsup.config.ts",
     "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist",
-    "dev": "bun run --watch src/index.ts",
+    "dev": "tsup --config tsup.config.ts --watch",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@create-markdown/core": "^0.2.0",
-    "@create-markdown/react": "^0.2.0",
-    "@create-markdown/preview": "^1.0.0"
+    "@create-markdown/core": "workspace:^",
+    "@create-markdown/react": "workspace:^",
+    "@create-markdown/preview": "workspace:^"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
@@ -102,5 +100,5 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "packageManager": "bun@1.0.0"
+  "packageManager": "pnpm@10.11.1"
 }

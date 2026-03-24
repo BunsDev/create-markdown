@@ -49,22 +49,22 @@ Install only what you need for smaller bundle sizes:
 
 ```bash
 # Core only (parsing/serialization)
-bun add @create-markdown/core
+pnpm add @create-markdown/core
 # or
 npm install @create-markdown/core
 
 # With React support
-bun add @create-markdown/core @create-markdown/react
+pnpm add @create-markdown/core @create-markdown/react
 # or
 npm install @create-markdown/core @create-markdown/react
 
 # With HTML preview (for non-React projects or SSG)
-bun add @create-markdown/core @create-markdown/preview
+pnpm add @create-markdown/core @create-markdown/preview
 # or
 npm install @create-markdown/core @create-markdown/preview
 
 # With syntax highlighting and diagrams
-bun add @create-markdown/core @create-markdown/preview shiki mermaid
+pnpm add @create-markdown/core @create-markdown/preview shiki mermaid
 ```
 
 ### Convenience Bundle
@@ -72,12 +72,12 @@ bun add @create-markdown/core @create-markdown/preview shiki mermaid
 For projects that need everything:
 
 ```bash
-bun add create-markdown
+pnpm add create-markdown
 # or
 npm install create-markdown
 
 # With optional peer dependencies
-bun add create-markdown react shiki mermaid
+pnpm add create-markdown react shiki mermaid
 ```
 
 ---
@@ -89,7 +89,7 @@ bun add create-markdown react shiki mermaid
 #### Installation
 
 ```bash
-bun add @create-markdown/core @create-markdown/react
+pnpm add @create-markdown/core @create-markdown/react
 ```
 
 #### Client Components
@@ -961,13 +961,13 @@ Some packages have optional peer dependencies:
 
 ```bash
 # If using syntax highlighting with @create-markdown/preview
-bun add shiki
+pnpm add shiki
 
 # If using Mermaid diagrams
-bun add mermaid
+pnpm add mermaid
 
 # If using @create-markdown/react
-bun add react react-dom
+pnpm add react react-dom
 ```
 
 ### TypeScript Path Resolution

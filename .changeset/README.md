@@ -12,7 +12,7 @@ We have a quick list of common questions to get you started engaging with this p
 To add a changeset, run:
 
 ```bash
-bun changeset
+pnpm changeset
 ```
 
 This will prompt you to:
@@ -25,6 +25,6 @@ This will prompt you to:
 When ready to release:
 
 ```bash
-bun version-packages  # Updates versions and changelogs
-bun release           # Publishes to npm
+pnpm run version-packages  # Updates versions and changelogs
+pnpm run release           # Publishes to npm
 ```
