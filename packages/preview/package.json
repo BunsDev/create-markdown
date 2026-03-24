@@ -1,6 +1,6 @@
 {
   "name": "@create-markdown/preview",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Framework-agnostic HTML rendering for @create-markdown with syntax highlighting and diagrams",
   "author": "Val Alexander <val@viewdue.ai>",
   "license": "MIT",

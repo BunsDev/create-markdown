@@ -1,6 +1,6 @@
 {
   "name": "@create-markdown/react",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "React components and hooks for @create-markdown",
   "author": "Val Alexander <val@viewdue.ai>",
   "license": "MIT",
