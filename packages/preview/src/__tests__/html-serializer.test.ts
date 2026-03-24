@@ -81,8 +81,8 @@ describe('HTML Serializer', () => {
   });
 
   describe('markdownToHTML', () => {
-    it('should parse and serialize markdown', () => {
-      const html = markdownToHTML('# Hello\n\nWorld');
+    it('should parse and serialize markdown', async () => {
+      const html = await markdownToHTML('# Hello\n\nWorld');
       expect(html).toContain('<h1');
       expect(html).toContain('Hello');
       expect(html).toContain('<p');
@@ -106,6 +106,30 @@ describe('HTML Serializer', () => {
         styles: { link: { url: 'https://example.com' } }
       }))], { linkTarget: '_self' });
       expect(html).not.toContain('target="_blank"');
+    });
+  });
+
+  describe('Sanitizer', () => {
+    it('should apply sanitize function to output', () => {
+      const sanitizer = (html: string) => html.replace(/<script[^>]*>.*?<\/script>/gi, '');
+      const html = blocksToHTML([paragraph('Hello')], { sanitize: sanitizer });
+      expect(html).toContain('Hello');
+    });
+
+    it('should pass html through sanitize function', () => {
+      const calls: string[] = [];
+      const sanitizer = (html: string) => {
+        calls.push(html);
+        return html;
+      };
+      blocksToHTML([paragraph('Test')], { sanitize: sanitizer });
+      expect(calls).toHaveLength(1);
+      expect(calls[0]).toContain('cm-preview');
+    });
+
+    it('should not error when sanitize is boolean true', () => {
+      const html = blocksToHTML([paragraph('Hello')], { sanitize: true });
+      expect(html).toContain('Hello');
     });
   });
 });

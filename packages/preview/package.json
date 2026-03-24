@@ -1,6 +1,6 @@
 {
   "name": "@create-markdown/preview",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Framework-agnostic HTML rendering for @create-markdown with syntax highlighting and diagrams",
   "author": "Val Alexander <val@viewdue.ai>",
   "license": "MIT",
@@ -45,13 +45,25 @@
     },
     "./themes/github.css": "./dist/themes/github.css",
     "./themes/github-dark.css": "./dist/themes/github-dark.css",
-    "./themes/minimal.css": "./dist/themes/minimal.css"
+    "./themes/minimal.css": "./dist/themes/minimal.css",
+    "./themes/system.css": "./dist/themes/system.css",
+    "./themes": {
+      "import": {
+        "types": "./dist/themes/css-strings.d.ts",
+        "default": "./dist/themes/css-strings.js"
+      },
+      "require": {
+        "types": "./dist/themes/css-strings.d.ts",
+        "default": "./dist/themes/css-strings.cjs"
+      }
+    }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "bun run build:esm && bun run build:cjs && bun run build:types && bun run build:css",
+    "build": "bun run build:theme-strings && bun run build:esm && bun run build:cjs && bun run build:types && bun run build:css",
+    "build:theme-strings": "bun scripts/generate-css-strings.ts",
     "build:esm": "bun build ./src/index.ts --outfile ./dist/index.js --format esm --external @create-markdown/core --external shiki --external mermaid",
     "build:cjs": "bun build ./src/index.ts --outfile ./dist/index.cjs --format cjs --external @create-markdown/core --external shiki --external mermaid",
     "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist",
@@ -72,6 +84,9 @@
     "mermaid": ">=10.0.0"
   },
   "peerDependenciesMeta": {
+    "@create-markdown/core": {
+      "optional": true
+    },
     "shiki": {
       "optional": true
     },

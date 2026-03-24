@@ -30,7 +30,9 @@
     "docs:convert": "bun packages/docs/scripts/convert.ts",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "turbo run build && changeset publish",
+    "security-audit": "bash scripts/security-audit.sh",
+    "release": "bash scripts/release.sh",
+    "release:ci": "turbo run build && changeset publish",
     "prepare": "turbo run build"
   },
   "devDependencies": {

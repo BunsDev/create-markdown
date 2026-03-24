@@ -41,8 +41,8 @@ export interface PreviewOptions {
   /** Link target attribute */
   linkTarget?: '_blank' | '_self';
   
-  /** Sanitize HTML output */
-  sanitize?: boolean;
+  /** Sanitize HTML output. Pass a function (e.g. DOMPurify.sanitize) for custom sanitization. */
+  sanitize?: boolean | ((html: string) => string);
   
   /** Plugins for enhanced rendering */
   plugins?: PreviewPlugin[];
@@ -75,7 +75,7 @@ export interface ResolvedPreviewOptions {
   classPrefix: string;
   theme: string;
   linkTarget: '_blank' | '_self';
-  sanitize: boolean;
+  sanitize: boolean | ((html: string) => string);
   plugins: PreviewPlugin[];
   customRenderers: Partial<BlockHTMLRenderers>;
 }

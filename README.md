@@ -8,22 +8,27 @@ Lightweight, block-based markdown solution (_zero dependencies_). Parse, create,
 ## Packages
 | Package | Version | Description |
 |---------|---------|-------------|
-| [@create-markdown/core](./packages/core) | 0.1.0 | Zero-dependency parsing and serialization |
-| [@create-markdown/react](./packages/react) | 0.1.0 | React components and hooks |
-| [@create-markdown/preview](./packages/preview) | 0.1.0 | HTML rendering with Shiki and Mermaid |
-| [create-markdown](./packages/create-markdown) | 0.1.0 | Convenience bundle |
+| [@create-markdown/core](./packages/core) | 0.2.0 | Zero-dependency parsing and serialization |
+| [@create-markdown/react](./packages/react) | 0.2.0 | React components and hooks |
+| [@create-markdown/preview](./packages/preview) | 1.0.0 | HTML rendering with themes, plugins, and BYO-parser support |
+| [@create-markdown/mdx](./packages/mdx) | 0.2.0 | MDX conversion |
+| [create-markdown](./packages/create-markdown) | 0.4.0 | Convenience bundle |
 
 ## Key Features
 - **Block-based architecture**: Work with structured blocks instead of raw strings
--  **Bidirectional conversion**: Parse markdown to blocks, serialize blocks to markdown
--  **Rich inline styles**: Bold, italic, code, links, strikethrough, highlights
--  **React components**: Optional React bindings for rendering and editing
--  **HTML preview**: Framework-agnostic HTML rendering with themes
--  **Syntax highlighting**: Shiki plugin for code blocks
--  **Diagrams**: Mermaid plugin for flowcharts, sequence diagrams, etc.
--  **Web Component**: `<markdown-preview>` custom element
--  **Zero dependencies**: Core package has no runtime dependencies
--  **Full TypeScript**: Complete type definitions with generics
+- **Bidirectional conversion**: Parse markdown to blocks, serialize blocks to markdown
+- **Rich inline styles**: Bold, italic, code, links, strikethrough, highlights
+- **React components**: Optional React bindings for rendering and editing
+- **HTML preview**: Framework-agnostic HTML rendering with themes
+- **BYO parser**: Use `applyPreviewTheme()` with `marked`, `markdown-it`, `remark`, or any parser -- no lock-in to `@create-markdown/core`
+- **CSS custom property theming**: `system.css` theme integrates with any design system via `--cm-*` variables
+- **Syntax highlighting**: Shiki plugin for code blocks
+- **Diagrams**: Mermaid plugin for flowcharts, sequence diagrams, etc.
+- **Web Component**: `<markdown-preview>` custom element with optional light DOM mode
+- **BYO sanitizer**: Plug in DOMPurify or any sanitizer function
+- **Theme CSS as strings**: Import theme CSS as string constants for CSS-in-JS or web components
+- **Zero dependencies**: Core package has no runtime dependencies
+- **Full TypeScript**: Complete type definitions with generics
 
 ## Installation
 ```bash
@@ -37,6 +42,7 @@ bun add create-markdown
 ```
 
 ## Quick Start
+
 ### Parse and Serialize Markdown
 ```typescript
 import { parse, stringify, h1, paragraph } from '@create-markdown/core';
@@ -53,6 +59,20 @@ const doc = [
 // Serialize back to markdown
 const markdown = stringify(doc);
 ```
+
+### Use with Any Markdown Parser
+
+`@create-markdown/preview` works with any parser's HTML output -- no need to switch to `@create-markdown/core`:
+
+```typescript
+import { applyPreviewTheme } from '@create-markdown/preview';
+import { marked } from 'marked';
+
+const raw = marked.parse('# Hello\n\nSome **bold** text.');
+const themed = applyPreviewTheme(raw); // wraps elements with cm-* classes
+```
+
+Pair with any theme CSS (`github.css`, `github-dark.css`, `minimal.css`, or `system.css`) and the styled output just works.
 
 ### React Components
 
@@ -97,6 +117,61 @@ const html = await renderAsync(blocks, {
 });
 ```
 
+### CSS Custom Property Theming
+
+The `system.css` theme uses CSS custom properties so it adapts to any design system:
+
+```css
+/* Set once -- the theme adapts to light and dark mode automatically */
+:root {
+  --cm-text: #1f2328;
+  --cm-bg: #ffffff;
+  --cm-border: #d1d9e0;
+  --cm-code-bg: #f6f8fa;
+  --cm-link: #0969da;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cm-text: #e6edf3;
+    --cm-bg: #0d1117;
+    --cm-border: #30363d;
+    --cm-code-bg: #161b22;
+    --cm-link: #58a6ff;
+  }
+}
+```
+
+```typescript
+import '@create-markdown/preview/themes/system.css';
+```
+
+### BYO Sanitizer
+
+Pass any sanitizer function instead of relying on a built-in implementation:
+
+```typescript
+import { blocksToHTML } from '@create-markdown/preview';
+import DOMPurify from 'dompurify';
+
+const html = blocksToHTML(blocks, {
+  sanitize: (html) => DOMPurify.sanitize(html, { USE_PROFILES: { html: true } }),
+});
+```
+
+### Theme CSS as Strings
+
+Import theme CSS as string constants for CSS-in-JS, bundlers that struggle with CSS imports, or web components:
+
+```typescript
+import { themes } from '@create-markdown/preview/themes';
+
+// themes.github, themes.githubDark, themes.minimal, themes.system
+const style = document.createElement('style');
+style.textContent = themes.githubDark;
+document.head.appendChild(style);
+```
+
 ### Web Component
 
 ```html
@@ -110,6 +185,12 @@ const html = await renderAsync(blocks, {
 
 This renders automatically!
 </markdown-preview>
+```
+
+Use `shadowMode: 'none'` to render in the light DOM and inherit page styles:
+
+```typescript
+registerPreviewElement({ shadowMode: 'none' });
 ```
 
 ## Documentation
@@ -147,12 +228,15 @@ bun run playground
 ```
 create-markdown/
 ├── packages/
-│   ├── core/           # @create-markdown/core
-│   ├── react/          # @create-markdown/react
-│   ├── preview/        # @create-markdown/preview
-│   └── create-markdown/ # Convenience bundle
-├── playground/         # Demo application
-└── .github/            # CI/CD workflows
+│   ├── core/              # @create-markdown/core
+│   ├── react/             # @create-markdown/react
+│   ├── preview/           # @create-markdown/preview
+│   ├── mdx/               # @create-markdown/mdx
+│   ├── create-markdown/   # Convenience bundle
+│   └── docs/              # Documentation site
+├── playground/            # Demo application
+├── scripts/               # Release and utility scripts
+└── .github/               # CI/CD workflows
 ```
 
 ## Contributing

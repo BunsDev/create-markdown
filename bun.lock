@@ -16,7 +16,7 @@
     },
     "packages/core": {
       "name": "@create-markdown/core",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "devDependencies": {
         "typescript": "^5.3.0",
         "vitest": "^2.1.0",
@@ -24,7 +24,7 @@
     },
     "packages/create-markdown": {
       "name": "create-markdown",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "dependencies": {
         "@create-markdown/core": "workspace:*",
         "@create-markdown/preview": "workspace:*",
@@ -85,10 +85,7 @@
     },
     "packages/mdx": {
       "name": "@create-markdown/mdx",
-      "version": "0.1.0",
-      "dependencies": {
-        "@create-markdown/core": "workspace:*",
-      },
+      "version": "0.2.0",
       "devDependencies": {
         "@types/bun": "latest",
         "@types/node": "^20.0.0",
@@ -96,34 +93,30 @@
         "vitest": "^2.1.0",
       },
       "peerDependencies": {
-        "@create-markdown/core": ">=0.1.0",
+        "@create-markdown/core": ">=0.2.0",
       },
     },
     "packages/preview": {
       "name": "@create-markdown/preview",
-      "version": "0.1.0",
-      "dependencies": {
-        "@create-markdown/core": "workspace:*",
-      },
+      "version": "1.0.0",
       "devDependencies": {
         "typescript": "^5.3.0",
         "vitest": "^2.1.0",
       },
       "peerDependencies": {
+        "@create-markdown/core": ">=0.2.0",
         "mermaid": ">=10.0.0",
         "shiki": ">=1.0.0",
       },
       "optionalPeers": [
+        "@create-markdown/core",
         "mermaid",
         "shiki",
       ],
     },
     "packages/react": {
       "name": "@create-markdown/react",
-      "version": "0.1.0",
-      "dependencies": {
-        "@create-markdown/core": "workspace:*",
-      },
+      "version": "0.2.0",
       "devDependencies": {
         "@testing-library/react": "^16.0.0",
         "@types/react": "^18.2.0",
@@ -134,6 +127,7 @@
         "vitest": "^2.1.0",
       },
       "peerDependencies": {
+        "@create-markdown/core": ">=0.2.0",
         "react": ">=18.0.0",
       },
     },
@@ -563,7 +557,7 @@
 
     "@types/babel__traverse": ["@types/babel__traverse@7.28.0", "", { "dependencies": { "@babel/types": "^7.28.2" } }, "sha512-8PvcXf70gTDZBgt9ptxJ8elBeBjcLOAcOtoO/mPJjtji1+CdGbHgm77om1GrsPxsiE+uXIpNSK64UYaIwQXd4Q=="],
 
-    "@types/bun": ["@types/bun@1.3.9", "", { "dependencies": { "bun-types": "1.3.9" } }, "sha512-KQ571yULOdWJiMH+RIWIOZ7B2RXQGpL1YQrBtLIV3FqDcCu6FsbFUBwhdKUlCKUpS3PJDsHlJ1QKlpxoVR+xtw=="],
+    "@types/bun": ["@types/bun@1.3.11", "", { "dependencies": { "bun-types": "1.3.11" } }, "sha512-5vPne5QvtpjGpsGYXiFyycfpDF2ECyPcTSsFBMa0fraoxiQyMJ3SmuQIGhzPg2WJuWxVBoxWJ2kClYTcw/4fAg=="],
 
     "@types/debug": ["@types/debug@4.1.12", "", { "dependencies": { "@types/ms": "*" } }, "sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ=="],
 
@@ -655,7 +649,7 @@
 
     "browserslist": ["browserslist@4.28.1", "", { "dependencies": { "baseline-browser-mapping": "^2.9.0", "caniuse-lite": "^1.0.30001759", "electron-to-chromium": "^1.5.263", "node-releases": "^2.0.27", "update-browserslist-db": "^1.2.0" }, "bin": { "browserslist": "cli.js" } }, "sha512-ZC5Bd0LgJXgwGqUknZY/vkUQ04r8NXnJZ3yYi4vDmSiZmC/pdSN0NbNRPxZpbtO4uAfDUAFffO8IZoM3Gj8IkA=="],
 
-    "bun-types": ["bun-types@1.3.9", "", { "dependencies": { "@types/node": "*" } }, "sha512-+UBWWOakIP4Tswh0Bt0QD0alpTY8cb5hvgiYeWCMet9YukHbzuruIEeXC2D7nMJPB12kbh8C7XJykSexEqGKJg=="],
+    "bun-types": ["bun-types@1.3.11", "", { "dependencies": { "@types/node": "*" } }, "sha512-1KGPpoxQWl9f6wcZh57LvrPIInQMn2TQ7jsgxqpRzg+l0QPOFvJVH7HmvHo/AiPgwXy+/Thf6Ov3EdVn1vOabg=="],
 
     "cac": ["cac@6.7.14", "", {}, "sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ=="],
 

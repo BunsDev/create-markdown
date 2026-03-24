@@ -76,7 +76,7 @@
   "dependencies": {
     "@create-markdown/core": "^0.2.0",
     "@create-markdown/react": "^0.2.0",
-    "@create-markdown/preview": "^0.2.0"
+    "@create-markdown/preview": "^1.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

@@ -15,6 +15,15 @@ export {
 } from './html-serializer';
 
 // ============================================================================
+// Apply Theme (works with any parser's HTML output)
+// ============================================================================
+
+export {
+  applyPreviewTheme,
+  type ApplyThemeOptions,
+} from './apply-theme';
+
+// ============================================================================
 // Plugin Types
 // ============================================================================
 
@@ -30,8 +39,9 @@ export type {
 // ============================================================================
 
 export {
-  themes,
+  themeNames,
   getThemePath,
+  themes,
   type ThemeName,
 } from './themes';
 
@@ -56,10 +66,10 @@ export {
   autoRegister,
   MarkdownPreviewElement,
 } from './web-component';
-export type { RegisterOptions } from './web-component';
+export type { RegisterOptions, ShadowModeOption } from './web-component';
 
 // ============================================================================
-// Re-exports from core
+// Re-exports from core (type-only, no runtime dependency)
 // ============================================================================
 
 export type { Block, TextSpan, BlockType } from '@create-markdown/core';
@@ -68,7 +78,4 @@ export type { Block, TextSpan, BlockType } from '@create-markdown/core';
 // Package Info
 // ============================================================================
 
-/**
- * Package version
- */
-export const VERSION = '0.2.0';
+export const VERSION = '1.0.0';

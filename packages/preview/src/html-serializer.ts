@@ -13,8 +13,19 @@ import type {
   CalloutBlock,
   CheckListBlock,
 } from '@create-markdown/core';
-import { parse } from '@create-markdown/core';
 import type { PreviewOptions, ResolvedPreviewOptions } from './plugins/types';
+
+async function lazyParse(markdown: string): Promise<Block[]> {
+  try {
+    const core = await import('@create-markdown/core');
+    return core.parse(markdown);
+  } catch {
+    throw new Error(
+      '@create-markdown/core is required for markdownToHTML(). ' +
+      'Install it as a dependency, or use applyPreviewTheme() with your own parser instead.',
+    );
+  }
+}
 
 // ============================================================================
 // Default Options
@@ -39,6 +50,20 @@ function resolveOptions(options?: PreviewOptions): ResolvedPreviewOptions {
     plugins: options?.plugins ?? [],
     customRenderers: options?.customRenderers ?? {},
   };
+}
+
+// ============================================================================
+// Sanitization
+// ============================================================================
+
+function applySanitize(
+  html: string,
+  sanitize: boolean | ((html: string) => string),
+): string {
+  if (typeof sanitize === 'function') {
+    return sanitize(html);
+  }
+  return html;
 }
 
 // ============================================================================
@@ -85,19 +110,22 @@ export function blocksToHTML(
     return renderBlock(block, opts);
   });
   
-  const html = `<div class="${prefix}preview">${htmlParts.join('\n')}</div>`;
-  
+  let html = `<div class="${prefix}preview">${htmlParts.join('\n')}</div>`;
+
+  html = applySanitize(html, opts.sanitize);
+
   return html;
 }
 
 /**
- * Converts markdown string to HTML
+ * Converts markdown string to HTML.
+ * Requires `@create-markdown/core` to be installed.
  */
-export function markdownToHTML(
+export async function markdownToHTML(
   markdown: string,
   options?: PreviewOptions
-): string {
-  const blocks = parse(markdown);
+): Promise<string> {
+  const blocks = await lazyParse(markdown);
   return blocksToHTML(blocks, options);
 }
 

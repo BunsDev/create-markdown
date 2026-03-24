@@ -2,18 +2,20 @@
  * @create-markdown/preview - Theme Exports
  */
 
-// Theme CSS content (for bundling)
-export const themes = {
+export const themeNames = {
   github: 'github',
   githubDark: 'github-dark',
   minimal: 'minimal',
+  system: 'system',
 } as const;
 
-export type ThemeName = keyof typeof themes;
+export type ThemeName = keyof typeof themeNames;
 
 /**
  * Get the CSS file path for a theme
  */
 export function getThemePath(theme: ThemeName): string {
-  return `@create-markdown/preview/themes/${themes[theme]}.css`;
+  return `@create-markdown/preview/themes/${themeNames[theme]}.css`;
 }
+
+export { themeCSS as themes } from './css-strings';

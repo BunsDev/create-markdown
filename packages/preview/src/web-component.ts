@@ -3,9 +3,23 @@
  * <markdown-preview> custom element for rendering markdown anywhere
  */
 
-import { parse, type Block } from '@create-markdown/core';
+import type { Block } from '@create-markdown/core';
 import { blocksToHTML, renderAsync } from './html-serializer';
 import type { PreviewPlugin, PreviewOptions } from './plugins/types';
+
+async function lazyParse(markdown: string): Promise<Block[]> {
+  try {
+    const core = await import('@create-markdown/core');
+    return core.parse(markdown);
+  } catch {
+    throw new Error(
+      '@create-markdown/core is required to parse markdown in <markdown-preview>. ' +
+      'Install it, or provide pre-parsed blocks via the blocks attribute / setBlocks().',
+    );
+  }
+}
+
+export type ShadowModeOption = 'open' | 'closed' | 'none';
 
 /**
  * Options for registering the web component
@@ -14,11 +28,11 @@ export interface RegisterOptions {
   /** Custom tag name (default: 'markdown-preview') */
   tagName?: string;
   /** Default theme */
-  defaultTheme?: 'github' | 'github-dark' | 'minimal';
+  defaultTheme?: 'github' | 'github-dark' | 'minimal' | 'system' | string;
   /** Default plugins to apply */
   plugins?: PreviewPlugin[];
-  /** Shadow DOM mode */
-  shadowMode?: 'open' | 'closed';
+  /** Shadow DOM mode. Use 'none' to render in light DOM and inherit page CSS. */
+  shadowMode?: ShadowModeOption;
 }
 
 /**
@@ -37,67 +51,62 @@ export interface MarkdownPreviewAttributes {
  * The MarkdownPreview custom element
  */
 class MarkdownPreviewElement extends HTMLElement {
-  private shadow: ShadowRoot;
-  private plugins: PreviewPlugin[];
-  private defaultTheme: string;
-  private styleElement: HTMLStyleElement;
-  private contentElement: HTMLDivElement;
-  
+  /** @internal */ static _shadowMode: ShadowModeOption = 'open';
+
+  private _shadow: ShadowRoot | null = null;
+  private plugins: PreviewPlugin[] = [];
+  private defaultTheme = 'github';
+  private styleElement!: HTMLStyleElement;
+  private contentElement!: HTMLDivElement;
+
   static get observedAttributes(): string[] {
     return ['theme', 'link-target', 'async'];
   }
-  
+
+  private get renderRoot(): ShadowRoot | HTMLElement {
+    return this._shadow ?? this;
+  }
+
   constructor() {
     super();
-    this.shadow = this.attachShadow({ mode: 'open' });
-    this.plugins = [];
-    this.defaultTheme = 'github';
-    
-    // Create style element
+
+    const mode = (this.constructor as typeof MarkdownPreviewElement)._shadowMode;
+
+    if (mode !== 'none') {
+      this._shadow = this.attachShadow({ mode: mode as 'open' | 'closed' });
+    }
+
     this.styleElement = document.createElement('style');
-    this.shadow.appendChild(this.styleElement);
-    
-    // Create content container
+    this.renderRoot.appendChild(this.styleElement);
+
     this.contentElement = document.createElement('div');
     this.contentElement.className = 'markdown-preview-content';
-    this.shadow.appendChild(this.contentElement);
-    
-    // Set initial styles
+    this.renderRoot.appendChild(this.contentElement);
+
     this.updateStyles();
   }
-  
+
   connectedCallback(): void {
     this.render();
   }
-  
+
   attributeChangedCallback(_name: string, _oldValue: string | null, _newValue: string | null): void {
     this.render();
   }
-  
-  /**
-   * Set plugins for this element
-   */
+
   setPlugins(plugins: PreviewPlugin[]): void {
     this.plugins = plugins;
     this.render();
   }
-  
-  /**
-   * Set the default theme
-   */
+
   setDefaultTheme(theme: string): void {
     this.defaultTheme = theme;
     this.render();
   }
-  
-  /**
-   * Get the current markdown content
-   */
+
   getMarkdown(): string {
-    // Check for blocks attribute first
     const blocksAttr = this.getAttribute('blocks');
     if (blocksAttr) {
-      // Blocks are provided as JSON, convert back to markdown
       try {
         const blocks = JSON.parse(blocksAttr) as Block[];
         return blocks.map(b => b.content.map(s => s.text).join('')).join('\n\n');
@@ -105,46 +114,32 @@ class MarkdownPreviewElement extends HTMLElement {
         return '';
       }
     }
-    
-    // Otherwise use text content
+
     return this.textContent || '';
   }
-  
-  /**
-   * Set markdown content
-   */
+
   setMarkdown(markdown: string): void {
     this.textContent = markdown;
     this.render();
   }
-  
-  /**
-   * Set blocks directly
-   */
+
   setBlocks(blocks: Block[]): void {
     this.setAttribute('blocks', JSON.stringify(blocks));
     this.render();
   }
-  
-  /**
-   * Get the current options
-   */
+
   private getOptions(): PreviewOptions {
     const theme = this.getAttribute('theme') || this.defaultTheme;
     const linkTarget = (this.getAttribute('link-target') || '_blank') as '_blank' | '_self';
-    
+
     return {
       theme,
       linkTarget,
       plugins: this.plugins,
     };
   }
-  
-  /**
-   * Get blocks from content
-   */
-  private getBlocks(): Block[] {
-    // Check for blocks attribute
+
+  private async getBlocks(): Promise<Block[]> {
     const blocksAttr = this.getAttribute('blocks');
     if (blocksAttr) {
       try {
@@ -154,50 +149,44 @@ class MarkdownPreviewElement extends HTMLElement {
         return [];
       }
     }
-    
-    // Parse markdown from text content
+
     const markdown = this.textContent || '';
-    return parse(markdown);
+    return lazyParse(markdown);
   }
-  
-  /**
-   * Render the content
-   */
+
   private async render(): Promise<void> {
-    const blocks = this.getBlocks();
+    const blocks = await this.getBlocks();
     const options = this.getOptions();
     const isAsync = this.hasAttribute('async') || this.plugins.length > 0;
-    
+
     try {
       let html: string;
-      
+
       if (isAsync) {
         html = await renderAsync(blocks, options);
       } else {
         html = blocksToHTML(blocks, options);
       }
-      
+
       this.contentElement.innerHTML = html;
     } catch (error) {
       console.error('Error rendering markdown preview:', error);
       this.contentElement.innerHTML = `<div class="error">Error rendering content</div>`;
     }
   }
-  
-  /**
-   * Update the component styles
-   */
+
   private updateStyles(): void {
-    // Include plugin CSS
     const pluginCSS = this.plugins
       .filter(p => p.getCSS)
       .map(p => p.getCSS!())
       .join('\n\n');
-    
+
+    const hostRule = this._shadow
+      ? ':host { display: block; }'
+      : 'markdown-preview { display: block; }';
+
     this.styleElement.textContent = `
-:host {
-  display: block;
-}
+${hostRule}
 
 .markdown-preview-content {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
@@ -217,9 +206,6 @@ ${pluginCSS}
   }
 }
 
-/**
- * Global plugins and options for the web component
- */
 let globalPlugins: PreviewPlugin[] = [];
 let globalDefaultTheme = 'github';
 
@@ -230,22 +216,22 @@ export function registerPreviewElement(options?: RegisterOptions): void {
   const tagName = options?.tagName || 'markdown-preview';
   const plugins = options?.plugins || [];
   const defaultTheme = options?.defaultTheme || 'github';
-  
-  // Store global options
+  const shadowMode = options?.shadowMode ?? 'open';
+
   globalPlugins = plugins;
   globalDefaultTheme = defaultTheme;
-  
-  // Define the custom element
+
   if (!customElements.get(tagName)) {
-    // Create a custom class with the options baked in
     class ConfiguredMarkdownPreview extends MarkdownPreviewElement {
+      static override _shadowMode = shadowMode;
+
       constructor() {
         super();
         this.setPlugins(globalPlugins);
         this.setDefaultTheme(globalDefaultTheme);
       }
     }
-    
+
     customElements.define(tagName, ConfiguredMarkdownPreview);
   }
 }
@@ -259,5 +245,4 @@ export function autoRegister(): void {
   }
 }
 
-// Export the element class for manual use
 export { MarkdownPreviewElement };
