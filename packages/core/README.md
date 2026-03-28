@@ -1,5 +1,8 @@
 # @create-markdown/core
 
+[![npm version](https://img.shields.io/npm/v/@create-markdown/core.svg)](https://www.npmjs.com/package/@create-markdown/core)
+[![npm downloads](https://img.shields.io/npm/dm/@create-markdown/core.svg)](https://www.npmjs.com/package/@create-markdown/core)
+
 Block-based markdown parsing and serialization with zero dependencies.
 
 ## Installation

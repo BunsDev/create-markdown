@@ -1,5 +1,8 @@
 # @create-markdown/react
 
+[![npm version](https://img.shields.io/npm/v/@create-markdown/react.svg)](https://www.npmjs.com/package/@create-markdown/react)
+[![npm downloads](https://img.shields.io/npm/dm/@create-markdown/react.svg)](https://www.npmjs.com/package/@create-markdown/react)
+
 React components and hooks for @create-markdown.
 
 ## Installation

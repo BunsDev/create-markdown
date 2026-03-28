@@ -1,5 +1,8 @@
 # @create-markdown/preview
 
+[![npm version](https://img.shields.io/npm/v/@create-markdown/preview.svg)](https://www.npmjs.com/package/@create-markdown/preview)
+[![npm downloads](https://img.shields.io/npm/dm/@create-markdown/preview.svg)](https://www.npmjs.com/package/@create-markdown/preview)
+
 Framework-agnostic HTML rendering for @create-markdown with syntax highlighting (Shiki) and diagram support (Mermaid).
 
 ## Installation

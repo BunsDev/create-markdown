@@ -1,18 +1,19 @@
 # @create-markdown
 
 [![npm version](https://img.shields.io/npm/v/create-markdown.svg)](https://www.npmjs.com/package/create-markdown)
+[![npm downloads](https://img.shields.io/npm/dm/create-markdown.svg)](https://www.npmjs.com/package/create-markdown)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Lightweight, block-based markdown solution (_zero dependencies_). Parse, create, serialize, and render markdown with TypeScript support.
 
 ## Packages
-| Package | Version | Description |
-|---------|---------|-------------|
-| [@create-markdown/core](./packages/core) | 0.2.0 | Zero-dependency parsing and serialization |
-| [@create-markdown/react](./packages/react) | 0.2.0 | React components and hooks |
-| [@create-markdown/preview](./packages/preview) | 1.0.0 | HTML rendering with themes, plugins, and BYO-parser support |
-| [@create-markdown/mdx](./packages/mdx) | 0.2.0 | MDX conversion |
-| [create-markdown](./packages/create-markdown) | 0.4.0 | Convenience bundle |
+| Package | Version | Downloads | Description |
+|---------|---------|-----------|-------------|
+| [@create-markdown/core](./packages/core) | [![npm](https://img.shields.io/npm/v/@create-markdown/core.svg)](https://www.npmjs.com/package/@create-markdown/core) | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/core.svg)](https://www.npmjs.com/package/@create-markdown/core) | Zero-dependency parsing and serialization |
+| [@create-markdown/react](./packages/react) | [![npm](https://img.shields.io/npm/v/@create-markdown/react.svg)](https://www.npmjs.com/package/@create-markdown/react) | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/react.svg)](https://www.npmjs.com/package/@create-markdown/react) | React components and hooks |
+| [@create-markdown/preview](./packages/preview) | [![npm](https://img.shields.io/npm/v/@create-markdown/preview.svg)](https://www.npmjs.com/package/@create-markdown/preview) | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/preview.svg)](https://www.npmjs.com/package/@create-markdown/preview) | HTML rendering with themes, plugins, and BYO-parser support |
+| [@create-markdown/mdx](./packages/mdx) | [![npm](https://img.shields.io/npm/v/@create-markdown/mdx.svg)](https://www.npmjs.com/package/@create-markdown/mdx) | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/mdx.svg)](https://www.npmjs.com/package/@create-markdown/mdx) | MDX conversion |
+| [create-markdown](./packages/create-markdown) | [![npm](https://img.shields.io/npm/v/create-markdown.svg)](https://www.npmjs.com/package/create-markdown) | [![npm downloads](https://img.shields.io/npm/dm/create-markdown.svg)](https://www.npmjs.com/package/create-markdown) | Convenience bundle |
 
 ## Key Features
 - **Block-based architecture**: Work with structured blocks instead of raw strings

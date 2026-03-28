@@ -1,5 +1,8 @@
 # @create-markdown/mdx
 
+[![npm version](https://img.shields.io/npm/v/@create-markdown/mdx.svg)](https://www.npmjs.com/package/@create-markdown/mdx)
+[![npm downloads](https://img.shields.io/npm/dm/@create-markdown/mdx.svg)](https://www.npmjs.com/package/@create-markdown/mdx)
+
 Convert markdown blocks to MDX with component mappings. Part of the [create-markdown](https://github.com/BunsDev/create-markdown) monorepo.
 
 ## Installation
