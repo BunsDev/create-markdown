@@ -61,7 +61,7 @@
     "vitest": "^4.1.2"
   },
   "peerDependencies": {
-    "@create-markdown/core": ">=2.0.1",
+    "@create-markdown/core": ">=2.0.0",
     "react": ">=18.0.0"
   },
   "engines": {
