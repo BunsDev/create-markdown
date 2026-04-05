@@ -260,6 +260,8 @@ NODE
 
   if ! $COUNTS_FOUND && ! $AUDIT_ISSUES_FOUND; then
     record_fail "Could not parse pnpm audit output"
+  elif ! $AUDIT_ISSUES_FOUND && ! $ADVISORY_LINES_FOUND && [[ "${TOTAL_VULNS:-0}" -gt 0 ]]; then
+    record_fail "pnpm audit reported ${TOTAL_VULNS} vulnerabilit(y/ies), but no advisory details were emitted"
   elif ! $AUDIT_ISSUES_FOUND && ! $ADVISORY_LINES_FOUND && [[ "${TOTAL_VULNS:-0}" -eq 0 ]]; then
     record_pass "pnpm audit: no known vulnerabilities"
   fi
