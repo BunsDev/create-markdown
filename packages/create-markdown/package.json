@@ -97,6 +97,9 @@
       "optional": true
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=20.0.0"
   },
