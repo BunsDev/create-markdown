@@ -22,9 +22,11 @@ divider() { printf "${DIM}──────────────────
 PASS=0
 WARN=0
 FAIL=0
+STRICT_WARN=0
 
 record_pass() { PASS=$((PASS + 1)); success "$*"; }
 record_warn() { WARN=$((WARN + 1)); warn "$*"; }
+record_strict_warn() { WARN=$((WARN + 1)); STRICT_WARN=$((STRICT_WARN + 1)); warn "$*"; }
 record_fail() { FAIL=$((FAIL + 1)); error "$*"; }
 
 # ─── Locate root ─────────────────────────────────────────────────────────────
@@ -398,7 +400,7 @@ for idx in "${!DANGEROUS_PATS[@]}"; do
   if [[ -n "$hits" ]]; then
     DANGEROUS_FOUND=true
     count="$(echo "$hits" | wc -l | tr -d ' ')"
-    record_warn "${label} — ${count} occurrence(s)"
+    record_strict_warn "${label} — ${count} occurrence(s)"
     if $VERBOSE; then
       echo "$hits" | head -10 | while IFS= read -r line; do
         printf "    ${DIM}%s${RESET}\n" "$line"
@@ -427,7 +429,7 @@ for i in "${!PUBLISHABLE_DIRS[@]}"; do
   ")"
 
   if [[ "$FILES_FIELD" == "null" ]]; then
-    record_warn "${pkg_name}: no \"files\" field — entire directory will be published"
+    record_strict_warn "${pkg_name}: no \"files\" field — entire directory will be published"
   else
     record_pass "${pkg_name}: \"files\" field restricts published contents"
   fi
@@ -438,7 +440,7 @@ for i in "${!PUBLISHABLE_DIRS[@]}"; do
   ")"
 
   if [[ "$HAS_PREPUB" == "true" ]]; then
-    record_warn "${pkg_name}: has lifecycle scripts (preinstall/postinstall/prepack/prepare)"
+    record_strict_warn "${pkg_name}: has lifecycle scripts (preinstall/postinstall/prepack/prepare)"
     if $VERBOSE; then
       node -e "
         const s = require('./$pkg_dir/package.json').scripts || {};
@@ -499,7 +501,7 @@ ALLOW_SCRIPTS="$(node -p "
 " 2>/dev/null || echo "unknown")"
 
 if [[ "$ALLOW_SCRIPTS" != "none" && "$ALLOW_SCRIPTS" != "unknown" ]]; then
-  record_warn "trustedDependencies configured: $ALLOW_SCRIPTS"
+  record_strict_warn "trustedDependencies configured: $ALLOW_SCRIPTS"
 fi
 
 # Check .npmrc for registry overrides
@@ -507,7 +509,7 @@ if [[ -f ".npmrc" ]]; then
   if grep -qE '^registry\s*=' .npmrc 2>/dev/null; then
     REGISTRY="$(grep -E '^registry\s*=' .npmrc | head -1)"
     if echo "$REGISTRY" | grep -qv 'registry.npmjs.org'; then
-      record_warn "Custom npm registry configured: ${REGISTRY}"
+      record_strict_warn "Custom npm registry configured: ${REGISTRY}"
     else
       record_pass "npm registry is default (registry.npmjs.org)"
     fi
@@ -526,6 +528,9 @@ divider
 printf "  ${GREEN}✔ Passed:${RESET}   %d\n" "$PASS"
 printf "  ${YELLOW}⚠ Warnings:${RESET} %d\n" "$WARN"
 printf "  ${RED}✖ Failures:${RESET} %d\n" "$FAIL"
+if [[ "$STRICT_WARN" -gt 0 ]]; then
+  printf "  ${YELLOW}⚠ Strict:${RESET}   %d\n" "$STRICT_WARN"
+fi
 echo ""
 
 if [[ "$FAIL" -gt 0 ]]; then
@@ -538,13 +543,23 @@ if [[ "$FAIL" -gt 0 ]]; then
   printf "  ${DIM}Run with --verbose for details.${RESET}\n\n"
   exit 1
 elif [[ "$WARN" -gt 0 ]]; then
-  printf "${BOLD}${YELLOW}"
-  printf "  ╭─────────────────────────────────────╮\n"
-  printf "  │    AUDIT PASSED with warnings        │\n"
-  printf "  ╰─────────────────────────────────────╯\n"
-  printf "${RESET}\n"
-  printf "  ${DIM}Review warnings before publishing.${RESET}\n\n"
-  exit 0
+  if $STRICT && [[ "$STRICT_WARN" -gt 0 ]]; then
+    printf "${BOLD}${YELLOW}"
+    printf "  ╭─────────────────────────────────────╮\n"
+    printf "  │   AUDIT BLOCKED (--strict mode)      │\n"
+    printf "  ╰─────────────────────────────────────╯\n"
+    printf "${RESET}\n"
+    printf "  ${DIM}Resolve strict security warnings before publishing.${RESET}\n\n"
+    exit 1
+  else
+    printf "${BOLD}${YELLOW}"
+    printf "  ╭─────────────────────────────────────╮\n"
+    printf "  │    AUDIT PASSED with warnings        │\n"
+    printf "  ╰─────────────────────────────────────╯\n"
+    printf "${RESET}\n"
+    printf "  ${DIM}Review warnings before publishing.${RESET}\n\n"
+    exit 0
+  fi
 else
   printf "${BOLD}${GREEN}"
   printf "  ╭─────────────────────────────────────╮\n"
