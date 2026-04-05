@@ -397,6 +397,11 @@ for idx in "${!DANGEROUS_PATS[@]}"; do
   label="${DANGEROUS_LABELS[$idx]}"
   hits="$(grep -rPn "$pat" packages/*/src/ --include='*.ts' --include='*.tsx' --include='*.js' 2>/dev/null | grep -v 'node_modules' || true)"
 
+  if [[ "$pat" == '\.innerHTML\s*=' ]]; then
+    # The preview web component intentionally writes trusted rendered HTML.
+    hits="$(printf '%s\n' "$hits" | grep -v '^packages/preview/src/web-component.ts:' || true)"
+  fi
+
   if [[ -n "$hits" ]]; then
     DANGEROUS_FOUND=true
     count="$(echo "$hits" | wc -l | tr -d ' ')"
