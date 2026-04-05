@@ -23,9 +23,9 @@ PASS=0
 WARN=0
 FAIL=0
 
-record_pass() { ((PASS++)); success "$*"; }
-record_warn() { ((WARN++)); warn "$*"; }
-record_fail() { ((FAIL++)); error "$*"; }
+record_pass() { PASS=$((PASS + 1)); success "$*"; }
+record_warn() { WARN=$((WARN + 1)); warn "$*"; }
+record_fail() { FAIL=$((FAIL + 1)); error "$*"; }
 
 # ─── Locate root ─────────────────────────────────────────────────────────────
 
