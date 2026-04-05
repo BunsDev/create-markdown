@@ -21,15 +21,22 @@ pnpm add shiki mermaid
 
 ```typescript
 import { markdownToHTML } from '@create-markdown/preview';
+import DOMPurify from 'dompurify';
 
-const html = markdownToHTML(`
+const html = await markdownToHTML(`
 # Hello World
 
 This is **bold** and *italic* text.
 `);
 
-document.getElementById('preview').innerHTML = html;
+const preview = document.getElementById('preview');
+
+if (preview) {
+  preview.innerHTML = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+}
 ```
+
+Sanitize untrusted content before rendering it. Direct DOM assignment is only appropriate when you fully trust the markdown source.
 
 ### With Syntax Highlighting (Shiki)
 
@@ -64,9 +71,16 @@ flowchart LR
 `);
 
 const html = await renderAsync(blocks, {
-  plugins: [mermaidPlugin({ theme: 'default' })],
+  plugins: [
+    mermaidPlugin({
+      theme: 'default',
+      config: { securityLevel: 'strict' },
+    }),
+  ],
 });
 ```
+
+Use Mermaid's stricter security mode when diagram text can come from users. Only opt into looser Mermaid settings for fully trusted content.
 
 ### Web Component
 
@@ -95,6 +109,8 @@ registerPreviewElement({
   ],
 });
 ```
+
+The web component renders trusted content by default, so sanitize user-provided markdown before passing it to the element.
 
 ## API
 
@@ -130,7 +146,7 @@ interface PreviewOptions {
   classPrefix?: string;       // CSS class prefix (default: 'cm-')
   theme?: string;             // Theme name
   linkTarget?: '_blank' | '_self';
-  sanitize?: boolean;         // Sanitize HTML output
+  sanitize?: boolean | ((html: string) => string);
   plugins?: PreviewPlugin[];  // Plugins for enhanced rendering
 }
 ```
