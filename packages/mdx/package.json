@@ -59,6 +59,9 @@
   "peerDependencies": {
     "@create-markdown/core": ">=2.0.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=20.0.0"
   }
