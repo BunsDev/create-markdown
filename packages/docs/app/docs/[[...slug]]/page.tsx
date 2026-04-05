@@ -67,6 +67,7 @@ export default async function DocPage({ params }: DocPageProps) {
 
           {/* MDX Content */}
           <div className="pb-12 pt-8">
+            {/* Docs content is compiled only from repository-local MDX files in packages/docs/content. */}
             <MDXRemote
               source={doc.content}
               components={mdxComponents}

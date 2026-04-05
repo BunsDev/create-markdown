@@ -6,8 +6,8 @@ We release patches for security vulnerabilities in the following versions:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.x.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+| 2.x.x   | :white_check_mark: |
+| < 2.0   | :x:                |
 
 ## Reporting a Vulnerability
 
@@ -16,7 +16,7 @@ We take the security of create-markdown seriously. If you discover a security vu
 ### How to Report
 
 1. **Do not** open a public GitHub issue for security vulnerabilities
-2. Email your findings to **val@viewdue.ai** (replace with your actual security email)
+2. Email your findings to **val@viewdue.ai**
 3. Alternatively, use [GitHub's private vulnerability reporting](https://github.com/BunsDev/create-markdown/security/advisories/new)
 
 ### What to Include
@@ -51,9 +51,10 @@ We will not pursue civil action or initiate a complaint to law enforcement for a
 When using create-markdown in your projects:
 
 1. **Sanitize User Input**: Always sanitize markdown content from untrusted sources before rendering
-2. **Keep Dependencies Updated**: Regularly update to the latest version to receive security patches
-3. **Content Security Policy**: Implement appropriate CSP headers when rendering markdown in browsers
-4. **Review Generated HTML**: Be cautious with HTML output, especially when allowing raw HTML in markdown
+2. **Treat Mermaid as Trusted by Default**: Use `mermaidPlugin({ config: { securityLevel: 'strict' } })` when diagram text can come from users
+3. **Keep Dependencies Updated**: Regularly update to the latest version to receive security patches
+4. **Content Security Policy**: Implement appropriate CSP headers when rendering markdown in browsers
+5. **Review Generated HTML**: Be cautious with HTML output, especially when allowing raw HTML in markdown
 
 ## Acknowledgments
 

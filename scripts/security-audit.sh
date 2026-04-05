@@ -44,7 +44,7 @@ while [[ $# -gt 0 ]]; do
     --verbose) VERBOSE=true; shift ;;
     -h|--help)
       printf "Usage: %s [--strict] [--verbose]\n" "$(basename "$0")"
-      printf "  --strict   Exit non-zero on any warning or failure\n"
+      printf "  --strict   Exit non-zero on any remaining dependency advisory\n"
       printf "  --verbose  Show detailed output for each check\n"
       exit 0
       ;;
@@ -107,38 +107,164 @@ fi
 
 step "2/8  Dependency vulnerabilities"
 
-if command -v npm &>/dev/null; then
+if command -v pnpm &>/dev/null; then
   AUDIT_TMP="$(mktemp)"
-  npm audit --json > "$AUDIT_TMP" 2>/dev/null || true
+  pnpm audit --json > "$AUDIT_TMP" 2>/dev/null || true
 
-  VULN_COUNTS="$(node -e "
-    const fs = require('fs');
-    try {
-      const d = JSON.parse(fs.readFileSync('$AUDIT_TMP', 'utf8'));
-      const m = d.metadata?.vulnerabilities || {};
-      const c = m.critical || 0, h = m.high || 0;
-      const total = c + h + (m.moderate || 0) + (m.low || 0) + (m.info || 0);
-      console.log(c + ' ' + h + ' ' + total);
-    } catch { console.log('-1 0 0'); }
-  " 2>/dev/null || echo "-1 0 0")"
+  AUDIT_REPORT="$(node - "$AUDIT_TMP" "$STRICT" <<'NODE'
+const fs = require('fs');
 
-  read -r CRITICAL HIGH TOTAL_VULNS <<< "$VULN_COUNTS"
+const auditPath = process.argv[2];
+const strict = process.argv[3] === 'true';
+
+function rank(severity) {
+  return ({ critical: 4, high: 3, moderate: 2, low: 1, info: 0 }[severity] ?? -1);
+}
+
+function unique(values) {
+  return [...new Set(values)];
+}
+
+function ownerFor(path) {
+  if (!path) return '';
+
+  const importer = path.split('>')[0];
+  if (importer === '.' || importer.startsWith('.')) {
+    return 'workspace root';
+  }
+
+  if (importer.startsWith('packages__')) {
+    return importer.replace(/^packages__/, 'packages/').replace(/__/g, '/');
+  }
+
+  if (importer.includes('__')) {
+    return importer.replace(/__/g, '/');
+  }
+
+  return '';
+}
+
+try {
+  const raw = fs.readFileSync(auditPath, 'utf8').trim();
+  if (!raw) {
+    console.log('PARSE_ERROR\tpnpm audit returned no output');
+    process.exit(0);
+  }
+
+  const data = JSON.parse(raw);
+  if (data.error) {
+    const message = data.error.summary || data.error.message || 'pnpm audit failed';
+    console.log(`AUDIT_ERROR\t${message}`);
+    process.exit(0);
+  }
+
+  const counts = data.metadata?.vulnerabilities || {};
+  console.log([
+    'COUNTS',
+    counts.critical || 0,
+    counts.high || 0,
+    counts.moderate || 0,
+    counts.low || 0,
+    counts.info || 0,
+  ].join('\t'));
+
+  const advisories = Object.values(data.advisories || {}).sort((a, b) => {
+    return rank(b.severity) - rank(a.severity) || a.module_name.localeCompare(b.module_name);
+  });
+
+  for (const advisory of advisories) {
+    const severity = advisory.severity || 'unknown';
+    const paths = unique((advisory.findings || []).flatMap((finding) => finding.paths || []));
+    const owners = unique(paths.map(ownerFor).filter(Boolean));
+    const ownerLabel = owners.length ? owners.join(', ') : 'workspace owner unavailable';
+    const fix = advisory.patched_versions || advisory.recommendation || 'no patched version listed';
+    const advisoryId = advisory.cves?.length
+      ? advisory.cves.join(', ')
+      : (advisory.github_advisory_id || advisory.url || 'no advisory id');
+    const shouldBlock = severity === 'critical' || severity === 'high' || (
+      strict && ['moderate', 'low', 'info'].includes(severity)
+    );
+
+    console.log([
+      'ADVISORY',
+      severity,
+      advisory.module_name || 'unknown-module',
+      advisoryId,
+      fix,
+      ownerLabel,
+      shouldBlock ? 'block' : 'warn',
+      advisory.title || 'Unnamed advisory',
+    ].join('\t'));
+
+    for (const path of paths.slice(0, 5)) {
+      console.log(['PATH', path].join('\t'));
+    }
+
+    if (paths.length > 5) {
+      console.log(['PATH', `...and ${paths.length - 5} more path(s)`].join('\t'));
+    }
+  }
+} catch (error) {
+  console.log(`PARSE_ERROR\tCould not parse pnpm audit output: ${error.message}`);
+}
+NODE
+)"
+
   rm -f "$AUDIT_TMP"
 
-  if [[ "$CRITICAL" == "-1" ]]; then
-    record_warn "Could not parse npm audit output"
-  elif [[ "$CRITICAL" -gt 0 ]]; then
-    record_fail "npm audit: ${CRITICAL} critical, ${HIGH} high (${TOTAL_VULNS} total)"
-    if $VERBOSE; then npm audit 2>/dev/null || true; fi
-  elif [[ "$HIGH" -gt 0 ]]; then
-    record_warn "npm audit: ${HIGH} high-severity vulnerabilities (${TOTAL_VULNS} total)"
-  elif [[ "$TOTAL_VULNS" -gt 0 ]]; then
-    record_warn "npm audit: ${TOTAL_VULNS} vulnerabilities (none critical/high)"
-  else
-    record_pass "npm audit: no known vulnerabilities"
+  COUNTS_FOUND=false
+  AUDIT_ISSUES_FOUND=false
+  ADVISORY_LINES_FOUND=false
+
+  while IFS=$'\t' read -r kind field1 field2 field3 field4 field5 field6 field7; do
+    [[ -n "${kind:-}" ]] || continue
+
+    case "$kind" in
+      COUNTS)
+        COUNTS_FOUND=true
+        CRITICAL="${field1:-0}"
+        HIGH="${field2:-0}"
+        MODERATE="${field3:-0}"
+        LOW="${field4:-0}"
+        INFO_COUNT="${field5:-0}"
+        TOTAL_VULNS=$((CRITICAL + HIGH + MODERATE + LOW + INFO_COUNT))
+        info "pnpm audit counts: critical=${CRITICAL}, high=${HIGH}, moderate=${MODERATE}, low=${LOW}, info=${INFO_COUNT}"
+        ;;
+      ADVISORY)
+        ADVISORY_LINES_FOUND=true
+        severity="${field1:-unknown}"
+        module_name="${field2:-unknown-module}"
+        advisory_id="${field3:-no advisory id}"
+        fix_version="${field4:-no patched version listed}"
+        owner_label="${field5:-workspace owner unavailable}"
+        disposition="${field6:-warn}"
+        title="${field7:-Unnamed advisory}"
+
+        if [[ "$disposition" == "block" ]]; then
+          record_fail "pnpm audit: ${severity} ${module_name} (${advisory_id}) in ${owner_label} — ${title}. Fix: ${fix_version}"
+        else
+          record_warn "pnpm audit: ${severity} ${module_name} (${advisory_id}) in ${owner_label} — ${title}. Fix: ${fix_version}"
+        fi
+        ;;
+      PATH)
+        if $VERBOSE; then
+          printf "    ${DIM}%s${RESET}\n" "${field1}"
+        fi
+        ;;
+      PARSE_ERROR|AUDIT_ERROR)
+        AUDIT_ISSUES_FOUND=true
+        record_fail "${field1}"
+        ;;
+    esac
+  done <<< "$AUDIT_REPORT"
+
+  if ! $COUNTS_FOUND && ! $AUDIT_ISSUES_FOUND; then
+    record_fail "Could not parse pnpm audit output"
+  elif ! $AUDIT_ISSUES_FOUND && ! $ADVISORY_LINES_FOUND && [[ "${TOTAL_VULNS:-0}" -eq 0 ]]; then
+    record_pass "pnpm audit: no known vulnerabilities"
   fi
 else
-  record_warn "npm not found — skipping dependency audit"
+  record_warn "pnpm not found — skipping dependency audit"
 fi
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -410,23 +536,13 @@ if [[ "$FAIL" -gt 0 ]]; then
   printf "  ${DIM}Run with --verbose for details.${RESET}\n\n"
   exit 1
 elif [[ "$WARN" -gt 0 ]]; then
-  if $STRICT; then
-    printf "${BOLD}${YELLOW}"
-    printf "  ╭─────────────────────────────────────╮\n"
-    printf "  │   AUDIT BLOCKED (--strict mode)      │\n"
-    printf "  ╰─────────────────────────────────────╯\n"
-    printf "${RESET}\n"
-    printf "  ${DIM}Resolve warnings or remove --strict.${RESET}\n\n"
-    exit 1
-  else
-    printf "${BOLD}${YELLOW}"
-    printf "  ╭─────────────────────────────────────╮\n"
-    printf "  │    AUDIT PASSED with warnings        │\n"
-    printf "  ╰─────────────────────────────────────╯\n"
-    printf "${RESET}\n"
-    printf "  ${DIM}Review warnings before publishing.${RESET}\n\n"
-    exit 0
-  fi
+  printf "${BOLD}${YELLOW}"
+  printf "  ╭─────────────────────────────────────╮\n"
+  printf "  │    AUDIT PASSED with warnings        │\n"
+  printf "  ╰─────────────────────────────────────╯\n"
+  printf "${RESET}\n"
+  printf "  ${DIM}Review warnings before publishing.${RESET}\n\n"
+  exit 0
 else
   printf "${BOLD}${GREEN}"
   printf "  ╭─────────────────────────────────────╮\n"

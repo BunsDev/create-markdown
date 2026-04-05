@@ -81,6 +81,7 @@ const themed = applyPreviewTheme(raw); // wraps elements with cm-* classes
 ```
 
 Pair with any theme CSS (`github.css`, `github-dark.css`, `minimal.css`, or `system.css`) and the styled output just works.
+Sanitize untrusted HTML before assigning the themed output to the DOM.
 
 ### React Components
 
@@ -125,6 +126,8 @@ const html = await renderAsync(blocks, {
 });
 ```
 
+Preview output is intended for trusted content by default. If the markdown or generated HTML can come from users, sanitize it before rendering.
+
 ### CSS Custom Property Theming
 
 The `system.css` theme uses CSS custom properties so it adapts to any design system:
@@ -156,7 +159,7 @@ import '@create-markdown/preview/themes/system.css';
 
 ### BYO Sanitizer
 
-Pass any sanitizer function instead of relying on a built-in implementation:
+Pass any sanitizer function when rendering untrusted content:
 
 ```typescript
 import { blocksToHTML } from '@create-markdown/preview';
@@ -200,6 +203,8 @@ Use `shadowMode: 'none'` to render in the light DOM and inherit page styles:
 ```typescript
 registerPreviewElement({ shadowMode: 'none' });
 ```
+
+The web component also assumes trusted markdown by default, so sanitize user-provided content before passing it in.
 
 ## Documentation
 
