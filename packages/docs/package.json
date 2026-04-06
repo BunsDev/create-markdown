@@ -1,6 +1,6 @@
 {
   "name": "@create-markdown/docs",
-  "version": "1.0.1",
+  "version": "2.0.2",
   "private": true,
   "description": "Documentation site for create-markdown",
   "type": "module",
@@ -12,8 +12,8 @@
     "convert": "tsx scripts/convert.ts"
   },
   "dependencies": {
-    "@create-markdown/core": "workspace:*",
-    "@create-markdown/mdx": "workspace:*",
+    "@create-markdown/core": "workspace:^",
+    "@create-markdown/mdx": "workspace:^",
     "@radix-ui/react-dialog": "^1.1.0",
     "@radix-ui/react-scroll-area": "^1.2.0",
     "@radix-ui/react-slot": "^1.1.0",

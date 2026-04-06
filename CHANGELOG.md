@@ -14,6 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.2] - 2026-04-05
+
+### Changed
+- Aligned all public create-markdown packages on version 2.0.2.
+- Refreshed package/docs version tables so the repo matches the published release line.
+- Fixed the security audit strict-mode check to correctly resolve inherited tsconfig settings.
+
+---
+
 ## [0.3.0] - 2026-01-27
 
 ### Changed

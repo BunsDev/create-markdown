@@ -259,4 +259,4 @@ export function toMarkdown(blocksOrDoc: Block[] | { blocks: Block[] }): string {
 /**
  * Package version
  */
-export const VERSION = '2.0.1';
+export const VERSION = '2.0.2';

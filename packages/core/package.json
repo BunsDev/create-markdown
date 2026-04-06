@@ -1,6 +1,6 @@
 {
   "name": "@create-markdown/core",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Block-based markdown parsing and serialization with zero dependencies",
   "author": "Val Alexander <val@viewdue.ai>",
   "license": "MIT",
@@ -26,14 +26,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.cjs"
-      }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "files": [

@@ -1,5 +1,12 @@
 # @create-markdown/preview
 
+## 2.0.2
+
+### Patch Changes
+
+- Aligned `@create-markdown/preview` with the 2.0.2 release line.
+- Added local workspace wiring for cleaner monorepo installs and releases.
+
 ## 2.0.1
 
 ### Patch Changes

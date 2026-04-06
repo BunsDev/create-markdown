@@ -1,9 +1,10 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import GitHubSlugger from 'github-slugger';
 import matter from 'gray-matter';
 
-const contentDirectory = path.join(process.cwd(), 'content');
+const contentDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../content');
 
 export interface DocFrontmatter {
   title: string;

@@ -1,5 +1,12 @@
 # @create-markdown/docs
 
+## 2.0.2
+
+### Patch Changes
+
+- Updated the docs package and content to reflect the 2.0.2 release line.
+- Synced changelog, package version tables, and security policy messaging.
+
 ## 1.0.1
 
 ### Patch Changes

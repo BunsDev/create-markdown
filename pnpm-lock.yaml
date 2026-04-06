@@ -70,8 +70,11 @@ importers:
         version: 3.23.0
     devDependencies:
       '@types/react':
-        specifier: ^18.2.0
+        specifier: ^18.3.0
         version: 18.3.28
+      '@types/react-dom':
+        specifier: ^18.3.0
+        version: 18.3.7(@types/react@18.3.28)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -82,10 +85,10 @@ importers:
   packages/docs:
     dependencies:
       '@create-markdown/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       '@create-markdown/mdx':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../mdx
       '@radix-ui/react-dialog':
         specifier: ^1.1.0
@@ -171,11 +174,10 @@ importers:
         version: 5.9.3
 
   packages/mdx:
-    dependencies:
-      '@create-markdown/core':
-        specifier: '>=2.0.0'
-        version: 2.0.0
     devDependencies:
+      '@create-markdown/core':
+        specifier: workspace:^
+        version: link:../core
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.37
@@ -191,9 +193,6 @@ importers:
 
   packages/preview:
     dependencies:
-      '@create-markdown/core':
-        specifier: '>=2.0.0'
-        version: 2.0.0
       mermaid:
         specifier: '>=10.0.0'
         version: 11.13.0
@@ -201,6 +200,9 @@ importers:
         specifier: '>=1.0.0'
         version: 3.23.0
     devDependencies:
+      '@create-markdown/core':
+        specifier: workspace:^
+        version: link:../core
       typescript:
         specifier: ^5.3.0
         version: 5.9.3
@@ -212,19 +214,18 @@ importers:
         version: 4.1.2(@types/node@25.5.0)(jsdom@25.0.1)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
 
   packages/react:
-    dependencies:
-      '@create-markdown/core':
-        specifier: '>=2.0.0'
-        version: 2.0.0
     devDependencies:
+      '@create-markdown/core':
+        specifier: workspace:^
+        version: link:../core
       '@testing-library/react':
         specifier: ^16.0.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@types/react':
-        specifier: ^18.2.0
+        specifier: ^18.3.0
         version: 18.3.28
       '@types/react-dom':
-        specifier: ^18.3.7
+        specifier: ^18.3.0
         version: 18.3.7(@types/react@18.3.28)
       jsdom:
         specifier: ^25.0.0
@@ -390,10 +391,6 @@ packages:
 
   '@chevrotain/utils@11.1.2':
     resolution: {integrity: sha512-4mudFAQ6H+MqBTfqLmU7G1ZwRzCLfJEooL/fsF6rCX5eePMbGhoy5n4g+G4vlh2muDcsCTJtL+uKbOzWxs5LHA==}
-
-  '@create-markdown/core@2.0.0':
-    resolution: {integrity: sha512-xOmhoiDSa82EzjXp3aViQdB+xfCP4E2jEKxJiKJ702sup3p/CTCtL8fZBKQ3BvzASQRpq/xKCRXZZwRrg1DmZQ==}
-    engines: {node: '>=20.0.0'}
 
   '@csstools/color-helpers@5.1.0':
     resolution: {integrity: sha512-S11EXWJyy0Mz5SYvRmY8nJYTFFd1LCNV+7cXyAgQtOOuzb4EsgfqDufL+9esx72/eLhsRdGZwaldu/h+E4t4BA==}
@@ -3757,8 +3754,6 @@ snapshots:
   '@chevrotain/types@11.1.2': {}
 
   '@chevrotain/utils@11.1.2': {}
-
-  '@create-markdown/core@2.0.0': {}
 
   '@csstools/color-helpers@5.1.0': {}
 

@@ -1,6 +1,6 @@
 {
   "name": "@create-markdown/react",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "React components and hooks for @create-markdown",
   "author": "Val Alexander <val@viewdue.ai>",
   "license": "MIT",
@@ -26,14 +26,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.cjs"
-      }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "files": [
@@ -50,9 +45,10 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
+    "@create-markdown/core": "workspace:^",
     "@testing-library/react": "^16.0.0",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.3.7",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
     "jsdom": "^25.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -61,7 +57,7 @@
     "vitest": "^4.1.2"
   },
   "peerDependencies": {
-    "@create-markdown/core": ">=2.0.0",
+    "@create-markdown/core": ">=2.0.2",
     "react": ">=18.0.0"
   },
   "publishConfig": {

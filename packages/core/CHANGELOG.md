@@ -1,5 +1,12 @@
 # @create-markdown/core
 
+## 2.0.2
+
+### Patch Changes
+
+- Aligned `@create-markdown/core` with the 2.0.2 release line.
+- Refreshed release metadata and documentation references for the 2.0.2 publish.
+
 ## 2.0.1
 
 ### Patch Changes

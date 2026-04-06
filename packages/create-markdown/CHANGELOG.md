@@ -1,5 +1,12 @@
 # create-markdown
 
+## 2.0.2
+
+### Patch Changes
+
+- Aligned the convenience bundle with the 2.0.2 release line.
+- Updated package exports for cleaner TypeScript resolution in downstream apps.
+
 ## 2.0.1
 
 ### Patch Changes

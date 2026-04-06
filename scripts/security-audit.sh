@@ -463,24 +463,46 @@ done
 step "7/8  TypeScript strict mode"
 
 for pkg_dir in packages/*/; do
-  tsconfig="$pkg_dir/tsconfig.json"
-  [[ -f "$tsconfig" ]] || continue
-
   pkg_name="$(basename "$pkg_dir")"
-  IS_STRICT="$(node -p "
-    try {
-      const c = JSON.parse(require('fs').readFileSync('$tsconfig','utf8')
-        .replace(/\/\/.*$/gm,'').replace(/\/\*[\s\S]*?\*\//g,''));
-      c.compilerOptions?.strict === true ? 'true' : 'false';
-    } catch { 'unknown'; }
-  " 2>/dev/null || echo "unknown")"
+  tsconfig="$pkg_dir/tsconfig.json"
 
-  if [[ "$IS_STRICT" == "true" ]]; then
-    record_pass "${pkg_name}: strict mode enabled"
-  elif [[ "$IS_STRICT" == "unknown" ]]; then
-    record_warn "${pkg_name}: could not parse tsconfig.json"
+  if [ ! -f "$tsconfig" ]; then
+    record_warn "$pkg_name: no tsconfig.json found"
+    continue
+  fi
+
+  IS_STRICT="$({ node - "$tsconfig" 2>/dev/null <<'NODE'
+const ts = require('typescript');
+const tsconfigPath = process.argv[2];
+
+try {
+  const parsed = ts.getParsedCommandLineOfConfigFile(tsconfigPath, {}, {
+    useCaseSensitiveFileNames: ts.sys.useCaseSensitiveFileNames,
+    readDirectory: ts.sys.readDirectory,
+    fileExists: ts.sys.fileExists,
+    getCurrentDirectory: ts.sys.getCurrentDirectory,
+    onUnRecoverableConfigFileDiagnostic: () => {},
+    readFile: ts.sys.readFile,
+    trace: () => {},
+  });
+
+  if (!parsed) {
+    process.stdout.write('unknown');
+  } else {
+    process.stdout.write(parsed.options.strict === true ? 'true' : 'false');
+  }
+} catch {
+  process.stdout.write('unknown');
+}
+NODE
+} || echo "unknown")"
+
+  if [ "$IS_STRICT" = "true" ]; then
+    record_pass "$pkg_name: strict mode enabled"
+  elif [ "$IS_STRICT" = "false" ]; then
+    record_warn "$pkg_name: strict mode not enabled"
   else
-    record_warn "${pkg_name}: strict mode is not enabled"
+    record_warn "$pkg_name: could not parse tsconfig.json"
   fi
 done
 

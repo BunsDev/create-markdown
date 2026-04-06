@@ -1,5 +1,12 @@
 # @create-markdown/react
 
+## 2.0.2
+
+### Patch Changes
+
+- Aligned `@create-markdown/react` with the 2.0.2 release line.
+- Added local dev type dependencies to keep the workspace install clean.
+
 ## 2.0.1
 
 ### Patch Changes
