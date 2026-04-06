@@ -49,7 +49,11 @@
   "pnpm": {
     "overrides": {
       "lodash-es": "4.18.1"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
   },
   "packageManager": "pnpm@10.11.1",
   "engines": {
