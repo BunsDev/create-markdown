@@ -464,7 +464,143 @@ step "7/8  TypeScript strict mode"
 
 for pkg_dir in packages/*/; do
   pkg_name="$(basename "$pkg_dir")"
+<<<<<<< Updated upstream
   tsconfig="$pkg_dir/tsconfig.json"
+=======
+  IS_STRICT="$(node - "$tsconfig" <<'NODE'
+const fs = require('fs');
+const path = require('path');
+
+function stripJsonComments(input) {
+  const source = input.replace(/^\uFEFF/, '');
+  let result = '';
+  let inString = false;
+  let stringQuote = '';
+  let escaping = false;
+  let inLineComment = false;
+  let inBlockComment = false;
+
+  for (let i = 0; i < source.length; i += 1) {
+    const char = source[i];
+    const next = source[i + 1];
+
+    if (inLineComment) {
+      if (char === '\n') {
+        inLineComment = false;
+        result += char;
+      }
+      continue;
+    }
+
+    if (inBlockComment) {
+      if (char === '*' && next === '/') {
+        inBlockComment = false;
+        i += 1;
+      }
+      continue;
+    }
+
+    if (inString) {
+      result += char;
+      if (escaping) {
+        escaping = false;
+      } else if (char === '\\') {
+        escaping = true;
+      } else if (char === stringQuote) {
+        inString = false;
+        stringQuote = '';
+      }
+      continue;
+    }
+
+    if ((char === '"' || char === "'")) {
+      inString = true;
+      stringQuote = char;
+      result += char;
+      continue;
+    }
+
+    if (char === '/' && next === '/') {
+      inLineComment = true;
+      i += 1;
+      continue;
+    }
+
+    if (char === '/' && next === '*') {
+      inBlockComment = true;
+      i += 1;
+      continue;
+    }
+
+    result += char;
+  }
+
+  return result;
+}
+
+function loadTsconfig(tsconfigPath, visited = new Set()) {
+  const resolvedPath = path.resolve(tsconfigPath);
+  if (visited.has(resolvedPath)) {
+    throw new Error(`Circular tsconfig extends detected: ${resolvedPath}`);
+  }
+
+  visited.add(resolvedPath);
+
+  const raw = fs.readFileSync(resolvedPath, 'utf8');
+  const parsed = JSON.parse(stripJsonComments(raw));
+  const baseConfig = parsed.extends
+    ? loadExtendedTsconfig(parsed.extends, path.dirname(resolvedPath), visited)
+    : {};
+
+  return {
+    ...baseConfig,
+    ...parsed,
+    compilerOptions: {
+      ...(baseConfig.compilerOptions || {}),
+      ...(parsed.compilerOptions || {}),
+    },
+  };
+}
+
+function loadExtendedTsconfig(extendsValue, configDir, visited) {
+  const candidates = [];
+
+  if (extendsValue.startsWith('.')) {
+    candidates.push(path.resolve(configDir, extendsValue));
+  } else if (path.isAbsolute(extendsValue)) {
+    candidates.push(extendsValue);
+  } else {
+    candidates.push(path.resolve(configDir, extendsValue));
+  }
+
+  for (const candidate of [...candidates]) {
+    if (!candidate.endsWith('.json')) {
+      candidates.push(`${candidate}.json`);
+    }
+  }
+
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      return loadTsconfig(candidate, visited);
+    }
+  }
+
+  throw new Error(`Unable to resolve extended tsconfig: ${extendsValue}`);
+}
+
+try {
+  const config = loadTsconfig(process.argv[2]);
+  if (config.compilerOptions?.strict === true) {
+    process.stdout.write('true');
+  } else {
+    process.stdout.write('false');
+  }
+} catch {
+  process.stdout.write('unknown');
+}
+NODE
+)"
+>>>>>>> Stashed changes
 
   if [ ! -f "$tsconfig" ]; then
     record_warn "$pkg_name: no tsconfig.json found"
