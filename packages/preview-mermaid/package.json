@@ -1,25 +1,24 @@
 {
-  "name": "@create-markdown/mdx",
+  "name": "@create-markdown/preview-mermaid",
   "version": "2.0.2",
-  "description": "Convert markdown blocks to MDX with component mappings",
+  "description": "Optional Mermaid diagram plugin for @create-markdown/preview",
   "author": "Val Alexander <val@viewdue.ai>",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/BunsDev/create-markdown",
-    "directory": "packages/mdx"
+    "directory": "packages/preview-mermaid"
   },
-  "homepage": "https://github.com/BunsDev/create-markdown/tree/main/packages/mdx",
+  "homepage": "https://github.com/BunsDev/create-markdown/tree/main/packages/preview-mermaid",
   "bugs": {
     "url": "https://github.com/BunsDev/create-markdown/issues"
   },
   "keywords": [
     "markdown",
-    "mdx",
-    "converter",
-    "blocks",
-    "typescript",
-    "react"
+    "preview",
+    "mermaid",
+    "diagram",
+    "typescript"
   ],
   "type": "module",
   "sideEffects": false,
@@ -42,19 +41,22 @@
     "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist",
     "dev": "tsup --config tsup.config.ts --watch",
     "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@create-markdown/core": "workspace:^",
-    "@types/node": "^25.5.2",
-    "typescript": "^6.0.2",
-    "vite": "7.1.11",
-    "vitest": "^4.1.2"
+    "@create-markdown/preview": "workspace:^",
+    "mermaid": "^11.14.0",
+    "typescript": "^6.0.2"
   },
   "peerDependencies": {
-    "@create-markdown/core": ">=2.0.2"
+    "@create-markdown/preview": ">=2.0.2",
+    "mermaid": ">=10.0.0"
+  },
+  "peerDependenciesMeta": {
+    "mermaid": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"

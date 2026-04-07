@@ -54,6 +54,16 @@
         "types": "./dist/preview.d.ts",
         "default": "./dist/preview.cjs"
       }
+    },
+    "./preview-mermaid": {
+      "import": {
+        "types": "./dist/preview-mermaid.d.ts",
+        "default": "./dist/preview-mermaid.js"
+      },
+      "require": {
+        "types": "./dist/preview-mermaid.d.ts",
+        "default": "./dist/preview-mermaid.cjs"
+      }
     }
   },
   "files": [
@@ -70,6 +80,7 @@
   "dependencies": {
     "@create-markdown/core": "workspace:^",
     "@create-markdown/preview": "workspace:^",
+    "@create-markdown/preview-mermaid": "workspace:^",
     "@create-markdown/react": "workspace:^"
   },
   "devDependencies": {
@@ -79,7 +90,6 @@
     "typescript": "^6.0.2"
   },
   "peerDependencies": {
-    "mermaid": ">=10.0.0",
     "react": ">=18.0.0",
     "shiki": ">=1.0.0"
   },
@@ -88,9 +98,6 @@
       "optional": true
     },
     "shiki": {
-      "optional": true
-    },
-    "mermaid": {
       "optional": true
     }
   },

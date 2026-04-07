@@ -97,7 +97,8 @@ function Editor() {
 ### HTML Preview with Plugins
 
 ```typescript
-import { renderAsync, shikiPlugin, mermaidPlugin } from '@create-markdown/preview';
+import { renderAsync, shikiPlugin } from '@create-markdown/preview';
+import { mermaidPlugin } from '@create-markdown/preview-mermaid';
 import { parse } from '@create-markdown/core';
 
 const blocks = parse(`

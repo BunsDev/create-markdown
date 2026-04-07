@@ -17,7 +17,7 @@ pnpm add @create-markdown/preview
 npm install @create-markdown/preview
 
 # Optional: Install plugins
-pnpm add shiki mermaid
+pnpm add shiki @create-markdown/preview-mermaid mermaid
 ```
 
 ## Quick Start
@@ -64,7 +64,8 @@ const html = await renderAsync(blocks, {
 ### With Mermaid Diagrams
 
 ```typescript
-import { renderAsync, mermaidPlugin } from '@create-markdown/preview';
+import { renderAsync } from '@create-markdown/preview';
+import { mermaidPlugin } from '@create-markdown/preview-mermaid';
 import { parse } from '@create-markdown/core';
 
 const blocks = parse(`
@@ -105,7 +106,8 @@ This is rendered as HTML automatically!
 With plugins:
 
 ```typescript
-import { registerPreviewElement, shikiPlugin, mermaidPlugin } from '@create-markdown/preview';
+import { registerPreviewElement, shikiPlugin } from '@create-markdown/preview';
+import { mermaidPlugin } from '@create-markdown/preview-mermaid';
 
 registerPreviewElement({
   plugins: [
@@ -134,7 +136,7 @@ Async version that initializes plugins before rendering.
 ### Plugins
 
 - `shikiPlugin(options?)` - Syntax highlighting with Shiki
-- `mermaidPlugin(options?)` - Mermaid diagram rendering
+- `mermaidPlugin(options?)` - Mermaid diagram rendering from `@create-markdown/preview-mermaid`
 
 ### Themes
 

@@ -1,7 +1,7 @@
 {
   "name": "@create-markdown/preview",
   "version": "2.0.2",
-  "description": "Framework-agnostic HTML rendering for @create-markdown with syntax highlighting and diagrams",
+  "description": "Framework-agnostic HTML rendering for @create-markdown with optional syntax highlighting",
   "author": "Val Alexander <val@viewdue.ai>",
   "license": "MIT",
   "repository": {
@@ -18,7 +18,6 @@
     "preview",
     "html",
     "shiki",
-    "mermaid",
     "web-component",
     "typescript"
   ],
@@ -73,15 +72,13 @@
   },
   "devDependencies": {
     "@create-markdown/core": "workspace:^",
-    "mermaid": "^11.14.0",
     "shiki": "^4.0.2",
     "typescript": "^6.0.2",
-    "vite": "^8.0.5",
+    "vite": "7.1.11",
     "vitest": "^4.1.2"
   },
   "peerDependencies": {
     "@create-markdown/core": ">=2.0.2",
-    "mermaid": ">=10.0.0",
     "shiki": ">=1.0.0"
   },
   "peerDependenciesMeta": {
@@ -89,9 +86,6 @@
       "optional": true
     },
     "shiki": {
-      "optional": true
-    },
-    "mermaid": {
       "optional": true
     }
   },
