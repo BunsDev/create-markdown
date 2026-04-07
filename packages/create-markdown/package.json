@@ -69,19 +69,19 @@
   },
   "dependencies": {
     "@create-markdown/core": "workspace:^",
-    "@create-markdown/react": "workspace:^",
-    "@create-markdown/preview": "workspace:^"
+    "@create-markdown/preview": "workspace:^",
+    "@create-markdown/react": "workspace:^"
   },
   "devDependencies": {
-    "@types/react": "^18.3.0",
-    "react": "^18.2.0",
-    "typescript": "^5.3.0",
-    "@types/react-dom": "^18.3.0"
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.4",
+    "typescript": "^6.0.2"
   },
   "peerDependencies": {
+    "mermaid": ">=10.0.0",
     "react": ">=18.0.0",
-    "shiki": ">=1.0.0",
-    "mermaid": ">=10.0.0"
+    "shiki": ">=1.0.0"
   },
   "peerDependenciesMeta": {
     "react": {

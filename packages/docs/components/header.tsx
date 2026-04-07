@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Github, Menu, X } from 'lucide-react';
+import { GitBranch, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { ThemeToggle } from './theme-toggle';
 import { CommandMenu } from './command-menu';
@@ -64,7 +64,7 @@ export function Header() {
             rel="noopener noreferrer"
             className="hidden md:inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border/50 bg-background/50 backdrop-blur-sm hover:bg-accent/50 hover:border-accent hover:shadow-glow-sm transition-all duration-200"
           >
-            <Github className="h-4 w-4" />
+            <GitBranch className="h-4 w-4" />
             <span className="sr-only">GitHub</span>
           </a>
           <ThemeToggle />
