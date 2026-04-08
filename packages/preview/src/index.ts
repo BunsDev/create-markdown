@@ -74,4 +74,4 @@ export type { Block, TextSpan, BlockType } from '@create-markdown/core';
 // Package Info
 // ============================================================================
 
-export const VERSION = '2.0.2';
+export const VERSION = '2.0.3';

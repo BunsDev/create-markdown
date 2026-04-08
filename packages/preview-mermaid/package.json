@@ -1,6 +1,6 @@
 {
   "name": "@create-markdown/preview-mermaid",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Optional Mermaid diagram plugin for @create-markdown/preview",
   "author": "Val Alexander <val@viewdue.ai>",
   "license": "MIT",
@@ -50,7 +50,7 @@
     "typescript": "^6.0.2"
   },
   "peerDependencies": {
-    "@create-markdown/preview": ">=2.0.2",
+    "@create-markdown/preview": ">=2.0.3",
     "mermaid": ">=10.0.0"
   },
   "peerDependenciesMeta": {

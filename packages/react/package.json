@@ -1,6 +1,6 @@
 {
   "name": "@create-markdown/react",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "React components and hooks for @create-markdown",
   "author": "Val Alexander <val@viewdue.ai>",
   "license": "MIT",
@@ -58,7 +58,7 @@
     "vitest": "^4.1.2"
   },
   "peerDependencies": {
-    "@create-markdown/core": ">=2.0.2",
+    "@create-markdown/core": ">=2.0.3",
     "react": ">=18.0.0"
   },
   "publishConfig": {
