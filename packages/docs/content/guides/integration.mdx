@@ -56,7 +56,7 @@ pnpm add @create-markdown/core @create-markdown/preview
 npm install @create-markdown/core @create-markdown/preview
 
 # With syntax highlighting and diagrams
-pnpm add @create-markdown/core @create-markdown/preview shiki mermaid
+pnpm add @create-markdown/core @create-markdown/preview @create-markdown/preview-mermaid shiki mermaid
 ```
 
 ### Convenience Bundle
@@ -69,7 +69,7 @@ pnpm add create-markdown
 npm install create-markdown
 
 # With optional peer dependencies
-pnpm add create-markdown react shiki mermaid
+pnpm add create-markdown react @create-markdown/preview-mermaid shiki mermaid
 ```
 
 ---
@@ -685,10 +685,10 @@ Use the preview package for server-side HTML rendering with syntax highlighting:
 import { parse } from '@create-markdown/core';
 import { 
   blocksToHTML, 
-  renderAsync, 
-  shikiPlugin, 
-  mermaidPlugin 
+  renderAsync,
+  shikiPlugin
 } from '@create-markdown/preview';
+import { mermaidPlugin } from '@create-markdown/preview-mermaid';
 
 const markdown = `
 # Hello World
@@ -956,7 +956,7 @@ Some packages have optional peer dependencies:
 pnpm add shiki
 
 # If using Mermaid diagrams
-pnpm add mermaid
+pnpm add @create-markdown/preview-mermaid mermaid
 
 # If using @create-markdown/react
 pnpm add react react-dom

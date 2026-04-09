@@ -13,11 +13,11 @@ Lightweight, block-based markdown solution (*zero dependencies*). Parse, create,
 
 | Package | Version | Description |
 | --- | --- | --- |
-| [@create-markdown/core](./packages/core) | 2.0.2 | Zero-dependency parsing and serialization |
-| [@create-markdown/react](./packages/react) | 2.0.2 | React components and hooks |
-| [@create-markdown/preview](./packages/preview) | 2.0.2 | HTML rendering with themes, plugins, and BYO-parser support |
-| [@create-markdown/mdx](./packages/mdx) | 2.0.2 | MDX conversion |
-| [create-markdown](./packages/create-markdown) | 2.0.2 | Convenience bundle |
+| [@create-markdown/core](./packages/core) | 2.0.3 | Zero-dependency parsing and serialization |
+| [@create-markdown/react](./packages/react) | 2.0.3 | React components and hooks |
+| [@create-markdown/preview](./packages/preview) | 2.0.3 | HTML rendering with themes, plugins, and BYO-parser support |
+| [@create-markdown/mdx](./packages/mdx) | 2.0.3 | MDX conversion |
+| [create-markdown](./packages/create-markdown) | 2.0.3 | Convenience bundle |
 
 ## Key Features
 
@@ -105,7 +105,8 @@ function Editor() {
 ### HTML Preview with Plugins
 
 ```typescript
-import { renderAsync, shikiPlugin, mermaidPlugin } from '@create-markdown/preview';
+import { renderAsync, shikiPlugin } from '@create-markdown/preview';
+import { mermaidPlugin } from '@create-markdown/preview-mermaid';
 import { parse } from '@create-markdown/core';
 
 const blocks = parse(`

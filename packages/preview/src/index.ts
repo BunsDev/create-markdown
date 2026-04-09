@@ -1,7 +1,7 @@
 /**
  * @create-markdown/preview
  * Framework-agnostic HTML rendering for @create-markdown
- * Supports syntax highlighting (Shiki) and diagrams (Mermaid)
+ * Supports optional syntax highlighting (Shiki)
  */
 
 // ============================================================================
@@ -53,10 +53,6 @@ export {
 export { shikiPlugin, createShikiPlugin } from './plugins/shiki';
 export type { ShikiPluginOptions } from './plugins/shiki';
 
-// Mermaid plugin
-export { mermaidPlugin, createMermaidPlugin } from './plugins/mermaid';
-export type { MermaidPluginOptions } from './plugins/mermaid';
-
 // ============================================================================
 // Web Component
 // ============================================================================
@@ -78,4 +74,4 @@ export type { Block, TextSpan, BlockType } from '@create-markdown/core';
 // Package Info
 // ============================================================================
 
-export const VERSION = '2.0.2';
+export const VERSION = '2.0.3';

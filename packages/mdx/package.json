@@ -1,6 +1,6 @@
 {
   "name": "@create-markdown/mdx",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Convert markdown blocks to MDX with component mappings",
   "author": "Val Alexander <val@viewdue.ai>",
   "license": "MIT",
@@ -48,13 +48,13 @@
   },
   "devDependencies": {
     "@create-markdown/core": "workspace:^",
-    "@types/node": "^20.0.0",
-    "typescript": "^5.3.0",
-    "vite": "^7.1.11",
+    "@types/node": "^25.5.2",
+    "typescript": "^6.0.2",
+    "vite": "7.1.11",
     "vitest": "^4.1.2"
   },
   "peerDependencies": {
-    "@create-markdown/core": ">=2.0.2"
+    "@create-markdown/core": ">=2.0.3"
   },
   "publishConfig": {
     "access": "public"

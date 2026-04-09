@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@config "../tailwind.config.ts";
+@import "tailwindcss";
 
 @layer base {
   :root {
@@ -183,7 +182,12 @@
   }
 
   .glass-card {
-    @apply glass rounded-2xl;
+    background: rgba(var(--glass-bg));
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid rgba(var(--glass-border));
+    box-shadow: var(--glass-shadow);
+    border-radius: 1rem;
   }
 
   .glass-code {
@@ -229,7 +233,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-transparent;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -247,29 +251,47 @@
 
 /* Code block styling */
 .prose pre {
-  @apply !bg-transparent !p-0 overflow-hidden;
+  background: transparent !important;
+  padding: 0 !important;
+  overflow: hidden;
 }
 
 .prose pre code {
-  @apply !bg-transparent block p-5 overflow-x-auto text-[14px] leading-7;
+  background: transparent !important;
+  display: block;
+  padding: 1.25rem;
+  overflow-x: auto;
+  font-size: 14px;
+  line-height: 1.75rem;
 }
 
 .prose code:not(pre code) {
-  @apply px-1.5 py-0.5 rounded-md text-sm font-medium before:content-none after:content-none;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   background: var(--muted);
+}
+
+.prose code:not(pre code)::before,
+.prose code:not(pre code)::after {
+  content: none;
 }
 
 /* Shiki code highlighting */
 .shiki {
-  @apply !bg-transparent;
+  background: transparent !important;
 }
 
 .shiki code {
-  @apply block overflow-x-auto text-[14px] leading-7;
+  display: block;
+  overflow-x: auto;
+  font-size: 14px;
+  line-height: 1.75rem;
 }
 
 .shiki code .line {
-  @apply block;
+  display: block;
 }
 
 /* Command palette - ensure mouse selection works */

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Split Mermaid support out of `@create-markdown/preview` into the new optional `@create-markdown/preview-mermaid` package.
+- Added `create-markdown/preview-mermaid` as a convenience re-export for Mermaid users on the bundle package.
+- Pinned the shared Vite toolchain back to `7.1.11` while newer releases are evaluated.
+
+### Migration
+- If you currently import `mermaidPlugin` from `@create-markdown/preview`, switch to `@create-markdown/preview-mermaid`.
+- Install Mermaid support explicitly with `pnpm add @create-markdown/preview-mermaid mermaid`.
+
 ### Planned
 - Frontmatter parsing support
 - Markdown validation utilities

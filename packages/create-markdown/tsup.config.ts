@@ -5,6 +5,7 @@ export default defineConfig({
     index: 'src/index.ts',
     react: 'src/react.ts',
     preview: 'src/preview.ts',
+    'preview-mermaid': 'src/preview-mermaid.ts',
   },
   format: ['esm', 'cjs'],
   outDir: 'dist',
@@ -17,9 +18,9 @@ export default defineConfig({
     '@create-markdown/core',
     '@create-markdown/react',
     '@create-markdown/preview',
+    '@create-markdown/preview-mermaid',
     'react',
     'shiki',
-    'mermaid',
   ],
   outExtension({ format }) {
     return {

@@ -1,6 +1,6 @@
 {
   "name": "create-markdown",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Complete block-based markdown notes package - convenience bundle for @create-markdown packages",
   "author": "Val Alexander <val@viewdue.ai>",
   "license": "MIT",
@@ -54,6 +54,16 @@
         "types": "./dist/preview.d.ts",
         "default": "./dist/preview.cjs"
       }
+    },
+    "./preview-mermaid": {
+      "import": {
+        "types": "./dist/preview-mermaid.d.ts",
+        "default": "./dist/preview-mermaid.js"
+      },
+      "require": {
+        "types": "./dist/preview-mermaid.d.ts",
+        "default": "./dist/preview-mermaid.cjs"
+      }
     }
   },
   "files": [
@@ -69,28 +79,25 @@
   },
   "dependencies": {
     "@create-markdown/core": "workspace:^",
-    "@create-markdown/react": "workspace:^",
-    "@create-markdown/preview": "workspace:^"
+    "@create-markdown/preview": "workspace:^",
+    "@create-markdown/preview-mermaid": "workspace:^",
+    "@create-markdown/react": "workspace:^"
   },
   "devDependencies": {
-    "@types/react": "^18.3.0",
-    "react": "^18.2.0",
-    "typescript": "^5.3.0",
-    "@types/react-dom": "^18.3.0"
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.4",
+    "typescript": "^6.0.2"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
-    "shiki": ">=1.0.0",
-    "mermaid": ">=10.0.0"
+    "shiki": ">=1.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
     },
     "shiki": {
-      "optional": true
-    },
-    "mermaid": {
       "optional": true
     }
   },

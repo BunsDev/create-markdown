@@ -12,7 +12,7 @@ pnpm add @create-markdown/preview
 npm install @create-markdown/preview
 
 # Optional: Install plugins
-pnpm add shiki mermaid
+pnpm add shiki
 ```
 
 ## Quick Start
@@ -59,7 +59,8 @@ const html = await renderAsync(blocks, {
 ### With Mermaid Diagrams
 
 ```typescript
-import { renderAsync, mermaidPlugin } from '@create-markdown/preview';
+import { renderAsync } from '@create-markdown/preview';
+import { mermaidPlugin } from '@create-markdown/preview-mermaid';
 import { parse } from '@create-markdown/core';
 
 const blocks = parse(`
@@ -78,6 +79,12 @@ const html = await renderAsync(blocks, {
     }),
   ],
 });
+```
+
+Install Mermaid support only when you need it:
+
+```bash
+pnpm add @create-markdown/preview-mermaid mermaid
 ```
 
 Use Mermaid's stricter security mode when diagram text can come from users. Only opt into looser Mermaid settings for fully trusted content.
@@ -100,7 +107,8 @@ This is rendered as HTML automatically!
 With plugins:
 
 ```typescript
-import { registerPreviewElement, shikiPlugin, mermaidPlugin } from '@create-markdown/preview';
+import { registerPreviewElement, shikiPlugin } from '@create-markdown/preview';
+import { mermaidPlugin } from '@create-markdown/preview-mermaid';
 
 registerPreviewElement({
   plugins: [
@@ -129,7 +137,7 @@ Async version that initializes plugins before rendering.
 ### Plugins
 
 - `shikiPlugin(options?)` - Syntax highlighting with Shiki
-- `mermaidPlugin(options?)` - Mermaid diagram rendering
+- `mermaidPlugin(options?)` - Mermaid diagram rendering via `@create-markdown/preview-mermaid`
 
 ### Themes
 
