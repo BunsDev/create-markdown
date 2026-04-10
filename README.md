@@ -2,17 +2,20 @@
 
 [![npm version](https://img.shields.io/npm/v/create-markdown.svg)](https://www.npmjs.com/package/create-markdown)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+---
+### @create-markdown/core | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/core?style=for-the-badge&color=black)](https://www.npmjs.com/package/localeval)
+Zero-dependency parsing and serialization
 
 Lightweight, block-based markdown solution (_zero dependencies_). Parse, create, serialize, and render markdown with TypeScript support.
 
 ## Packages
-| Package | Version | Description |
-|---------|---------|-------------|
-| [@create-markdown/core](./packages/core) | 2.0.3 | Zero-dependency parsing and serialization |
-| [@create-markdown/react](./packages/react) | 2.0.3 | React components and hooks |
-| [@create-markdown/preview](./packages/preview) | 2.0.3 | HTML rendering with themes, plugins, and BYO-parser support |
-| [@create-markdown/mdx](./packages/mdx) | 2.0.3 | MDX conversion |
-| [create-markdown](./packages/create-markdown) | 2.0.3 | Convenience bundle |
+| Package | Version | Description | Downloads (monthly)
+|---------|---------|-------------|-------------|
+| [@create-markdown/core](./packages/core) | 2.0.3 | Zero-dependency parsing and serialization | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/core?style=for-the-badge&color=black)](https://www.npmjs.com/package/@create-markdown/core)
+| [@create-markdown/react](./packages/react) | 2.0.3 | React components and hooks | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/react?style=for-the-badge&color=black)](https://www.npmjs.com/package/@create-markdown/core)
+| [@create-markdown/preview](./packages/preview) | 2.0.3 | HTML rendering with themes, plugins, and BYO-parser support | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/preview?style=for-the-badge&color=black)](https://www.npmjs.com/package/@create-markdown/preview)
+| [@create-markdown/mdx](./packages/mdx) | 2.0.3 | MDX conversion | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/mdx?style=for-the-badge&color=black)](https://www.npmjs.com/package/@create-markdown/mdx)
+| [create-markdown](./packages/create-markdown) | 2.0.3 | Convenience bundle | [![npm downloads](https://img.shields.io/npm/dm/create-markdown?style=for-the-badge&color=black)](https://www.npmjs.com/package/create-markdown)
 
 ## Key Features
 - **Block-based architecture**: Work with structured blocks instead of raw strings
