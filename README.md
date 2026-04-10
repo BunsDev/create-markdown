@@ -9,7 +9,7 @@ Lightweight, block-based markdown solution (_zero dependencies_). Parse, create,
 | Package | Version | Description | Downloads (monthly)
 |---------|---------|-------------|-------------|
 | [@create-markdown/core](./packages/core) | 2.0.3 | Zero-dependency parsing and serialization | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/core?style=for-the-badge&color=black)](https://www.npmjs.com/package/@create-markdown/core)
-| [@create-markdown/react](./packages/react) | 2.0.3 | React components and hooks | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/react?style=for-the-badge&color=black)](https://www.npmjs.com/package/@create-markdown/core)
+| [@create-markdown/react](./packages/react) | 2.0.3 | React components and hooks | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/react?style=for-the-badge&color=black)](https://www.npmjs.com/package/@create-markdown/react)
 | [@create-markdown/preview](./packages/preview) | 2.0.3 | HTML rendering with themes, plugins, and BYO-parser support | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/preview?style=for-the-badge&color=black)](https://www.npmjs.com/package/@create-markdown/preview)
 | [@create-markdown/mdx](./packages/mdx) | 2.0.3 | MDX conversion | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/mdx?style=for-the-badge&color=black)](https://www.npmjs.com/package/@create-markdown/mdx)
 | [create-markdown](./packages/create-markdown) | 2.0.3 | Convenience bundle | [![npm downloads](https://img.shields.io/npm/dm/create-markdown?style=for-the-badge&color=black)](https://www.npmjs.com/package/create-markdown)
