@@ -3,9 +3,6 @@
 [![npm version](https://img.shields.io/npm/v/create-markdown.svg)](https://www.npmjs.com/package/create-markdown)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ---
-### @create-markdown/core | [![npm downloads](https://img.shields.io/npm/dm/@create-markdown/core?style=for-the-badge&color=black)](https://www.npmjs.com/package/localeval)
-Zero-dependency parsing and serialization
-
 Lightweight, block-based markdown solution (_zero dependencies_). Parse, create, serialize, and render markdown with TypeScript support.
 
 ## Packages
