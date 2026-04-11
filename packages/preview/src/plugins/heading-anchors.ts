@@ -45,6 +45,7 @@ export function headingAnchorsPlugin(options?: HeadingAnchorsPluginOptions): Pre
         .map((span) => span.text)
         .join('');
       const anchorId = slugify(content, opts.anchorPrefix);
+      const level = headingBlock.props.level;
 
       const defaultHtml = defaultRender();
 
@@ -54,18 +55,20 @@ export function headingAnchorsPlugin(options?: HeadingAnchorsPluginOptions): Pre
   </svg>
 </a>`;
 
+      const headingTag = `h${level}`;
       const idAttr = ` id="${anchorId}"`;
 
-      const match = defaultHtml.match(/^<(h[1-6])/i);
-      if (!match) return null;
+      const htmlWithId = defaultHtml.replace(
+        new RegExp(`^<${headingTag}([^>]*)>`, 'i'),
+        (_match, attrs) => `<${headingTag}${attrs}${idAttr}>`
+      );
 
-      const tag = match[1];
-      const closeTag = `</${tag}>`;
-      const parts = defaultHtml.split(closeTag);
+      const htmlWithAnchor = htmlWithId.replace(
+        new RegExp(`</${headingTag}>`, 'i'),
+        `${anchorHtml}</${headingTag}>`
+      );
 
-      if (parts.length !== 2) return null;
-
-      return `${parts[0]}${idAttr}${anchorHtml}${closeTag}${parts[1]}`;
+      return htmlWithAnchor;
     },
 
     getCSS(): string {

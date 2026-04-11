@@ -14,6 +14,7 @@ export interface TocPluginOptions {
   linkClass?: string;
   indentWidth?: number;
   headingLevels?: number[];
+  anchorPrefix?: string;
 }
 
 export interface TocItem {
@@ -30,15 +31,19 @@ const DEFAULT_OPTIONS: Required<TocPluginOptions> = {
   linkClass: 'toc-link',
   indentWidth: 2,
   headingLevels: [1, 2, 3, 4, 5, 6],
+  anchorPrefix: '',
 };
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
+function slugify(text: string, prefix: string): string {
+  return (
+    prefix +
+    text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim()
+  );
 }
 
 function escapeHtml(text: string): string {
@@ -69,7 +74,7 @@ export function tocPlugin(options?: TocPluginOptions): PreviewPlugin {
           tocItems.push({
             level,
             text,
-            anchor: slugify(text),
+            anchor: slugify(text, opts.anchorPrefix),
           });
         }
       }
@@ -81,37 +86,59 @@ export function tocPlugin(options?: TocPluginOptions): PreviewPlugin {
         return html;
       }
 
-      const buildList = (items: TocItem[], parentLevel = 1): string => {
-        let result = '';
-        let currentItem: TocItem | null = null;
+      const buildNestedList = (items: TocItem[], startLevel: number): string => {
+        if (items.length === 0) {
+          return '';
+        }
 
-        for (const item of items) {
-          if (item.level < parentLevel) continue;
+        const result: string[] = [];
+        let i = 0;
 
-          if (!currentItem) {
-            result += `<ul class="${prefix}${opts.listClass}">\n`;
+        while (i < items.length) {
+          const item = items[i];
+
+          if (item.level < startLevel) {
+            break;
           }
 
-          currentItem = item;
+          if (item.level === startLevel) {
+            const safeText = escapeHtml(item.text);
+            result.push(
+              `<li class="${prefix}${opts.itemClass}">` +
+              `<a class="${prefix}${opts.linkClass}" href="#${item.anchor}">${safeText}</a>`
+            );
+            i++;
 
-          const indent = (item.level - parentLevel) * opts.indentWidth;
-          const indentStyle = indent > 0 ? ` style="padding-left: ${indent}em"` : '';
+            const childList = buildNestedList(items.slice(i), startLevel + 1);
+            if (childList) {
+              result.push(`<ul class="${prefix}${opts.listClass}">${childList}</ul>`);
+            }
 
-          result += `<li class="${prefix}${opts.itemClass}"${indentStyle}>
-  <a class="${prefix}${opts.linkClass}" href="#${item.anchor}">${escapeHtml(item.text)}</a>
-</li>\n`;
+            result.push('</li>');
+          } else {
+            const childList = buildNestedList(items.slice(i), item.level);
+            if (childList) {
+              result.push(`<ul class="${prefix}${opts.listClass}">${childList}</ul>`);
+            }
+
+            while (i < items.length && items[i].level >= startLevel) {
+              if (items[i].level === startLevel) {
+                break;
+              }
+              i++;
+            }
+          }
         }
 
-        if (currentItem) {
-          result += '</ul>\n';
-        }
-
-        return result;
+        return result.join('\n');
       };
 
       const minLevel = Math.min(...tocItems.map((i) => i.level));
-      const tocHtml = `<div class="${prefix}${opts.containerClass}" data-toc="true">
-${buildList(tocItems, minLevel)}</div>\n`;
+      const tocHtml = `<nav class="${prefix}${opts.containerClass}" aria-label="Table of contents">
+<ul class="${prefix}${opts.listClass}">
+${buildNestedList(tocItems, minLevel)}
+</ul>
+</nav>\n`;
 
       tocItems.length = 0;
 
@@ -120,7 +147,7 @@ ${buildList(tocItems, minLevel)}</div>\n`;
 
     getCSS(): string {
       return `
-.${prefix}${opts.containerClass}[data-toc="true"] {
+.${prefix}${opts.containerClass}[aria-label="Table of contents"] {
   margin-bottom: 1.5em;
   padding: 1em;
   background: rgba(175, 184, 193, 0.1);
@@ -151,7 +178,7 @@ ${buildList(tocItems, minLevel)}</div>\n`;
   };
 }
 
-export function extractToc(blocks: Block[]): TocItem[] {
+export function extractToc(blocks: Block[], anchorPrefix = ''): TocItem[] {
   const items: TocItem[] = [];
 
   for (const block of blocks) {
@@ -163,7 +190,7 @@ export function extractToc(blocks: Block[]): TocItem[] {
       items.push({
         level,
         text,
-        anchor: slugify(text),
+        anchor: slugify(text, anchorPrefix),
       });
     }
   }
@@ -176,36 +203,58 @@ export function renderToc(items: TocItem[], classPrefix = 'cm-'): string {
     return '';
   }
 
-  const minLevel = Math.min(...items.map((i) => i.level));
+  const buildNestedList = (items: TocItem[], startLevel: number): string => {
+    if (items.length === 0) {
+      return '';
+    }
 
-  const buildList = (items: TocItem[], parentLevel: number): string => {
-    let result = '';
-    let currentItem: TocItem | null = null;
+    const result: string[] = [];
+    let i = 0;
 
-    for (const item of items) {
-      if (item.level < parentLevel) continue;
+    while (i < items.length) {
+      const item = items[i];
 
-      if (!currentItem) {
-        result += `<ul class="${classPrefix}toc-list">\n`;
+      if (item.level < startLevel) {
+        break;
       }
 
-      currentItem = item;
+      if (item.level === startLevel) {
+        const safeText = escapeHtml(item.text);
+        result.push(
+          `<li class="${classPrefix}toc-item">` +
+          `<a class="${classPrefix}toc-link" href="#${item.anchor}">${safeText}</a>`
+        );
+        i++;
 
-      const indent = (item.level - parentLevel) * 2;
-      const indentStyle = indent > 0 ? ` style="padding-left: ${indent}em"` : '';
+        const childList = buildNestedList(items.slice(i), startLevel + 1);
+        if (childList) {
+          result.push(`<ul class="${classPrefix}toc-list">${childList}</ul>`);
+        }
 
-      result += `<li class="${classPrefix}toc-item"${indentStyle}>
-  <a class="${classPrefix}toc-link" href="#${item.anchor}">${escapeHtml(item.text)}</a>
-</li>\n`;
+        result.push('</li>');
+      } else {
+        const childList = buildNestedList(items.slice(i), item.level);
+        if (childList) {
+          result.push(`<ul class="${classPrefix}toc-list">${childList}</ul>`);
+        }
+
+        while (i < items.length && items[i].level >= startLevel) {
+          if (items[i].level === startLevel) {
+            break;
+          }
+          i++;
+        }
+      }
     }
 
-    if (currentItem) {
-      result += '</ul>\n';
-    }
-
-    return result;
+    return result.join('\n');
   };
 
-  return `<div class="${classPrefix}toc" data-toc="true">
-${buildList(items, minLevel)}</div>`;
+  const minLevel = Math.min(...items.map((i) => i.level));
+
+  return `<nav class="${classPrefix}toc" aria-label="Table of contents">
+<ul class="${classPrefix}toc-list">
+${buildNestedList(items, minLevel)}
+</ul>
+</nav>`;
 }

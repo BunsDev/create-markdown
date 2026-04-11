@@ -19,11 +19,15 @@ const DEFAULT_OPTIONS: Required<CopyButtonPluginOptions> = {
   includeShikiBlocks: true,
 };
 
-let scriptInjected = false;
+function escapeStringForJS(str: string): string {
+  return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+}
 
 export function copyButtonPlugin(options?: CopyButtonPluginOptions): PreviewPlugin {
   const opts = { ...DEFAULT_OPTIONS, ...options };
   const prefix = opts.classPrefix;
+
+  const injectedScripts = new Set<string>();
 
   return {
     name: 'copy-button',
@@ -41,11 +45,16 @@ export function copyButtonPlugin(options?: CopyButtonPluginOptions): PreviewPlug
       const copyButtonClass = `${prefix}copy-button`;
       const copyTextClass = `${prefix}copy-button-text`;
 
+      const scriptKey = `${prefix}|${copyButtonClass}|${copyTextClass}`;
+
       const injectScript = (): string => {
-        if (scriptInjected) {
+        if (injectedScripts.has(scriptKey)) {
           return '';
         }
-        scriptInjected = true;
+        injectedScripts.add(scriptKey);
+
+        const safeButtonText = escapeStringForJS(opts.buttonText);
+        const safeCopiedText = escapeStringForJS(opts.copiedText);
 
         return `<script>
 (function() {
@@ -58,11 +67,11 @@ export function copyButtonPlugin(options?: CopyButtonPluginOptions): PreviewPlug
     var text = code ? code.textContent : '';
     navigator.clipboard.writeText(text).then(function() {
       var textEl = btn.querySelector('.${copyTextClass}');
-      if (textEl) textEl.textContent = '${opts.copiedText}';
+      if (textEl) textEl.textContent = '${safeCopiedText}';
       btn.setAttribute('data-copied', 'true');
       setTimeout(function() {
         var textEl = btn.querySelector('.${copyTextClass}');
-        if (textEl) textEl.textContent = '${opts.buttonText}';
+        if (textEl) textEl.textContent = '${safeButtonText}';
         btn.removeAttribute('data-copied');
       }, 2000);
     }).catch(function() {
@@ -78,9 +87,8 @@ export function copyButtonPlugin(options?: CopyButtonPluginOptions): PreviewPlug
 
       const processedHtml = html.replace(blockRegex, (match) => {
         buttonCount++;
-        const copyId = `copy-${Date.now()}-${buttonCount}`;
 
-        const buttonHtml = `<button class="${copyButtonClass}" data-copy-id="${copyId}" type="button" aria-label="Copy code">
+        const buttonHtml = `<button class="${copyButtonClass}" type="button" aria-label="Copy code">
   <span class="${copyTextClass}">${opts.buttonText}</span>
 </button>`;
 

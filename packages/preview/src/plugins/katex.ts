@@ -21,6 +21,15 @@ const DEFAULT_OPTIONS: Required<KaTeXPluginOptions> = {
 
 let katexModule: typeof import('katex') | null = null;
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export function katexPlugin(options?: KaTeXPluginOptions): PreviewPlugin {
   const opts = { ...DEFAULT_OPTIONS, ...options };
   const prefix = opts.classPrefix;
@@ -55,7 +64,8 @@ export function katexPlugin(options?: KaTeXPluginOptions): PreviewPlugin {
             macros: opts.macros,
           });
         } catch {
-          return `<span class="${prefix}katex-error">${expr}</span>`;
+          const safeExpr = escapeHtml(expr);
+          return `<span class="${prefix}katex-error" title="Invalid math expression">${safeExpr}</span>`;
         }
       };
 
