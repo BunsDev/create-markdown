@@ -53,6 +53,22 @@ export {
 export { shikiPlugin, createShikiPlugin } from './plugins/shiki';
 export type { ShikiPluginOptions } from './plugins/shiki';
 
+// KaTeX plugin
+export { katexPlugin } from './plugins/katex';
+export type { KaTeXPluginOptions } from './plugins/katex';
+
+// Copy button plugin
+export { copyButtonPlugin } from './plugins/copy-button';
+export type { CopyButtonPluginOptions } from './plugins/copy-button';
+
+// Heading anchors plugin
+export { headingAnchorsPlugin } from './plugins/heading-anchors';
+export type { HeadingAnchorsPluginOptions } from './plugins/heading-anchors';
+
+// Table of contents plugin
+export { tocPlugin, extractToc, renderToc } from './plugins/toc';
+export type { TocPluginOptions, TocItem } from './plugins/toc';
+
 // ============================================================================
 // Web Component
 // ============================================================================
